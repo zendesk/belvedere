@@ -1,0 +1,45 @@
+<resources>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base"/>
+
+    <style name="BelvedereCardView" parent="CardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/sample_belvedere_card_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/sample_belvedere_card_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/sample_belvedere_card_margin_right</item>
+        <item name="android:layout_marginBottom">@dimen/sample_belvedere_card_margin_bottom</item>
+        <item name="cardCornerRadius">@dimen/sample_belvedere_card_corner_radius</item>
+        <item name="cardElevation">@dimen/sample_belvedere_card_elevation</item>
+        <item name="android:padding">@dimen/sample_belvedere_card_padding</item>
+    </style>
+
+    <style name="BelvedereCardViewInnerLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">@dimen/sample_belvedere_card_layout_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/sample_belvedere_card_layout_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/sample_belvedere_card_layout_margin_right</item>
+        <item name="android:layout_marginBottom">@dimen/sample_belvedere_card_layout_margin_bottom</item>
+    </style>
+
+    <style name="BelvedereSwitch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:textColor">@android:color/secondary_text_light</item>
+    </style>
+
+    <style name="BelvedereCardViewTitle" parent="@android:style/TextAppearance">
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="BelvedereCardButton" parent="Widget.AppCompat.Button" />
+
+</resources>

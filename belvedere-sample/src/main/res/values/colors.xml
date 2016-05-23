@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="accent_translucent">#80303F9F</color>
+    <color name="belvedereSecondaryText">#727272</color>
+
+    <color name="sample_logger_error">#FF0000</color>
+    <color name="sample_logger_warn">#FF5722</color>
+
+</resources>

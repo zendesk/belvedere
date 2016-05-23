@@ -1,0 +1,64 @@
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+
+// Add checkstyle, findbugs, pmd and lint to the check task.
+check.dependsOn 'findbugs', 'pmd', 'lint'
+
+task findbugs(type: FindBugs, dependsOn: assembleDebug) {
+    ignoreFailures = true
+    effort = "max"
+    reportLevel = "low"
+    excludeFilter = new File("${project.rootDir}/quality/findbugs.xml")
+    classes = files("${project.rootDir}/belvedere/build/intermediates/classes")
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    reports {
+        xml.enabled = true
+        html.enabled = false
+        xml {
+            destination "${project.buildDir}/reports/findbugs/findbugs.xml"
+            xml.withMessages true
+        }
+        html {
+            destination "${project.buildDir}/reports/findbugs/findbugs.html"
+        }
+    }
+
+    classpath = files()
+}
+
+task pmd(type: Pmd) {
+    ignoreFailures = true
+    ruleSetFiles = files("${project.rootDir}/quality/pmd.xml")
+    ruleSets = []
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        xml {
+            destination "${project.buildDir}/reports/pmd/pmd.xml"
+        }
+        html {
+            destination "${project.buildDir}/reports/pmd/pmd.html"
+        }
+    }
+}
+
+android {
+    lintOptions {
+        abortOnError true
+        xmlReport true
+        htmlReport true
+        lintConfig file("${project.rootDir}/quality/lint.xml")
+        htmlOutput file("${project.buildDir}/reports/lint/lint-result.html")
+        xmlOutput file("${project.buildDir}/reports/lint/lint-result.xml")
+    }
+}
