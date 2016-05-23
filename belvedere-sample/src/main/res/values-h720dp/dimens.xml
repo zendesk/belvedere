@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="sample_belvedere_banner_height">456dp</dimen>
+    <integer name="sample_belvedere_image_cols">4</integer>
+</resources>

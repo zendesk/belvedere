@@ -1,0 +1,83 @@
+ext {
+    compileSdkVersion = 23
+    buildToolsVersion = "23.0.3"
+    minSdkVersion = 9
+    targetSdkVersion = 23
+    supportLibVersion = "23.4.0"
+    versionName = "1.1.0.1-SNAPSHOT"
+
+    // Read from environment, fallback to ~/.gradle/gradle.properties. Required for snapshots
+    repoUsername = getConfigurationParameter("zendeskOssRepoUsername")
+    repoPassword = getConfigurationParameter("zendeskOssRepoPassword")
+}
+
+/**
+ * Looks for the specified configuration key in this order:
+ *
+ * <ol>
+ *     <li>system environment</li>
+ *     <li>project properties</li>
+ * </ol>
+ *
+ * If it isn't found, then the empty string is returned. This stops the gradlew from failing until
+ * it actually needs those values.
+ *
+ * @param keyName The key to look for
+ * @return The value or the empty string if not found
+ */
+def getConfigurationParameter(String keyName) {
+    return System.getenv(keyName) ?:
+            rootProject.hasProperty(keyName) ? rootProject.properties[keyName] : ''
+}
+
+/**
+ * Checks if we're building in a test mode, false otherwise
+ * <p>
+ *     Test mode is based on the existence of an environmental variable called zdRunTestSdk
+ * <p>
+ *
+ * @return if we're building in a test mode, false otherwise
+ */
+def buildingInTestMode() {
+    return "$System.env.TEST_SDK" != "null"
+}
+
+/**
+ * Checks if we're building on CI, false otherwise
+ *
+ * <p>
+ *     Test mode is based on the existence of an environmental variable called CI. This is set
+ *     by the CI environment, not us.
+ * <p>
+ *
+ * @return true if we're building on CI, false otherwise
+ */
+def buildingOnCi() {
+    "$System.env.CI" != "null"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+    
+    if (JavaVersion.current().isJava8Compatible()) {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

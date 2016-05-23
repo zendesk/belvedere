@@ -1,0 +1,29 @@
+sudo: false
+jdk:
+  - oraclejdk8
+language: android
+notifications:
+  email: false
+android:
+  components:
+    - tools
+    - platform-tools
+    - android-23
+    - build-tools-23.0.3
+    - extra-android-m2repository
+    - extra-google-m2repository
+  licenses:
+    - android-sdk-license-[0-9a-f]{8}
+branches:
+  only:
+    - master
+env:
+  global:
+    - secure: "ox2iaVNl+RU4XTkYQrBdx4EWZUXr0XWAbnsvAX28snxWVS81FCdDdC0qXRadpxYEB8QRKHH7M5s1oE4iKsWg99W1OyuntkRZN/Ubyy9Pjq0LJbvgFAos0t01/f8JJYAVtY2GFXMB+repzI37MwlgS5sKVUUtE0ZhUxySLoD0r6r98jo0afXmXyMYeQyLZfytGdTRx4Um82tuNsqhGjw0KwVLPhhU8qgPg1WX2kdWyHyRLRtJ1Y9Mb5b1/IATE4XH1cYZwelWmivrxHYNDknr2EOzGvIsSSxgP+SvFNAu34X0YRsLrTAP5MICN6O+sr+FSeP6YRrzOsR/4FmuP3ipa2/vayUiKlTmIRnJQMAzhUeA8D4a3NBPogFUw5hTNqBddna/wZMFvKaYKG0zEwGrx8UEzBzh4K2rPgZuQPAMNhR7spPcRYpaZAOUuRiLTyk6cYm3GPKJ4TZA6JZgK4VqsBE5c8+UMToj68YY/UmgNCuskPd4E6MWUjRM3kUwWbr0U474eJzuRky9lRRfWs/W820T/xX6vTJMRT0Urrt8oaJCKqgt8ftSQGoaDHNa6d78RZ1zhAAXp8kcXAwRkhzWMlguTKHSjc32Gtd7ypsc4xs+Jl4g9JFx4cLBLSYqPKjMHom4M37pd5GIu8nW/wXlTGvAWHbT3TwP856YgHolFgQ="
+    - secure: "FmqEc1+sEmRo0mXTq2YpbZeqEo5k6F3aya33O6Xl1BCcZpcMx29+tOPmo5BjXFQefHvDomAmjE2ki502sgW+XRSVrMT4XYgXFWK7ZR2zJAaZg5nM0BhMa86tSMUI2Go3XzyIF0v39wFCi3DrCF0Yy9AYQA/0Ic3KzMh2u9YsuJl0BTEsUowCw/ePJEFO3TbHWHZimLWAgXMPPjnhC2dhunIFGJCi0JI5qLeufqBcMK+wVtWPMx6rQpQ/9L0XWjJTfypSBqNBPfywgcy4ktw4R0LtYh+D5Af/IXub6FL5oQncxlrt7Ev4b51JRGyS5dgy7u3foGvgzBDCG5Bal/175F76IGZ1kIurx0L3mh9NGx14yt2pHnkaYY3uAV8aBc9y3ug0w940YuKLgxly+4QNeQeO9EMCxxwUnt43anzADg2UahLOp5jVh5GZ5lIVy8qIdpQOrGVviwhpna/hC1LpjFG2TVXT/tQjw6zYyUVukEC4DnLAEvnqugI0OvHEqFcJqeDoJMzy3rcr0rBIn1Tz6uGuu9VnS2vn0+yh2TsyjTis+Vqc/U//3/XENqO7pOdPnGBgST0eMWd9diYaFZOjfm/1DV6LFax7dISfzz8biv7UTtvKdvnTd5SIaLdcrBKCMWIligFMLTq1VYub6v793Jtd0HmNlS6eKAN71pBUX8w="
+before_script:
+  - echo no | android create avd --force -n test -t android-10 --abi armeabi --skin HVGA
+  - echo "hw.keyboard=yes" >> ~/.android/avd/test.avd/config.ini
+  - emulator -avd test -no-skin -no-audio -no-window -netspeed full -netdelay none &
+script:
+  - ./scripts/test_belvedere.sh && ./scripts/test_sample.sh && ./scripts/build_belvedere.sh
