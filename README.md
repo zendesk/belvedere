@@ -1,7 +1,5 @@
-# Belvedere
+## Belvedere
 Zero permissions file picker for Android.
-
-[Screenshots sample app //TODO]
 
 ## Overview
 Belvedere gives you the power to easily integrate file selection from third party apps and the camera without the need to take care of permissions, ContentProvider, Intent permissions, and so on.
@@ -32,9 +30,11 @@ If you’re not using Gradle, or you don’t have placeholder support please add
     android:authorities="<applicationId>.belvedere.attachments"
     android:exported="false"
     android:grantUriPermissions="true">
+
     <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/belvedere_attachment_storage" />
+
 </provider>
 ```
 
@@ -53,7 +53,7 @@ The newly created instance is used to acquire images from third party apps.
 
 Belvedere requires that you create an instance once and reuse that instance. We recommend to keep an instance in your global application class, in a headless fragment, a singleton or use your DI to take care of a Belvedere instance.
 
-For all the available configuration options, please have a look at our Javadoc: //TODO link
+For all the available configuration options, please have a look at our Javadoc:
 
 ## Display the built-in dialog
 If you want to show the built-in dialog to let the user select a file, invoke the following:
@@ -95,6 +95,7 @@ Use the first code snippet to open a file and the second one to share a file:
 final Intent intent = new Intent(Intent.ACTION_VIEW);
 intent.setDataAndType(uri, "image/*");
 belvedere.grantPermissionsForUri(intent, uri);
+
 startActivity(intent);
 ```
 
@@ -104,6 +105,7 @@ shareIntent.setAction(Intent.ACTION_SEND);
 shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
 shareIntent.setType("image/*");
 belvedere.grantPermissionsForUri(shareIntent, uri);
+
 startActivity(shareIntent);
 ```
 
