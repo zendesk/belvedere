@@ -1,4 +1,4 @@
-## Belvedere
+## belvedere
 Zero permissions file picker for Android.
 
 ## Overview
@@ -45,8 +45,8 @@ A Belvedere instance could be created as easily as the following:
 
 ```java
 Belvedere belvedere = Belvedere.from(context)
-                .withContentType(“image/*”)
-                .build()
+                .withContentType("image/*")
+                .build();
 ```
 
 The newly created instance is used to acquire images from third party apps.
@@ -127,7 +127,7 @@ If you’re submitting a bug report, please try to follow these steps:
 @schlan @baz8080 @brendan-fahy @a1cooke @ndobir @pmurph0
 
 ## Documentation
-Link to Javadoc //TODO
+[JavaDoc](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.1.0.1/belvedere-1.1.0.1-javadoc.jar)
 
 ## License
 ```
