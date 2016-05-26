@@ -41,6 +41,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     private final static String LOG_TAG = "BelvedereDialog";
     private final static String FRAGMENT_TAG = "BelvedereDialog";
     private final static String EXTRA_INTENT = "extra_intent";
+    private final static String STATE_WAITING_FOR_PERMISSION = "waiting_for_permission";
 
     private ListView listView;
     private BelvedereIntent waitingForPermission;
@@ -72,7 +73,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.belvedere_dialog, container, false);
         listView = (ListView) view.findViewById(R.id.belvedere_dialog_listview);
-        setRetainInstance(true);
         return view;
     }
 
@@ -80,6 +80,9 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = new BelvedereSharedPreferences(getContext());
+        if(savedInstanceState != null) {
+            waitingForPermission = savedInstanceState.getParcelable(STATE_WAITING_FOR_PERMISSION);
+        }
         setStyle(STYLE_NO_TITLE, getTheme());
     }
 
@@ -102,10 +105,10 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             if(permissions.length > 0 && permissions[0].equals(waitingForPermission.getPermission())) {
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    if(getActivity() != null){
-                        waitingForPermission.open(getActivity());
-                    } else if(getParentFragment() != null) {
+                    if(getParentFragment() != null){
                         waitingForPermission.open(getParentFragment());
+                    } else if(getActivity() != null) {
+                        waitingForPermission.open(getActivity());
                     }
 
                     dismissAllowingStateLoss();
@@ -130,11 +133,9 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     }
 
     @Override
-    public void onDestroyView() {
-        if (getDialog() != null && getRetainInstance()){
-            getDialog().setDismissMessage(null);
-        }
-        super.onDestroyView();
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_WAITING_FOR_PERMISSION, waitingForPermission);
     }
 
     private List<BelvedereIntent> getBelvedereIntents(){
