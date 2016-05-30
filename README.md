@@ -16,7 +16,7 @@ repositories {
 And add belvedere as a dependency:
 
 ```
-compile ‘com.zendesk:belvedere:1.1.0.1’
+compile ‘com.zendesk:belvedere:1.1.1.1’
 ```
 
 Belvedere relies on a certain feature of the Android manifest merger called placeholder support. Please make sure to provide the package name of your app as `applicationId` in your module specific `build.gradle`.
@@ -127,7 +127,7 @@ If you’re submitting a bug report, please try to follow these steps:
 @schlan @baz8080 @brendan-fahy @a1cooke @ndobir @pmurph0
 
 ## Documentation
-[JavaDoc](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.1.0.1/belvedere-1.1.0.1-javadoc.jar)
+[JavaDoc](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.1.1.1/belvedere-1.1.1.1-javadoc.jar)
 
 ## License
 ```
