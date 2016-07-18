@@ -28,10 +28,10 @@ import java.util.List;
 
 /**
  * This is a {@link DialogFragment} that allows the user to select an image source.
- *
  * <p>
- *     Based on the available permissions, this dialog allows the user to select images from a gallery or
- *     from a camera app.
+ * <p>
+ * Based on the available permissions, this dialog allows the user to select images from a gallery or
+ * from a camera app.
  * </p>
  */
 public class BelvedereDialog extends AppCompatDialogFragment {
@@ -51,12 +51,12 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     /**
      * Show a {@link BelvedereDialog} and render the specified {@link BelvedereIntent}.
      *
-     * @param fm A valid {@link FragmentManager}
+     * @param fm              A valid {@link FragmentManager}
      * @param belvedereIntent A list of {@link BelvedereIntent} to display
      */
-    public static void showDialog(FragmentManager fm, List<BelvedereIntent> belvedereIntent){
+    public static void showDialog(FragmentManager fm, List<BelvedereIntent> belvedereIntent) {
 
-        if(belvedereIntent == null || belvedereIntent.size() == 0){
+        if (belvedereIntent == null || belvedereIntent.size() == 0) {
             return;
         }
 
@@ -80,7 +80,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = new BelvedereSharedPreferences(getContext());
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             waitingForPermission = savedInstanceState.getParcelable(STATE_WAITING_FOR_PERMISSION);
         }
         setStyle(STYLE_NO_TITLE, getTheme());
@@ -102,12 +102,12 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
 
         if (requestCode == REQUEST_ID && waitingForPermission != null && !TextUtils.isEmpty(waitingForPermission.getPermission())) {
-            if(permissions.length > 0 && permissions[0].equals(waitingForPermission.getPermission())) {
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (permissions.length > 0 && permissions[0].equals(waitingForPermission.getPermission())) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    if(getParentFragment() != null){
+                    if (getParentFragment() != null) {
                         waitingForPermission.open(getParentFragment());
-                    } else if(getActivity() != null) {
+                    } else if (getActivity() != null) {
                         waitingForPermission.open(getActivity());
                     }
 
@@ -117,11 +117,12 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
                     boolean showRationale = shouldShowRequestPermissionRationale(waitingForPermission.getPermission());
 
-                    if(!showRationale){
+                    if (!showRationale) {
                         preferences.neverEverAskForThatPermissionAgain(waitingForPermission.getPermission());
                         belvedereIntents = getBelvedereIntents();
                         fillList(belvedereIntents);
                     }
+
                 }
 
                 waitingForPermission = null;
@@ -138,15 +139,15 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         outState.putParcelable(STATE_WAITING_FOR_PERMISSION, waitingForPermission);
     }
 
-    private List<BelvedereIntent> getBelvedereIntents(){
+    private List<BelvedereIntent> getBelvedereIntents() {
         List<BelvedereIntent> intents = getArguments().getParcelableArrayList(EXTRA_INTENT);
 
-        if(intents == null || intents.size() == 0){
+        if (intents == null || intents.size() == 0) {
             return new ArrayList<>();
         }
 
         List<BelvedereIntent> filter = new ArrayList<>();
-        for(BelvedereIntent belvedereIntent : intents) {
+        for (BelvedereIntent belvedereIntent : intents) {
             if (TextUtils.isEmpty(belvedereIntent.getPermission())
                     || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())) {
                 filter.add(belvedereIntent);
@@ -158,7 +159,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
     private void fillList(final List<BelvedereIntent> intents) {
 
-        if(getParentFragment() != null){
+        if (getParentFragment() != null) {
 
             final Fragment parentFragment = getParentFragment();
             fillListView(new StartActivity() {
@@ -173,7 +174,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
                 }
             }, intents);
 
-        } else if(getActivity() != null){
+        } else if (getActivity() != null) {
 
             final FragmentActivity activity = getActivity();
             fillListView(new StartActivity() {
@@ -190,32 +191,41 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
         } else {
             Log.w(LOG_TAG, "Not able to find a valid context for starting an BelvedereIntent");
-            if(getFragmentManager() != null){
+            if (getFragmentManager() != null) {
                 dismiss();
             }
         }
     }
 
-    private void fillListView(final StartActivity activity, final List<BelvedereIntent> intents){
+    private void fillListView(final StartActivity activity, final List<BelvedereIntent> intents) {
         listView.setAdapter(new Adapter(activity.getContext(), R.layout.belvedere_dialog_row, intents));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(@NonNull final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
                 if (view.getTag() instanceof BelvedereIntent) {
-                    final BelvedereIntent intent = (BelvedereIntent) view.getTag();
-
-                    if(TextUtils.isEmpty(intent.getPermission())){
-                        activity.startActivity(((BelvedereIntent) view.getTag()));
-                        dismiss();
-                    } else {
-                        askForPermission(intent);
-                    }
+                    openBelvedereIntent((BelvedereIntent) view.getTag(), activity);
                 }
             }
         });
+
+        if(intents.size() == 0) {
+            dismissAllowingStateLoss();
+
+        } else if(intents.size() == 1) {
+            openBelvedereIntent(intents.get(0), activity);
+        }
     }
 
-    private class Adapter extends ArrayAdapter<BelvedereIntent>{
+    private void openBelvedereIntent(BelvedereIntent belvedereIntent, StartActivity startActivity) {
+        if (TextUtils.isEmpty(belvedereIntent.getPermission())) {
+            startActivity.startActivity(belvedereIntent);
+            dismiss();
+        } else {
+            askForPermission(belvedereIntent);
+        }
+    }
+
+    private class Adapter extends ArrayAdapter<BelvedereIntent> {
 
         private Context context;
 
@@ -227,7 +237,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             View row = convertView;
-            if(convertView == null){
+            if (convertView == null) {
                 row = LayoutInflater.from(context).inflate(R.layout.belvedere_dialog_row, parent, false);
             }
 
@@ -241,13 +251,13 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         }
     }
 
-    private static class AttachmentSource{
+    private static class AttachmentSource {
 
         private final int drawable;
         private final String text;
 
-        public static AttachmentSource from(BelvedereIntent belvedereIntent, Context context){
-            switch (belvedereIntent.getSource()){
+        public static AttachmentSource from(BelvedereIntent belvedereIntent, Context context) {
+            switch (belvedereIntent.getSource()) {
                 case Camera:
                     return new AttachmentSource(R.drawable.ic_camera, context.getString(R.string.belvedere_dialog_camera));
                 case Gallery:
@@ -273,6 +283,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
     private interface StartActivity {
         void startActivity(BelvedereIntent belvedereIntent);
+
         Context getContext();
     }
 }
