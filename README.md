@@ -129,7 +129,8 @@ If you’re submitting a bug report, please try to follow these steps:
 @schlan @baz8080 @brendan-fahy @a1cooke @ndobir @pmurph0
 
 ### Documentation
-[JavaDoc](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.1.1.1/belvedere-1.1.1.1-javadoc.jar)
+
+[View](http://zdmobilesdkdocdev.herokuapp.com/belvedere/) | [Download](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.1.0.1/belvedere-1.1.0.1-javadoc.jar)
 
 ### License
 ```
