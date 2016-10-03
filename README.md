@@ -7,7 +7,7 @@ Zero permissions file picker for Android.
 Belvedere gives you the power to easily integrate file selection from third party apps and the camera without the need to take care of permissions, ContentProvider, Intent permissions, and so on.
 
 ### Download
-To use Belvedere in your own Android application, add the following maven repository:
+To use Belvedere in your own Android application, add the following Maven repository:
 
 ```
 repositories {
@@ -21,8 +21,8 @@ And add Belvedere as a dependency:
 compile ‘com.zendesk:belvedere:1.1.1.1’
 ```
 
-Belvedere relies on a certain feature of the Android manifest merger called placeholder support. Please make sure to provide the package name of your app as `applicationId` in your module specific `build.gradle`.
-For an example have a look at sample app.
+Belvedere relies on a certain feature of the [Android Manifest Merger](http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger) called [Placeholder support](http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger#TOC-Placeholder-support). Please make sure to provide the package name of your app as `applicationId` in your module specific `build.gradle`.
+For an example have a look at the sample app.
 
 If you’re not using Gradle, or you don’t have placeholder support please add the following to your `AndroidManifest.xml`:
 
@@ -79,7 +79,7 @@ protected void onActivityResult(final int requestCode, final int resultCode, fin
 }
 ...
 ```
-All files the user selects are copied into your apps internal cache. As a result Belvedere will return you a list of `BelvedereResult` objects. Each of these objects represents one selected file. To get access call `BelvedereResult#getFile()` or `BelvedereResult#getUri()`, both of which point to the internal cache, so no permissions are needed to access them.
+All files the user selects are copied into your apps internal cache. As a result Belvedere will return you a list of `BelvedereResult` objects. Each of these objects represents one selected file. To get access, call `BelvedereResult#getFile()` or `BelvedereResult#getUri()`, both of which point to the internal cache, so no permissions are needed to access them.
 
 #### Place a file into Belvedere’s internal storage
 Moreover, it’s possible to put your own data into Belvedere’s cache. To get access to an internal file, call:
@@ -87,9 +87,10 @@ Moreover, it’s possible to put your own data into Belvedere’s cache. To get 
 ```
 BelvedereResult file = belvedere.getFileRepresentation(“file_name.tmp”);
 ```
-Again, you’ll get a file object and an Uri. For example, you can use the file to open a FileOutputStream.
-Open or share an internal file
-Files that are available through Belvedere could be opened or shared with other apps. To do that, use the Uri you get from a `BelvedereResult`.
+Again, you’ll get a file object and a `Uri`. For example, you can use the file to open a `FileOutputStream`.
+
+#### Open or share an internal file
+Files that are available through Belvedere could be opened or shared with other apps. To do that, use the `Uri` you get from a `BelvedereResult`.
 
 Use the first code snippet to open a file and the second one to share a file:
 
