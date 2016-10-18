@@ -93,7 +93,7 @@ public class BelvedereConfig {
         private BelvedereLogger mBelvedereLogger = new DefaultLogger();
         private boolean mDebugEnabled = false;
         private TreeSet<BelvedereSource> mSources = new TreeSet<>(Arrays.asList(BelvedereSource.Camera, BelvedereSource.Gallery));
-        private String cameraImagePrefix = BelvedereStorage.CAMERA_IMAGE_PREFIX;
+        private String cameraImagePrefix = BelvedereStorage.CAMERA_IMG_PREFIX;
 
         Builder(Context context){
             this.mContext = context;

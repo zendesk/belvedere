@@ -37,7 +37,7 @@ class BelvedereStorage {
     private final static String REQUEST_IMAGE_DIR = "request";
 
     private final static String ATTACHMENT_NAME = "attachment_%s";
-    final static String CAMERA_IMAGE_PREFIX = "camera_image_";
+    final static String CAMERA_IMG_PREFIX = "camera_image_";
     private final static String CAMERA_IMG_NAME = "%s%s";
     private final static String CAMERA_IMG_SUFFIX = ".jpg";
     private final static String CAMERA_DATETIME_STRING_FORMAT = "yyyyMMddHHmmssSSS";
