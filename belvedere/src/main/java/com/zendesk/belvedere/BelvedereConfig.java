@@ -25,6 +25,8 @@ public class BelvedereConfig {
 
     private TreeSet<BelvedereSource> sources;
 
+    private String cameraImagePrefix;
+
     BelvedereConfig(Builder builder) {
         this.directoryName = builder.mDirectory;
         this.galleryRequestCode = builder.mGalleryRequestCode;
@@ -34,6 +36,7 @@ public class BelvedereConfig {
         this.contentType = builder.mContentType;
         this.belvedereLogger = builder.mBelvedereLogger;
         this.sources = builder.mSources;
+        this.cameraImagePrefix = builder.cameraImagePrefix;
     }
 
     String getDirectoryName() {
@@ -68,6 +71,10 @@ public class BelvedereConfig {
         return sources;
     }
 
+    String getCameraImagePrefix() {
+        return cameraImagePrefix;
+    }
+
     /**
      * Builder class for creating a {@link Belvedere} instance.
      */
@@ -86,6 +93,7 @@ public class BelvedereConfig {
         private BelvedereLogger mBelvedereLogger = new DefaultLogger();
         private boolean mDebugEnabled = false;
         private TreeSet<BelvedereSource> mSources = new TreeSet<>(Arrays.asList(BelvedereSource.Camera, BelvedereSource.Gallery));
+        private String cameraImagePrefix = BelvedereStorage.CAMERA_IMAGE_PREFIX;
 
         Builder(Context context){
             this.mContext = context;
@@ -223,6 +231,20 @@ public class BelvedereConfig {
          */
         public Builder withDebug(boolean enabled){
             this.mDebugEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Specify a string to prefix an image timestamp to make up the camera image file name
+         * <p>
+         *     Default: "camera_img_"
+         * </p>
+         *
+         * @param prefix The prefix string
+         * @return The {@link Builder}
+         */
+        public Builder withCameraImagePrefix(String prefix) {
+            this.cameraImagePrefix = prefix;
             return this;
         }
 
