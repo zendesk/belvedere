@@ -28,7 +28,7 @@ import java.util.Locale;
  * Internal helper class. Responsible for creating files
  * and handling the {@link BelvedereFileProvider}.
  */
-class BelvedereStorage {
+class Storage {
 
     private final static String LOG_TAG = "BelvedereStorage";
 
@@ -42,8 +42,9 @@ class BelvedereStorage {
     private final static String CAMERA_IMG_SUFFIX = ".jpg";
     private final static String CAMERA_DATETIME_STRING_FORMAT = "yyyyMMddHHmmssSSS";
 
-    private BelvedereConfig belvedereConfig;
-    private BelvedereLogger log;
+    private Logger log;
+    private String directoryName;
+
 
     @IntDef(flag = true, value = {
             Intent.FLAG_GRANT_READ_URI_PERMISSION,
@@ -52,9 +53,9 @@ class BelvedereStorage {
     @Retention(RetentionPolicy.SOURCE)
     public @interface IntentPermissions{}
 
-    BelvedereStorage(BelvedereConfig belvedereConfig){
-        this.belvedereConfig = belvedereConfig;
-        this.log = belvedereConfig.getBelvedereLogger();
+    Storage(String directoryName, Logger log){
+        this.directoryName = directoryName;
+        this.log = log;
     }
 
     /**
@@ -222,7 +223,7 @@ class BelvedereStorage {
      * @param context A valid application {@link Context}.
      */
     void clearStorage(@NonNull Context context) {
-        final File rootDir = new File(getRootDir(context) + File.separator + belvedereConfig.getDirectoryName());
+        final File rootDir = new File(getRootDir(context) + File.separator + directoryName);
         if(rootDir.isDirectory()){
             clearDirectory(rootDir);
         }
@@ -277,7 +278,7 @@ class BelvedereStorage {
             subDirectoryString = "";
         }
 
-        final File dir = new File(getRootDir(context) + File.separator + belvedereConfig.getDirectoryName() + File.separator + subDirectoryString);
+        final File dir = new File(getRootDir(context) + File.separator + directoryName + File.separator + subDirectoryString);
 
         if(!dir.isDirectory()){
             dir.mkdirs();

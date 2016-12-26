@@ -106,13 +106,23 @@
                         android:layout_marginBottom="@dimen/sample_belvedere_card_settings_margin_bottom"/>
 
                     <Button
-                        android:id="@+id/sample_belvedere_dialog"
+                        android:id="@+id/sample_belvedere_btn_camera"
                         style="@style/BelvedereCardButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
                         android:layout_marginTop="@dimen/sample_belvedere_card_settings_margin_bottom"
-                        android:text="Select Media" />
+                        android:text="Select Camera" />
+
+                    <Button
+                        android:id="@+id/sample_belvedere_btn_document"
+                        style="@style/BelvedereCardButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginTop="@dimen/sample_belvedere_card_settings_margin_bottom"
+                        android:text="Select Document" />
+
 
                 </LinearLayout>
 

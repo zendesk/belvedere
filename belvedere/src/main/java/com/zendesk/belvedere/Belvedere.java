@@ -1,12 +1,11 @@
 package com.zendesk.belvedere;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.app.Activity;
 
 import java.io.File;
 import java.util.List;
@@ -21,16 +20,26 @@ public class Belvedere {
 
     private final static String LOG_TAG = "Belvedere";
 
-    private final Context context;
-    private final BelvedereImagePicker imagePicker;
-    private final BelvedereStorage belvedereStorage;
-    private final BelvedereLogger log;
+    private static Belvedere instance;
 
-    Belvedere(Context context, BelvedereConfig belvedereConfig) {
-        this.context = context;
-        this.belvedereStorage = new BelvedereStorage(belvedereConfig);
-        this.imagePicker = new BelvedereImagePicker(belvedereConfig, belvedereStorage);
-        this.log = belvedereConfig.getBelvedereLogger();
+    private final Context context;
+    private final Logger log;
+    private final boolean debug;
+    private final String directoryName;
+
+    private Storage storage;
+    private IntentRegistry intentRegistry;
+    private MediaSource mediaSource;
+
+    private Belvedere(Builder builder) {
+        this.context = builder.context;
+        this.log = builder.logger;
+        this.debug = builder.debug;
+        this.directoryName = builder.directoryName;
+
+        this.intentRegistry = new IntentRegistry();
+        this.storage = new Storage(directoryName, log);
+        this.mediaSource = new MediaSource(context, log, storage, intentRegistry);
 
         log.d(LOG_TAG, "Belvedere initialized");
     }
@@ -44,34 +53,44 @@ public class Belvedere {
      * @throws IllegalArgumentException if provided {@link Context} is invalid.
      */
     @NonNull
-    public static BelvedereConfig.Builder from(@NonNull Context context) {
-        if (context != null && context.getApplicationContext() != null) {
-            return new BelvedereConfig.Builder(context.getApplicationContext());
+    public static Belvedere from(@NonNull Context context) {
+        synchronized (Belvedere.class) {
+            if(instance == null) {
+                if (context != null && context.getApplicationContext() != null) {
+                    return new Builder(context.getApplicationContext()).build();
+                } else {
+                    throw new IllegalArgumentException("Invalid context provided");
+                }
+            }
         }
 
-        throw new IllegalArgumentException("Invalid context provided");
+        return instance;
     }
 
-    /**
-     * Get a list of {@link BelvedereIntent} which can be used to build
-     * e.g. a dialog.
-     *
-     * @return A {@link List} of {@link BelvedereIntent}
-     */
-    @NonNull
-    public List<BelvedereIntent> getBelvedereIntents() {
-        return imagePicker.getBelvedereIntents(context);
+    public Belvedere withCustomLogger(Logger logger) {
+        synchronized (Belvedere.class) {
+            instance = builder().logger(logger).build();
+        }
+        return instance;
     }
 
-    /**
-     * Show Belvedere's own media picker dialog ({@link BelvedereDialog}).
-     *
-     * @param fragmentManager A {@link FragmentManager}
-     */
-    public void showDialog(@NonNull FragmentManager fragmentManager) {
-        final List<BelvedereIntent> intents = getBelvedereIntents();
-        BelvedereDialog.showDialog(fragmentManager, intents);
+    public Belvedere debugEnabled(boolean logging) {
+        synchronized (Belvedere.class) {
+            instance = builder().debug(logging).build();
+        }
+        return instance;
     }
+
+    public MediaIntent.CameraIntentBuilder camera() {
+        final int requestCode = intentRegistry.reserveSlot();
+        return new MediaIntent.CameraIntentBuilder(requestCode, mediaSource, intentRegistry);
+    }
+
+    public MediaIntent.DocumentIntentBuilder document() {
+        final int requestCode = intentRegistry.reserveSlot();
+        return new MediaIntent.DocumentIntentBuilder(requestCode, mediaSource);
+    }
+
 
     /**
      * Parse data from {@link Activity#onActivityResult(int, int, Intent)}.
@@ -85,7 +104,52 @@ public class Belvedere {
      * @param callback    {@link BelvedereCallback} that will deliver a list of {@link BelvedereResult}
      */
     public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data, @NonNull BelvedereCallback<List<BelvedereResult>> callback) {
-        imagePicker.getFilesFromActivityOnResult(context, requestCode, resultCode, data, callback);
+        mediaSource.getFilesFromActivityOnResult(context, requestCode, resultCode, data, callback); // FIXME
+    }
+
+    Builder builder() {
+        return new Builder(context, log, debug, directoryName);
+    }
+
+    private static class Builder {
+
+        private Context context;
+        private Logger logger;
+        private boolean debug;
+        private String directoryName;
+
+        Builder(Context context) {
+            this.context = context;
+            this.logger = new DefaultLogger();
+            this.debug = false;
+            this.directoryName = "belvedere-data-v2";
+        }
+
+        Builder(Context context, Logger logger, boolean debug, String directoryName) {
+            this.context = context;
+            this.logger = logger;
+            this.debug = debug;
+            this.directoryName = directoryName;
+        }
+
+        Builder logger(Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
+        Builder debug(boolean debug) {
+            this.debug = debug;
+            return this;
+        }
+
+        Builder directoryName(String name) {
+            this.directoryName = name;
+            return this;
+        }
+
+        Belvedere build() {
+            return new Belvedere(this);
+        }
     }
 
     /**
@@ -99,13 +163,13 @@ public class Belvedere {
      * @return A {@link BelvedereResult}
      */
     @Nullable
-    public BelvedereResult getFileRepresentation(@NonNull String fileName) {
-        final File file = belvedereStorage.getTempFileForRequestAttachment(context, fileName);
+    public BelvedereResult getFile(@NonNull String fileName) {
+        final File file = storage.getTempFileForRequestAttachment(context, fileName);
         log.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
 
         final Uri uri;
 
-        if (file != null && (uri = belvedereStorage.getFileProviderUri(context, file)) != null) {
+        if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
             return new BelvedereResult(file, uri);
         }
 
@@ -121,7 +185,7 @@ public class Belvedere {
      */
     public void grantPermissionsForUri(Intent intent, Uri uri) {
         log.d(LOG_TAG, String.format(Locale.US, "Grant Permission - Intent: %s - Uri: %s", intent, uri));
-        belvedereStorage.grantPermissionsForUri(context, intent, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        storage.grantPermissionsForUri(context, intent, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
 
     /**
@@ -132,35 +196,13 @@ public class Belvedere {
      */
     public void revokePermissionsForUri(Uri uri) {
         log.d(LOG_TAG, String.format(Locale.US, "Revoke Permission - Uri: %s", uri));
-        belvedereStorage.revokePermissionsFromUri(context, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        storage.revokePermissionsFromUri(context, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
-
-    /**
-     * Check if at least one requested {@link BelvedereSource}
-     * is available.
-     *
-     * @return {@code true} if one or more sources are available,
-     *         {@code false} if no source is available.
-     */
-    public boolean oneOrMoreSourceAvailable(){
-        return imagePicker.oneOrMoreSourceAvailable(context);
-    }
-
-    /**
-     * Check if a specific {@link BelvedereSource} is available.
-     *
-     * @param source The {@link BelvedereSource} to check.
-     * @return {@code true} if the source is available, {@code false} if not.
-     */
-    public boolean isFunctionalityAvailable(@NonNull final BelvedereSource source) {
-        return imagePicker.isFunctionalityAvailable(source, context);
-    }
-
     /**
      * Clear the internal Belvedere cache.
      */
     public void clear() {
         log.d(LOG_TAG, "Clear Belvedere cache");
-        belvedereStorage.clearStorage(context);
+        storage.clearStorage(context);
     }
 }

@@ -201,7 +201,7 @@ public class BelvedereTest extends ApplicationTestCase<Application> {
         final Belvedere belvedere = Belvedere.from(context)
                 .build();
 
-        final BelvedereResult file = belvedere.getFileRepresentation(fileName);
+        final BelvedereResult file = belvedere.getFile(fileName);
         assertThat("File shouldn't be null", file, is(notNullValue()));
         assertThat("Uri shouldn't be null", file.getUri(), is(notNullValue()));
         assertThat("File shouldn't be null", file.getFile(), is(notNullValue()));

@@ -7,18 +7,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -33,12 +28,11 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import com.zendesk.belvedere.Belvedere;
 import com.zendesk.belvedere.BelvedereCallback;
 import com.zendesk.belvedere.BelvedereResult;
-import com.zendesk.belvedere.BelvedereSource;
+import com.zendesk.belvedere.MediaIntent;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String BELVEDERE_FILE_NAME = "belvedere.jpg";
 
     private BelvedereCallback<List<BelvedereResult>> belvedereResult;
-    private HeadLessFragment dataFragment;
 
     @BindView(R.id.sample_belvedere_multiple) SwitchCompat switchMultiple;
     @BindView(R.id.sample_belvedere_logging) SwitchCompat switchLogging;
@@ -61,7 +54,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.sample_belvedere_log) TextView log;
     @BindView(R.id.sample_belvedere_gridlayout) GridLayout gridLayout;
-    @BindView(R.id.sample_belvedere_dialog) Button chooserButton;
+
+    @BindView(R.id.sample_belvedere_btn_document) Button documentButton;
+    @BindView(R.id.sample_belvedere_btn_camera) Button cameraButton;
+
     @BindView(R.id.main_content) CoordinatorLayout coordinatorLayout;
 
     @Override
@@ -70,32 +66,46 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        Belvedere
+                .from(this)
+                .debugEnabled(true)
+                .withCustomLogger(new SampleLogger(log));
+
         setSupportActionBar(toolbar);
-        dataFragment = initHeadlessFragment();
-        if(dataFragment.getBelvedere() == null){
-            dataFragment.setBelvedere(initBelvedere());
-        }
 
         initBanner();
 
-        chooserButton.setOnClickListener(new View.OnClickListener() {
+        documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                dataFragment.getBelvedere().showDialog(getSupportFragmentManager());
+                Belvedere
+                        .from(MainActivity.this)
+                        .document()
+                        .open(MainActivity.this);
+            }
+        });
+
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                Belvedere
+                        .from(MainActivity.this)
+                        .camera()
+                        .open(MainActivity.this);
             }
         });
 
         switchMultiple.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                dataFragment.setBelvedere(initBelvedere());
+                //dataFragment.setBelvedere(initBelvedere());
             }
         });
 
         switchLogging.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                dataFragment.setBelvedere(initBelvedere());
+                //dataFragment.setBelvedere(initBelvedere());
             }
         });
 
@@ -103,42 +113,27 @@ public class MainActivity extends AppCompatActivity {
         switchGallery.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                if(!switchCamera.isChecked() && !isChecked){
-                    Snackbar.make(coordinatorLayout, "At least one source must be selected", Snackbar.LENGTH_LONG).show();
-                    switchGallery.setChecked(true);
-                }else {
-                    dataFragment.setBelvedere(initBelvedere());
-                }
+//                if(!switchCamera.isChecked() && !isChecked){
+//                    Snackbar.make(coordinatorLayout, "At least one source must be selected", Snackbar.LENGTH_LONG).show();
+//                    switchGallery.setChecked(true);
+//                }else {
+//                    dataFragment.setBelvedere(initBelvedere());
+//                }
             }
         });
 
         switchCamera.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                if(!switchGallery.isChecked() && !isChecked){
-                    Snackbar.make(coordinatorLayout, "At least one source must be selected", Snackbar.LENGTH_LONG).show();
-                    switchCamera.setChecked(true);
-                } else {
-                    dataFragment.setBelvedere(initBelvedere());
-                }
+//                if(!switchGallery.isChecked() && !isChecked){
+//                    Snackbar.make(coordinatorLayout, "At least one source must be selected", Snackbar.LENGTH_LONG).show();
+//                    switchCamera.setChecked(true);
+//                } else {
+//                    dataFragment.setBelvedere(initBelvedere());
+//                }
             }
         });
 
-    }
-
-    private HeadLessFragment initHeadlessFragment(){
-        final FragmentManager fm = getSupportFragmentManager();
-        final Fragment fragment = fm.findFragmentByTag(HeadLessFragment.TAG);
-
-        if(fragment instanceof HeadLessFragment){
-            return (HeadLessFragment)fragment;
-        } else {
-            final HeadLessFragment headLessFragment = new HeadLessFragment();
-            fm.beginTransaction()
-                    .add(headLessFragment, HeadLessFragment.TAG)
-                    .commit();
-            return headLessFragment;
-        }
     }
 
     @Override
@@ -148,26 +143,6 @@ public class MainActivity extends AppCompatActivity {
             belvedereResult.cancel();
             belvedereResult = null;
         }
-    }
-
-    private Belvedere initBelvedere(){
-
-        final List<BelvedereSource> belvedereSources = new ArrayList<>();
-        if(switchCamera.isChecked()){
-            belvedereSources.add(BelvedereSource.Camera);
-        }
-
-        if(switchGallery.isChecked()){
-            belvedereSources.add(BelvedereSource.Gallery);
-        }
-
-        return Belvedere.from(this)
-                .withContentType("image/*")
-                .withAllowMultiple(switchMultiple.isChecked())
-                .withCustomLogger(new SampleLogger(log))
-                .withDebug(switchLogging.isChecked())
-                .withSource(belvedereSources.toArray(new BelvedereSource[belvedereSources.size()]))
-                .build();
     }
 
     private void initBanner() {
@@ -203,8 +178,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initBannerListener(final Bitmap bitmap){
-        final BelvedereResult file = dataFragment.getBelvedere().getFileRepresentation(BELVEDERE_FILE_NAME);
-        if(file == null) return;
+        final BelvedereResult file = Belvedere.from(MainActivity.this).getFile(BELVEDERE_FILE_NAME);
+        if(file == null) {
+            return;
+        }
 
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -248,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(final View v) {
                 final Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(uri, "image/*");
-                dataFragment.getBelvedere().grantPermissionsForUri(intent, uri);
+                Belvedere.from(MainActivity.this).grantPermissionsForUri(intent, uri);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -260,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                 shareIntent.setAction(Intent.ACTION_SEND);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                 shareIntent.setType("image/*");
-                dataFragment.getBelvedere().grantPermissionsForUri(shareIntent, uri);
+                Belvedere.from(MainActivity.this).grantPermissionsForUri(shareIntent, uri);
                 startActivity(shareIntent);
                 return true;
             }
@@ -295,28 +272,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        dataFragment.getBelvedere().getFilesFromActivityOnResult(requestCode, resultCode, data, belvedereResult);
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, belvedereResult);
     }
 
-
-    public static class HeadLessFragment extends Fragment {
-
-        public static final String TAG = "HeadLessFragment";
-        private Belvedere mBelvedere;
-
-        @Nullable
-        @Override
-        public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-            setRetainInstance(true);
-            return null;
-        }
-
-        public void setBelvedere(Belvedere belvedere){
-            this.mBelvedere = belvedere;
-        }
-
-        public Belvedere getBelvedere(){
-            return mBelvedere;
-        }
-    }
 }

@@ -13,11 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zendesk.belvedere.BelvedereLogger;
+import com.zendesk.belvedere.Logger;
 
 import java.util.Locale;
 
-class SampleLogger implements BelvedereLogger {
+class SampleLogger implements Logger {
 
     private TextView textView;
     private boolean loggable;

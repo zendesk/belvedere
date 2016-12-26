@@ -12,6 +12,10 @@ import java.io.File;
  */
 public class BelvedereResult implements Parcelable {
 
+    static BelvedereResult empty() {
+        return new BelvedereResult(null, null);
+    }
+
     private final File file;
     private final Uri uri;
 
@@ -25,7 +29,6 @@ public class BelvedereResult implements Parcelable {
      *
      * @return The {@link File}
      */
-    @NonNull
     public File getFile() {
         return file;
     }
@@ -40,7 +43,6 @@ public class BelvedereResult implements Parcelable {
      *
      * @return The {@link Uri}
      */
-    @NonNull
     public Uri getUri() {
         return uri;
     }

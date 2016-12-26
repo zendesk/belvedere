@@ -29,24 +29,12 @@ public class BelvedereIntent implements Parcelable {
 
     private final int requestCode;
     private final Intent intent;
-    private final BelvedereSource source;
     private final String permission;
 
-    public BelvedereIntent(@NonNull Intent intent, int requestCode, @NonNull BelvedereSource source, @Nullable String permission){
+    public BelvedereIntent(@NonNull Intent intent, int requestCode, @Nullable String permission){
         this.intent = intent;
         this.requestCode = requestCode;
-        this.source = source;
         this.permission = permission;
-    }
-
-    /**
-     * Get the source type.
-     *
-     * @return The source type.
-     */
-    @NonNull
-    public BelvedereSource getSource() {
-        return source;
     }
 
     /**
@@ -118,7 +106,6 @@ public class BelvedereIntent implements Parcelable {
     public void writeToParcel(@NonNull final Parcel dest, final int flags) {
         dest.writeInt(requestCode);
         dest.writeParcelable(intent, flags);
-        dest.writeSerializable(source);
         dest.writeString(permission);
     }
 
@@ -137,7 +124,6 @@ public class BelvedereIntent implements Parcelable {
     private BelvedereIntent(Parcel in) {
         requestCode = in.readInt();
         intent = in.readParcelable(BelvedereIntent.class.getClassLoader());
-        source = (BelvedereSource) in.readSerializable();
         permission = in.readString();
     }
 }

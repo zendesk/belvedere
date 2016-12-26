@@ -31,17 +31,17 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
     final BelvedereCallback<List<BelvedereResult>> callback;
     final Context context;
-    final BelvedereLogger log;
-    final BelvedereStorage belvedereStorage;
+    final Logger log;
+    final Storage storage;
 
     BelvedereResolveUriTask(
             @NonNull Context context,
-            @NonNull BelvedereLogger belvedereLogger,
-            @NonNull BelvedereStorage belvedereStorage,
+            @NonNull Logger logger,
+            @NonNull Storage storage,
             @Nullable BelvedereCallback<List<BelvedereResult>> callback) {
         this.context = context;
-        this.log = belvedereLogger;
-        this.belvedereStorage = belvedereStorage;
+        this.log = logger;
+        this.storage = storage;
         this.callback = callback;
     }
 
@@ -56,7 +56,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
             try {
                 inputStream = context.getContentResolver().openInputStream(uri);
-                final File file = belvedereStorage.getTempFileForGalleryImage(context, uri);
+                final File file = storage.getTempFileForGalleryImage(context, uri);
 
                 if (inputStream != null && file != null) {
                     log.d(LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
@@ -69,7 +69,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
                         fileOutputStream.write(buf, 0, len);
                     }
 
-                    success.add(new BelvedereResult(file, belvedereStorage.getFileProviderUri(context, file)));
+                    success.add(new BelvedereResult(file, storage.getFileProviderUri(context, file)));
 
                 } else {
                     log.w(

@@ -4,12 +4,12 @@ import android.util.Log;
 
 /**
  * Logger class that is used, if no custom logger was
- * defined {@link BelvedereConfig.Builder#withCustomLogger(BelvedereLogger)}
+ * defined {@link BelvedereConfig.Builder#withCustomLogger(Logger)}
  * but logging was enabled {@link BelvedereConfig.Builder#withDebug(boolean)}.
  * <br>
  * Using Android {@link Log} class to print log messages.
  */
-class DefaultLogger implements BelvedereLogger {
+class DefaultLogger implements Logger {
 
     private boolean loggable = false;
 

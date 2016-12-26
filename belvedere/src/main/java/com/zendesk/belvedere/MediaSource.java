@@ -13,84 +13,44 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Internal Helper class. Responsible for creating {@link BelvedereIntent} and
  * parsing returned data.
  */
-class BelvedereImagePicker {
+class MediaSource {
 
     private final static String LOG_TAG = "BelvedereImagePicker";
 
-    private final BelvedereConfig belvedereConfig;
-    private final BelvedereStorage belvedereStorage;
+    private final Storage storage;
+    private final IntentRegistry intentRegistry;
+    private final Context context;
+    private final Logger log;
 
-    private final Map<Integer, BelvedereResult> cameraImages = new HashMap<>();
-
-    private final BelvedereLogger log;
-
-    BelvedereImagePicker(final BelvedereConfig belvedereConfig, BelvedereStorage belvedereStorage){
-        this.belvedereConfig = belvedereConfig;
-        this.belvedereStorage = belvedereStorage;
-        this.log = belvedereConfig.getBelvedereLogger();
+    MediaSource(Context context, Logger log, Storage storage, IntentRegistry intentRegistry) {
+        this.log = log;
+        this.context = context;
+        this.storage = storage;
+        this.intentRegistry = intentRegistry;
     }
-
-    /**
-     * Get a list of {@link BelvedereIntent}. Each list entry represents
-     * an available media source. Sources can be limited due provided configurations, like
-     * {@link BelvedereConfig.Builder#withSource(BelvedereSource...)} or due hardware or os
-     * specific limitations. Like the absence of a camera or a valid gallery app.
-     *
-     * @param context A valid application {@link Context}
-     * @return A list of {@link BelvedereIntent}
-     */
-    @NonNull
-    List<BelvedereIntent> getBelvedereIntents(@NonNull Context context){
-        final TreeSet<BelvedereSource> belvedereSources = belvedereConfig.getBelvedereSources();
-        final List<BelvedereIntent> belvedereIntents = new ArrayList<>();
-
-        for(BelvedereSource belvedereSource : belvedereSources){
-            BelvedereIntent intent = null;
-
-            switch (belvedereSource){
-                case Gallery:
-                    intent = getGalleryIntent(context);
-                    break;
-                case Camera:
-                    intent = getCameraIntent(context);
-                    break;
-            }
-
-            if(intent != null){
-                belvedereIntents.add(intent);
-            }
-        }
-
-        return belvedereIntents;
-    }
-
 
     /**
      * Create a {@link BelvedereIntent} that invokes the android document picker or
      * an installed gallery, respecting the provided {@link BelvedereConfig}.
      *
-     * @param context A valid application {@link Context}.
      * @return An {@link BelvedereIntent} or null if this action isn't supported by
      *      the system.
      */
     @Nullable
-    BelvedereIntent getGalleryIntent(@NonNull Context context){
-        if(hasGalleryApp(context)) {
-            return new BelvedereIntent(getGalleryIntent(), belvedereConfig.getGalleryRequestCode(), BelvedereSource.Gallery, null);
+    BelvedereIntent getGalleryIntent(int requestCode, String contentType, boolean allowMultiple){
+        if(hasDocumentApp(context)) {
+            return new BelvedereIntent(getDocumentAndroidIntent(contentType, allowMultiple), requestCode, null);
         }
         return null;
     }
@@ -99,14 +59,13 @@ class BelvedereImagePicker {
      * Create a {@link BelvedereIntent} that invokes an installed camera app,
      * respecting the provided {@link BelvedereConfig}.
      *
-     * @param context A valid application {@link Context}.
      * @return An {@link BelvedereIntent} or null if this action isn't supported by
      *      the system.
      */
     @Nullable
-    private BelvedereIntent getCameraIntent(@NonNull Context context){
+    Pair<BelvedereIntent, BelvedereResult> getCameraIntent(int requestCode){
         if(canPickImageFromCamera(context)){
-            return pickImageFromCameraInternal(context);
+            return pickImageFromCameraInternal(context, requestCode);
         }
 
         return null;
@@ -172,8 +131,8 @@ class BelvedereImagePicker {
      * @return True if we have permissions to get a picture from a gallery, false if not allowed
      */
     @NonNull
-    private boolean hasGalleryApp(@NonNull Context context){
-        return isIntentResolvable(getGalleryIntent(), context);
+    private boolean hasDocumentApp(@NonNull Context context){
+        return isIntentResolvable(getDocumentAndroidIntent("*/*", false), context);
     }
 
     /**
@@ -188,75 +147,38 @@ class BelvedereImagePicker {
      */
     void getFilesFromActivityOnResult(@NonNull Context context, int requestCode, int resultCode, @NonNull Intent data, @Nullable BelvedereCallback<List<BelvedereResult>> callback){
         final List<BelvedereResult> result = new ArrayList<>();
+        final BelvedereResult belvedereResult = intentRegistry.getForRequestCode(requestCode);
 
-        if(requestCode == belvedereConfig.getGalleryRequestCode()){
-            log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Gallery - Ok: %s", (resultCode == Activity.RESULT_OK)));
+        if(belvedereResult != null) {
+            if(belvedereResult.getFile() == null || belvedereResult.getUri() == null) {
+                // data in intent
+                log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Gallery - Ok: %s", (resultCode == Activity.RESULT_OK)));
 
-            if(resultCode == Activity.RESULT_OK) {
-                final List<Uri> uris = extractUrisFromIntent(data);
-                log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
-                new BelvedereResolveUriTask(context, log, belvedereStorage, callback).execute(uris.toArray(new Uri[uris.size()]));
-                return;
+                if(resultCode == Activity.RESULT_OK) {
+                    final List<Uri> uris = extractUrisFromIntent(data);
+                    log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
+                    new BelvedereResolveUriTask(context, log, storage, callback).execute(uris.toArray(new Uri[uris.size()]));
+                    return;
+                }
+
+            } else {
+                // path in registry
+                log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Camera - Ok: %s", (resultCode == Activity.RESULT_OK)));
+
+                storage.revokePermissionsFromUri(context, belvedereResult.getUri(),
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                if(resultCode == Activity.RESULT_OK){
+                    result.add(belvedereResult);
+                    log.d(LOG_TAG, (String.format(Locale.US, "Image from camera: %s", belvedereResult.getFile())));
+                }
+
+                intentRegistry.freeSlot(requestCode);
             }
-
-        }else if(cameraImages.containsKey(requestCode)){
-            log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Camera - Ok: %s", (resultCode == Activity.RESULT_OK)));
-
-            final BelvedereResult belvedereResult = cameraImages.get(requestCode);
-            belvedereStorage.revokePermissionsFromUri(context, belvedereResult.getUri(),
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            if(resultCode == Activity.RESULT_OK){
-                result.add(belvedereResult);
-                log.d(LOG_TAG, (String.format(Locale.US, "Image from camera: %s", belvedereResult.getFile())));
-            }
-
-            cameraImages.remove(requestCode);
         }
 
         if(callback != null) {
             callback.internalSuccess(result);
-        }
-    }
-
-    /**
-     * Check if at least one requested {@link BelvedereSource}
-     * is available.
-     *
-     * @param context A valid application {@link Context}
-     * @return {@code true} if one or more sources are available,
-     *         {@code false} if no source is available.
-     */
-    public boolean oneOrMoreSourceAvailable(@NonNull final Context context){
-        for(BelvedereSource s : BelvedereSource.values()){
-            if(isFunctionalityAvailable(s, context)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Check if a specific {@link BelvedereSource} is available.
-     *
-     * @param source The {@link BelvedereSource} to check.
-     * @param context A valid application {@link Context}
-     * @return {@code true} if the source is available, {@code false} if not.
-     */
-    public boolean isFunctionalityAvailable(@NonNull final BelvedereSource source, @NonNull final Context context) {
-        final TreeSet<BelvedereSource> belvedereSources = belvedereConfig.getBelvedereSources();
-
-        if(!belvedereSources.contains(source)){
-            return false;
-        }
-
-        switch (source){
-            case Camera:
-                return canPickImageFromCamera(context);
-            case Gallery:
-                return hasGalleryApp(context);
-            default:
-                return false;
         }
     }
 
@@ -269,8 +191,8 @@ class BelvedereImagePicker {
      *      False if not
      */
     @NonNull
-    private boolean isIntentResolvable(@NonNull Intent intent, @NonNull Context context){
-        return intent.resolveActivity(context.getPackageManager()) != null;
+    private boolean isIntentResolvable(@Nullable Intent intent, @NonNull Context context){
+        return intent != null && intent.resolveActivity(context.getPackageManager()) != null;
     }
 
     /**
@@ -328,42 +250,27 @@ class BelvedereImagePicker {
      *      the system.
      */
     @Nullable
-    private BelvedereIntent pickImageFromCameraInternal(@NonNull Context context){
-         /*
-            To get an image from a camera app have to provide a file, pointing to the place where the image should be stored
-            We keep in track of all new images with a Map and requestIds
-         */
-        final Set<Integer> integers = cameraImages.keySet();
+    private Pair<BelvedereIntent, BelvedereResult> pickImageFromCameraInternal(@NonNull Context context, int requestCode){
 
-        int requestId = belvedereConfig.getCameraRequestCodeEnd();
-        for(int i = belvedereConfig.getCameraRequestCodeStart(); i < belvedereConfig.getCameraRequestCodeEnd(); i++){
-            if(!integers.contains(i)){
-                requestId = i;
-                break;
-            }
-        }
-
-        final File imagePath = belvedereStorage.getFileForCamera(context);
+        final File imagePath = storage.getFileForCamera(context);
 
         if(imagePath == null){
             log.w(LOG_TAG, "Camera Intent: Image path is null. There's something wrong with the storage.");
             return null;
         }
 
-        final Uri uriForFile = belvedereStorage.getFileProviderUri(context, imagePath);
+        final Uri uriForFile = storage.getFileProviderUri(context, imagePath);
 
         if(uriForFile == null) {
             log.w(LOG_TAG, "Camera Intent: Uri to file is null. There's something wrong with the storage or FileProvider configuration.");
             return null;
         }
 
-        cameraImages.put(requestId, new BelvedereResult(imagePath, uriForFile));
-
-        log.d(LOG_TAG, String.format(Locale.US, "Camera Intent: Request Id: %s - File: %s - Uri: %s", requestId, imagePath, uriForFile));
+        log.d(LOG_TAG, String.format(Locale.US, "Camera Intent: Request Id: %s - File: %s - Uri: %s", requestCode, imagePath, uriForFile));
 
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-        belvedereStorage.grantPermissionsForUri(context, intent, uriForFile,
+        storage.grantPermissionsForUri(context, intent, uriForFile,
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         /*
@@ -373,12 +280,14 @@ class BelvedereImagePicker {
                 PermissionUtil.hasPermissionInManifest(context, Manifest.permission.CAMERA) &&
                 !PermissionUtil.isPermissionGranted(context, Manifest.permission.CAMERA);
 
-        return new BelvedereIntent(
+        final BelvedereResult belvedereResult = new BelvedereResult(imagePath, uriForFile);
+        final BelvedereIntent belvedereIntent = new BelvedereIntent(
                 intent,
-                requestId,
-                BelvedereSource.Camera,
+                requestCode,
                 cameraPermissionInManifestButNoGranted ? Manifest.permission.CAMERA : null
         );
+
+        return new Pair<>(belvedereIntent, belvedereResult);
     }
 
 
@@ -390,7 +299,7 @@ class BelvedereImagePicker {
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @NonNull
-    private Intent getGalleryIntent(){
+    private Intent getDocumentAndroidIntent(String contentType, boolean allowMultiple){
         final Intent intent;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -401,12 +310,12 @@ class BelvedereImagePicker {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
         }
 
-        intent.setType(belvedereConfig.getContentType());
+        intent.setType(contentType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
             // if possible, allow the user to pick multiple images
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, belvedereConfig.allowMultiple());
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
         }
 
         return intent;
