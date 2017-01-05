@@ -35,6 +35,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.0.1'
     apt 'com.jakewharton:butterknife-compiler:8.0.1'
 
-    compile project(':belvedere')
+    compile project(':belvedere-ui')
     // compile group: 'com.zendesk', name: 'belvedere', version: '1.2.0.1-SNAPSHOT', changing: true
 }

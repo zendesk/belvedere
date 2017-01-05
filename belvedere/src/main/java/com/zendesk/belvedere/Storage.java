@@ -128,7 +128,7 @@ class Storage {
             Log.e(LOG_TAG, msg, e);
             log.e(LOG_TAG, msg, e);
 
-            return null;
+            throw new RuntimeException("Please specify your application id");
         }
     }
 

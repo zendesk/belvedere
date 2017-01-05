@@ -29,6 +29,7 @@ import com.zendesk.belvedere.Belvedere;
 import com.zendesk.belvedere.BelvedereCallback;
 import com.zendesk.belvedere.BelvedereResult;
 import com.zendesk.belvedere.MediaIntent;
+import com.zendesk.belvedere.ui.MediaChooser;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -88,10 +89,7 @@ public class MainActivity extends AppCompatActivity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Belvedere
-                        .from(MainActivity.this)
-                        .camera()
-                        .open(MainActivity.this);
+                startActivity(new Intent(MainActivity.this, MediaChooser.class));
             }
         });
 

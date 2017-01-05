@@ -1,1 +1,1 @@
-include ':belvedere-sample', ':belvedere'
+include ':belvedere-sample', ':belvedere', ':belvedere-ui'
