@@ -63,7 +63,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
                     fileOutputStream = new FileOutputStream(file);
 
-                    final byte[] buf = new byte[1024];
+                    final byte[] buf = new byte[1024 * 1024];
                     int len;
                     while ((len = inputStream.read(buf)) > 0) {
                         fileOutputStream.write(buf, 0, len);
