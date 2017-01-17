@@ -48,6 +48,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
     @Override
     protected List<BelvedereResult> doInBackground(@NonNull Uri... uris) {
         final List<BelvedereResult> success = new ArrayList<>();
+        final byte[] buf = new byte[1024 * 1024];
 
         for (Uri uri : uris) {
 
@@ -63,7 +64,6 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
                     fileOutputStream = new FileOutputStream(file);
 
-                    final byte[] buf = new byte[1024 * 1024];
                     int len;
                     while ((len = inputStream.read(buf)) > 0) {
                         fileOutputStream.write(buf, 0, len);
