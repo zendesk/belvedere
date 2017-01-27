@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -29,11 +28,13 @@ import com.zendesk.belvedere.Belvedere;
 import com.zendesk.belvedere.BelvedereCallback;
 import com.zendesk.belvedere.BelvedereResult;
 import com.zendesk.belvedere.MediaIntent;
-import com.zendesk.belvedere.ui.MediaChooser;
+import com.zendesk.belvedere.ui.BelvedereDialog;
+import com.zendesk.belvedere.ui.ImageStream;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,13 +48,11 @@ public class MainActivity extends AppCompatActivity {
     private BelvedereCallback<List<BelvedereResult>> belvedereResult;
 
     @BindView(R.id.sample_belvedere_multiple) SwitchCompat switchMultiple;
-    @BindView(R.id.sample_belvedere_logging) SwitchCompat switchLogging;
     @BindView(R.id.sample_belvedere_camera) SwitchCompat switchCamera;
     @BindView(R.id.sample_belvedere_gallery) SwitchCompat switchGallery;
     @BindView(R.id.sample_belvedere_banner) ImageView banner;
     @BindView(R.id.sample_belvedere_toolbar) Toolbar toolbar;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbar;
-    @BindView(R.id.sample_belvedere_log) TextView log;
     @BindView(R.id.sample_belvedere_gridlayout) GridLayout gridLayout;
 
     @BindView(R.id.sample_belvedere_btn_document) Button documentButton;
@@ -67,11 +66,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        Belvedere
-                .from(this)
-                .debugEnabled(true)
-                .withCustomLogger(new SampleLogger(log));
-
         setSupportActionBar(toolbar);
 
         initBanner();
@@ -79,56 +73,25 @@ public class MainActivity extends AppCompatActivity {
         documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Belvedere
-                        .from(MainActivity.this)
-                        .document()
-                        .open(MainActivity.this);
+                final Belvedere from = Belvedere.from(MainActivity.this);
+                final List<MediaIntent> mediaIntents = new ArrayList<>();
+
+                if(switchCamera.isChecked()) {
+                    mediaIntents.add(from.camera().build());
+                }
+
+                if(switchGallery.isChecked()) {
+                    mediaIntents.add(from.document().contentType("image/*").allowMultiple(switchMultiple.isChecked()).build());
+                }
+
+                BelvedereDialog.showDialog(getSupportFragmentManager(), mediaIntents);
             }
         });
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                startActivity(new Intent(MainActivity.this, MediaChooser.class));
-            }
-        });
-
-        switchMultiple.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                //dataFragment.setBelvedere(initBelvedere());
-            }
-        });
-
-        switchLogging.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                //dataFragment.setBelvedere(initBelvedere());
-            }
-        });
-
-
-        switchGallery.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-//                if(!switchCamera.isChecked() && !isChecked){
-//                    Snackbar.make(coordinatorLayout, "At least one source must be selected", Snackbar.LENGTH_LONG).show();
-//                    switchGallery.setChecked(true);
-//                }else {
-//                    dataFragment.setBelvedere(initBelvedere());
-//                }
-            }
-        });
-
-        switchCamera.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-//                if(!switchGallery.isChecked() && !isChecked){
-//                    Snackbar.make(coordinatorLayout, "At least one source must be selected", Snackbar.LENGTH_LONG).show();
-//                    switchCamera.setChecked(true);
-//                } else {
-//                    dataFragment.setBelvedere(initBelvedere());
-//                }
+                ImageStream.show(MainActivity.this);
             }
         });
 

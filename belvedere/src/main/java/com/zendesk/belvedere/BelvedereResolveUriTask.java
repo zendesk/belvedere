@@ -29,10 +29,10 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
     private final static String LOG_TAG = "BelvedereResolveUriTask";
 
-    final BelvedereCallback<List<BelvedereResult>> callback;
-    final Context context;
-    final Logger log;
-    final Storage storage;
+    private final BelvedereCallback<List<BelvedereResult>> callback;
+    private final Context context;
+    private final Logger log;
+    private final Storage storage;
 
     BelvedereResolveUriTask(
             @NonNull Context context,
@@ -53,6 +53,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
             InputStream inputStream = null;
             FileOutputStream fileOutputStream = null;
+            final byte[] buf = new byte[1024 * 1024];
 
             try {
                 inputStream = context.getContentResolver().openInputStream(uri);
@@ -60,10 +61,8 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
                 if (inputStream != null && file != null) {
                     log.d(LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
-
                     fileOutputStream = new FileOutputStream(file);
 
-                    final byte[] buf = new byte[1024];
                     int len;
                     while ((len = inputStream.read(buf)) > 0) {
                         fileOutputStream.write(buf, 0, len);

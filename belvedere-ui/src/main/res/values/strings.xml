@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">belvedere-ui</string>
+    <string name="belvedere_dialog_gallery">Gallery</string>
+    <string name="belvedere_dialog_camera">Camera</string>
+    <string name="belvedere_dialog_unknown">Unknown</string>
 </resources>

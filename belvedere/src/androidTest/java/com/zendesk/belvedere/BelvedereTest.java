@@ -38,7 +38,7 @@
 //        for(BelvedereIntent belvedereIntent : belvedereIntents) {
 //            final Intent intent = belvedereIntent.getIntent();
 //
-//            switch (belvedereIntent.getSource()){
+//            switch (belvedereIntent.getTarget()){
 //                case Camera:
 //                    assertThat("Action should be ACTION_IMAGE_CAPTURE", intent.getAction(), is(MediaStore.ACTION_IMAGE_CAPTURE));
 //
@@ -85,7 +85,7 @@
 //
 //        final BelvedereIntent belvedereIntent = belvedereIntents.get(0);
 //
-//        assertThat("Intent should point to Gallery", belvedereIntent.getSource(), is(BelvedereSource.Gallery));
+//        assertThat("Intent should point to Gallery", belvedereIntent.getTarget(), is(BelvedereSource.Gallery));
 //
 //        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
 //            final Intent intent = belvedereIntent.getIntent();

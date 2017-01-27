@@ -1,14 +1,14 @@
 package com.zendesk.belvedere.ui;
 
 import android.app.Activity;
-import android.content.res.TypedArray;
+import android.content.res.ColorStateList;
 import android.os.Build;
-import android.support.annotation.AttrRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
-
-import static android.support.v4.content.ContextCompat.getColor;
+import android.widget.Button;
 
 /**
  * Set of util methods for dealing the with UI
@@ -24,9 +24,15 @@ class UiUtils {
         }
     }
 
+    static void showToolbar(AppCompatActivity appCompatActivity) {
+        if(appCompatActivity.getSupportActionBar() != null){
+            appCompatActivity.getSupportActionBar().show();
+        }
+    }
+
     /**
      * Dims out the StatusBar on the specified Activity when running
-     * on API level {@link android.os.Build.VERSION_CODES#LOLLIPOP} and up.
+     * on API level {@link Build.VERSION_CODES#LOLLIPOP} and up.
      */
     static void dimStatusBar(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -36,22 +42,4 @@ class UiUtils {
         }
     }
 
-    /**
-     * Gets {@code colorAccent}.
-     */
-    static int getColorAccent(Activity activity) {
-        return getColor(activity, getThemedResId(activity, R.attr.colorAccent));
-    }
-
-    private static int getThemedResId(Activity activity, @AttrRes int attr) {
-        TypedArray a = activity.getTheme().obtainStyledAttributes(new int[]{attr});
-        int resId = a.getResourceId(0, Integer.MIN_VALUE);
-        a.recycle();
-
-        if(resId != Integer.MIN_VALUE) {
-            return resId;
-        } else {
-            return android.R.color.black;
-        }
-    }
 }

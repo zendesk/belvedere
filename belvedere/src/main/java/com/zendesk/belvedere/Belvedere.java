@@ -16,7 +16,7 @@ import java.util.Locale;
  * Media picker manager.
  */
 @SuppressWarnings("unused")
-public class Belvedere {
+public class Belvedere implements InstanceBuilder {
 
     private final static String LOG_TAG = "Belvedere";
 
@@ -31,7 +31,7 @@ public class Belvedere {
     private IntentRegistry intentRegistry;
     private MediaSource mediaSource;
 
-    private Belvedere(Builder builder) {
+    Belvedere(Builder builder) {
         this.context = builder.context;
         this.log = builder.logger;
         this.debug = builder.debug;
@@ -44,14 +44,6 @@ public class Belvedere {
         log.d(LOG_TAG, "Belvedere initialized");
     }
 
-    /**
-     * Initialize Belvedere with a {@link Context} and get a instance
-     * of {@link BelvedereConfig.Builder}
-     *
-     * @param context A valid {@link Context}
-     * @return A {@link BelvedereConfig.Builder}
-     * @throws IllegalArgumentException if provided {@link Context} is invalid.
-     */
     @NonNull
     public static Belvedere from(@NonNull Context context) {
         synchronized (Belvedere.class) {
@@ -67,19 +59,18 @@ public class Belvedere {
         return instance;
     }
 
-    public Belvedere withCustomLogger(Logger logger) {
-        synchronized (Belvedere.class) {
-            instance = builder().logger(logger).build();
+    public static void setSingletonInstance(@NonNull Belvedere belvedere) {
+        if (belvedere == null) {
+            throw new IllegalArgumentException("Picasso must not be null.");
         }
-        return instance;
+        synchronized (Belvedere.class) {
+            if (instance != null) {
+                throw new IllegalStateException("Singleton instance already exists.");
+            }
+            instance = belvedere;
+        }
     }
 
-    public Belvedere debugEnabled(boolean logging) {
-        synchronized (Belvedere.class) {
-            instance = builder().debug(logging).build();
-        }
-        return instance;
-    }
 
     public MediaIntent.CameraIntentBuilder camera() {
         final int requestCode = intentRegistry.reserveSlot();
@@ -90,7 +81,6 @@ public class Belvedere {
         final int requestCode = intentRegistry.reserveSlot();
         return new MediaIntent.DocumentIntentBuilder(requestCode, mediaSource);
     }
-
 
     /**
      * Parse data from {@link Activity#onActivityResult(int, int, Intent)}.
@@ -105,51 +95,6 @@ public class Belvedere {
      */
     public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data, @NonNull BelvedereCallback<List<BelvedereResult>> callback) {
         mediaSource.getFilesFromActivityOnResult(context, requestCode, resultCode, data, callback); // FIXME
-    }
-
-    Builder builder() {
-        return new Builder(context, log, debug, directoryName);
-    }
-
-    private static class Builder {
-
-        private Context context;
-        private Logger logger;
-        private boolean debug;
-        private String directoryName;
-
-        Builder(Context context) {
-            this.context = context;
-            this.logger = new DefaultLogger();
-            this.debug = false;
-            this.directoryName = "belvedere-data-v2";
-        }
-
-        Builder(Context context, Logger logger, boolean debug, String directoryName) {
-            this.context = context;
-            this.logger = logger;
-            this.debug = debug;
-            this.directoryName = directoryName;
-        }
-
-        Builder logger(Logger logger) {
-            this.logger = logger;
-            return this;
-        }
-
-        Builder debug(boolean debug) {
-            this.debug = debug;
-            return this;
-        }
-
-        Builder directoryName(String name) {
-            this.directoryName = name;
-            return this;
-        }
-
-        Belvedere build() {
-            return new Belvedere(this);
-        }
     }
 
     /**
@@ -174,6 +119,11 @@ public class Belvedere {
         }
 
         return null;
+    }
+
+    public void resolveUris(List<Uri> uris, BelvedereCallback<List<BelvedereResult>> callback) {
+        new BelvedereResolveUriTask(context, log, storage, callback)
+                .execute(uris.toArray(new Uri[uris.size()]));
     }
 
     /**
@@ -201,7 +151,7 @@ public class Belvedere {
     /**
      * Clear the internal Belvedere cache.
      */
-    public void clear() {
+    public void clearStorage() {
         log.d(LOG_TAG, "Clear Belvedere cache");
         storage.clearStorage(context);
     }

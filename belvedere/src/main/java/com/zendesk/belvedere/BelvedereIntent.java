@@ -25,7 +25,7 @@ import android.support.v4.app.Fragment;
  *      that code.
  * </p>
  */
-public class BelvedereIntent implements Parcelable {
+class BelvedereIntent implements Parcelable {
 
     private final int requestCode;
     private final Intent intent;

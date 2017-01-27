@@ -1,4 +1,4 @@
-package com.zendesk.belvedere;
+package com.zendesk.belvedere.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;

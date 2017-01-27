@@ -2,25 +2,45 @@ package com.zendesk.belvedere;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 
-public class MediaIntent {
+public class MediaIntent implements Parcelable {
+
+    public static int TARGET_DOCUMENT = 1;
+    public static int TARGET_CAMERA = 2;
 
     static MediaIntent notAvailable() {
-        return new MediaIntent(-1, null, null, false);
+        return new MediaIntent(-1, null, null, false, -1);
     }
 
     private final boolean isAvailable;
     private final int requestCode;
     private final Intent intent;
     private final String permission;
+    private final int target;
 
-    MediaIntent(int requestCode, Intent intent, String permission, boolean isAvailable) {
+    MediaIntent(int requestCode, Intent intent, String permission, boolean isAvailable, int target) {
         this.requestCode = requestCode;
         this.intent = intent;
         this.permission = permission;
         this.isAvailable = isAvailable;
+        this.target = target;
+    }
+
+    MediaIntent(Parcel in) {
+        this.requestCode = in.readInt();
+        this.intent = in.readParcelable(BelvedereIntent.class.getClassLoader());
+        this.permission = in.readString();
+
+        boolean[] isAvailable = new boolean[1];
+        in.readBooleanArray(isAvailable);
+        this.isAvailable = isAvailable[0];
+
+        this.target = in.readInt();
     }
 
     public void open(Fragment fragment) {
@@ -43,6 +63,37 @@ public class MediaIntent {
         return isAvailable;
     }
 
+    public int getTarget() {
+        return target;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+        dest.writeInt(requestCode);
+        dest.writeParcelable(intent, flags);
+        dest.writeString(permission);
+        dest.writeBooleanArray(new boolean[]{isAvailable});
+        dest.writeInt(target);
+    }
+
+    public static final Parcelable.Creator<MediaIntent> CREATOR
+            = new Parcelable.Creator<MediaIntent>() {
+        public MediaIntent createFromParcel(@NonNull Parcel in) {
+            return new MediaIntent(in);
+        }
+
+        @NonNull
+        public MediaIntent[] newArray(int size) {
+            return new MediaIntent[size];
+        }
+    };
+
+
     public static class DocumentIntentBuilder {
 
         private final MediaSource mediaSource;
@@ -62,10 +113,20 @@ public class MediaIntent {
             final BelvedereIntent mediaIntent
                     = mediaSource.getGalleryIntent(requestCode, contentType, allowMultiple);
             if(mediaIntent != null){
-                return new MediaIntent(requestCode, mediaIntent.getIntent(), mediaIntent.getPermission(), true);
+                return new MediaIntent(requestCode, mediaIntent.getIntent(), mediaIntent.getPermission(), true, TARGET_DOCUMENT);
             } else {
                 return MediaIntent.notAvailable();
             }
+        }
+
+        public DocumentIntentBuilder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public DocumentIntentBuilder allowMultiple(boolean allowMultiple) {
+            this.allowMultiple = allowMultiple;
+            return this;
         }
 
         public void open(Fragment fragment) {
@@ -101,7 +162,7 @@ public class MediaIntent {
                 final BelvedereIntent intent = cameraIntent.first;
                 final BelvedereResult result = cameraIntent.second;
                 intentRegistry.updateRequestCode(requestCode, result);
-                return new MediaIntent(requestCode, intent.getIntent(), intent.getPermission(), true);
+                return new MediaIntent(requestCode, intent.getIntent(), intent.getPermission(), true, TARGET_CAMERA);
             } else {
                 return MediaIntent.notAvailable();
             }

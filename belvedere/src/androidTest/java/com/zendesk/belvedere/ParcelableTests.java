@@ -34,7 +34,7 @@
 //        assertThat("BelvedereIntent shouldn't be null", intent, is(notNullValue()));
 //        assertThat("BelvedereIntent should have content", intent.getRequestCode(), is(requestId));
 //        assertThat("BelvedereIntent should have content", intent.getIntent(), is(mockIntent));
-//        assertThat("BelvedereIntent should have content", intent.getSource(), is(source));
+//        assertThat("BelvedereIntent should have content", intent.getTarget(), is(source));
 //        assertThat("BelvedereIntent should have content", intent.getPermission(), is(permission));
 //    }
 //
