@@ -19,7 +19,7 @@ public class BelvedereResult implements Parcelable {
     private final File file;
     private final Uri uri;
 
-    public BelvedereResult(@NonNull final File file, @NonNull final Uri uri) {
+    BelvedereResult(final File file, final Uri uri) {
         this.file = file;
         this.uri = uri;
     }
@@ -53,14 +53,14 @@ public class BelvedereResult implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeSerializable(file);
         dest.writeParcelable(uri, flags);
     }
 
     public static final Parcelable.Creator<BelvedereResult> CREATOR
             = new Parcelable.Creator<BelvedereResult>() {
-        public BelvedereResult createFromParcel(@NonNull Parcel in) {
+        public BelvedereResult createFromParcel(Parcel in) {
             return new BelvedereResult(in);
         }
 

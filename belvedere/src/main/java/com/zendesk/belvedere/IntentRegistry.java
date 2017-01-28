@@ -14,7 +14,7 @@ class IntentRegistry {
     private SparseArray<BelvedereResult> pendingIntents;
 
     IntentRegistry() {
-        this.pendingIntents = new SparseArray<>(END_REQUEST_CODE - START_REQUEST_CODE);
+        this.pendingIntents = new SparseArray<>();
     }
 
     int reserveSlot() {

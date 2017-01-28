@@ -4,8 +4,8 @@ import android.util.Log;
 
 /**
  * Logger class that is used, if no custom logger was
- * defined {@link BelvedereConfig.Builder#withCustomLogger(Logger)}
- * but logging was enabled {@link BelvedereConfig.Builder#withDebug(boolean)}.
+ * defined {@link Belvedere.Builder#logger(Logger)}
+ * but logging was enabled {@link Belvedere.Builder#debug(boolean)}.
  * <br>
  * Using Android {@link Log} class to print log messages.
  */

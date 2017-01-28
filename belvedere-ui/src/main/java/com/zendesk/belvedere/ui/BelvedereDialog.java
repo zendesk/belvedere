@@ -3,7 +3,6 @@ package com.zendesk.belvedere.ui;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -56,7 +55,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             return;
         }
 
-        showDialog(fm, new ArrayList<MediaIntent>(Arrays.asList(mediaIntent)));
+        showDialog(fm, Arrays.asList(mediaIntent));
     }
 
     public static void showDialog(FragmentManager fm, List<MediaIntent> mediaIntent) {
@@ -64,13 +63,19 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             return;
         }
 
-        final BelvedereDialog attachmentSourceSelectorDialog = new BelvedereDialog();
+        final ArrayList<MediaIntent> filteredList = new ArrayList<>();
+        for(MediaIntent intent : mediaIntent) {
+            if(intent.isAvailable()) {
+                filteredList.add(intent);
+            }
+        }
+
         final Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(EXTRA_INTENT, filteredList);
 
-        bundle.putParcelableArrayList(EXTRA_INTENT, new ArrayList<Parcelable>(mediaIntent));
-        attachmentSourceSelectorDialog.setArguments(bundle);
-
-        attachmentSourceSelectorDialog.show(fm.beginTransaction(), FRAGMENT_TAG);
+        final BelvedereDialog dialog = new BelvedereDialog();
+        dialog.setArguments(bundle);
+        dialog.show(fm.beginTransaction(), FRAGMENT_TAG);
     }
 
     @Override
@@ -229,7 +234,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         }
     }
 
-    private class Adapter extends ArrayAdapter<MediaIntent> {
+    private static class Adapter extends ArrayAdapter<MediaIntent> {
 
         private Context context;
 

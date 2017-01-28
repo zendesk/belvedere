@@ -2,7 +2,6 @@ package com.zendesk.belvedere.ui;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -19,24 +18,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.zendesk.belvedere.Belvedere;
-import com.zendesk.belvedere.BelvedereCallback;
+import com.zendesk.belvedere.Callback;
 import com.zendesk.belvedere.BelvedereResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageStream extends AppCompatActivity
         implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
 
-    public static void show(Context context) {
-        context.startActivity(new Intent(context, ImageStream.class));
-    }
-
     private static final int PERMISSION_REQUEST_CODE = 132;
+
+    public static final String RESULT_KEY = "result";
 
     private ImageStreamMvp.Presenter presenter;
 
@@ -75,25 +75,44 @@ public class ImageStream extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new BelvedereCallback<List<BelvedereResult>>() {
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<BelvedereResult>>() {
             @Override
             public void success(List<BelvedereResult> result) {
-
+                finishWithResult(result);
             }
         });
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.imagestream_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+
+        } else if(item.getItemId() == R.id.image_stream_system_gallery) {
+            openGallery();
+            return true;
+
+        } else {
+            return super.onOptionsItemSelected(item);
+
         }
+    }
+
+    private void finishWithResult(List<BelvedereResult> belvedereResults) {
+        Intent intent = ImageStream.this.getIntent();
+        intent.putParcelableArrayListExtra(ImageStream.RESULT_KEY, new ArrayList<>(belvedereResults));
+        ImageStream.this.setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void initToolbar() {
@@ -202,10 +221,10 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void imagesSelected(List<Uri> uris) {
-        Belvedere.from(this).resolveUris(uris, new BelvedereCallback<List<BelvedereResult>>() {
+        Belvedere.from(this).resolveUris(uris, new Callback<List<BelvedereResult>>() {
             @Override
             public void success(List<BelvedereResult> result) {
-
+                finishWithResult(result);
             }
         });
     }

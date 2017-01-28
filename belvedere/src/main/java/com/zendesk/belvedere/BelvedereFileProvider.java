@@ -22,7 +22,8 @@ public class BelvedereFileProvider extends FileProvider {
     private final static String LOG_TAG = "BelvedereFileProvider";
 
     @Override
-    public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+    public Cursor query(final Uri uri, final String[] projection, final String selection,
+                        final String[] selectionArgs, final String sortOrder) {
         final Cursor source = super.query(uri, projection, selection, selectionArgs, sortOrder);
 
         /*

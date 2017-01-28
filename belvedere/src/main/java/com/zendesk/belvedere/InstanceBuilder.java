@@ -5,6 +5,7 @@ import android.content.Context;
 
 interface InstanceBuilder {
 
+    @SuppressWarnings("WeakerAccess")
     class Builder {
 
         Context context;

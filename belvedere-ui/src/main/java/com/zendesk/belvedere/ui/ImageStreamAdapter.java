@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,6 +99,13 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override
         public void bind(View view) {
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    delegate.imagesSelected(Collections.singletonList(uri));
+                }
+            });
+
             Picasso.with(imageView.getContext())
                     .load(uri)
                     .resize(250, 0)
@@ -153,11 +161,9 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-
     interface Delegate {
         void imagesSelected(List<Uri> uris);
         void openCamera();
         void openGallery();
     }
-
 }

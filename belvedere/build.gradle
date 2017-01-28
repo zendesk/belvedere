@@ -127,7 +127,6 @@ android.libraryVariants.all { variant ->
 }
 
 dependencies {
-    //compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibVersion"
     compile "com.android.support:support-core-utils:25.1.0"
     compile "com.android.support:support-fragment:25.1.0"
 

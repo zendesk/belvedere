@@ -11,8 +11,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import java.io.File;
@@ -47,7 +45,6 @@ class MediaSource {
      * @return An {@link BelvedereIntent} or null if this action isn't supported by
      *      the system.
      */
-    @Nullable
     BelvedereIntent getGalleryIntent(int requestCode, String contentType, boolean allowMultiple){
         if(hasDocumentApp(context)) {
             return new BelvedereIntent(getDocumentAndroidIntent(contentType, allowMultiple), requestCode, null);
@@ -62,7 +59,6 @@ class MediaSource {
      * @return An {@link BelvedereIntent} or null if this action isn't supported by
      *      the system.
      */
-    @Nullable
     Pair<BelvedereIntent, BelvedereResult> getCameraIntent(int requestCode){
         if(canPickImageFromCamera(context)){
             return pickImageFromCameraInternal(context, requestCode);
@@ -83,7 +79,7 @@ class MediaSource {
      * @param context A valid {@link Context}
      * @return {@code true} if it's possible to get an image from camera, {@code false} if not
      */
-    private boolean canPickImageFromCamera(@NonNull Context context){
+    private boolean canPickImageFromCamera(Context context){
         return hasCamera(context);
     }
 
@@ -101,8 +97,7 @@ class MediaSource {
      * @param context A valid application {@link Context}
      * @return True if the device allows taking pictures from a camera, false if not
      */
-    @NonNull
-    private boolean hasCamera(@NonNull Context context){
+    private boolean hasCamera(Context context){
         final Intent mockIntent = new Intent();
         mockIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -130,8 +125,7 @@ class MediaSource {
      * @param context Context
      * @return True if we have permissions to get a picture from a gallery, false if not allowed
      */
-    @NonNull
-    private boolean hasDocumentApp(@NonNull Context context){
+    private boolean hasDocumentApp(Context context){
         return isIntentResolvable(getDocumentAndroidIntent("*/*", false), context);
     }
 
@@ -145,7 +139,8 @@ class MediaSource {
      * @param data The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
      * @param callback Callback that will deliver a list of {@link BelvedereResult}
      */
-    void getFilesFromActivityOnResult(@NonNull Context context, int requestCode, int resultCode, @NonNull Intent data, @Nullable BelvedereCallback<List<BelvedereResult>> callback){
+    void getFilesFromActivityOnResult(Context context, int requestCode, int resultCode,
+                                      Intent data, Callback<List<BelvedereResult>> callback){
         final List<BelvedereResult> result = new ArrayList<>();
         final BelvedereResult belvedereResult = intentRegistry.getForRequestCode(requestCode);
 
@@ -190,8 +185,7 @@ class MediaSource {
      * @return True if the system is able to handle the provided {@link Intent}
      *      False if not
      */
-    @NonNull
-    private boolean isIntentResolvable(@Nullable Intent intent, @NonNull Context context){
+    private boolean isIntentResolvable(Intent intent, Context context){
         return intent != null && intent.resolveActivity(context.getPackageManager()) != null;
     }
 
@@ -214,9 +208,8 @@ class MediaSource {
      *               media
      * @return A list of {link Uri}
      */
-    @NonNull
     @SuppressLint("NewApi")
-    private List<Uri> extractUrisFromIntent(@NonNull Intent intent){
+    private List<Uri> extractUrisFromIntent(Intent intent){
         final List<Uri> images = new ArrayList<>();
 
         /*
@@ -249,8 +242,7 @@ class MediaSource {
      * @return An {@link BelvedereIntent} or null if this action isn't supported by
      *      the system.
      */
-    @Nullable
-    private Pair<BelvedereIntent, BelvedereResult> pickImageFromCameraInternal(@NonNull Context context, int requestCode){
+    private Pair<BelvedereIntent, BelvedereResult> pickImageFromCameraInternal(Context context, int requestCode){
 
         final File imagePath = storage.getFileForCamera(context);
 
@@ -298,7 +290,6 @@ class MediaSource {
      * @return An {@link BelvedereIntent}
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    @NonNull
     private Intent getDocumentAndroidIntent(String contentType, boolean allowMultiple){
         final Intent intent;
 

@@ -9,8 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,7 +65,7 @@ class Storage {
      * @param uri An {@link Uri} to a file, managed by our {@link BelvedereFileProvider}
      * @param permission Permission that should be granted to the Apps, opened by the provided Intent
      */
-    void grantPermissionsForUri(@NonNull Context context, @NonNull Intent intent, @NonNull Uri uri, @IntentPermissions int permission){
+    void grantPermissionsForUri(Context context, Intent intent, Uri uri, int permission){
         List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         for (ResolveInfo resolveInfo : resInfoList) {
             String packageName = resolveInfo.activityInfo.packageName;
@@ -82,7 +80,7 @@ class Storage {
      * @param uri An {@link Uri} to a file, managed by our {@link BelvedereFileProvider}
      * @param permission Permissions that should be revoked
      */
-    void revokePermissionsFromUri(@NonNull Context context, @NonNull Uri uri, @IntentPermissions int permission){
+    void revokePermissionsFromUri(Context context, Uri uri, int permission){
         context.revokeUriPermission(uri, permission);
     }
 
@@ -94,8 +92,7 @@ class Storage {
      * @param file A {@link File}, accessible through our {@link BelvedereFileProvider}
      * @return The {@link Uri} pointing to the provided File.
      */
-    @Nullable
-    Uri getFileProviderUri(@NonNull Context context, @NonNull File file){
+    Uri getFileProviderUri(Context context, File file){
         final String authority = getFileProviderAuthority(context);
 
         try {
@@ -120,7 +117,7 @@ class Storage {
                     "            android:grantUriPermissions=\"true\">\n" +
                     "            <meta-data\n" +
                     "                android:name=\"android.support.FILE_PROVIDER_PATHS\"\n" +
-                    "                android:resource=\"@xml/belvedere_attachment_storage\" />\n" +
+                    "                android:resource=\"@xml/belvedere_attachment_storage_v2\" />\n" +
                     "        </provider>\n" +
                     "=====================",
                     authority);
@@ -140,8 +137,7 @@ class Storage {
      * @param context A valid application {@link Context}
      * @return The authority as a {@link String}
      */
-    @NonNull
-    String getFileProviderAuthority(@NonNull Context context){
+    String getFileProviderAuthority(Context context){
         final String suffix = context.getString(R.string.belvedere_sdk_fpa_suffix);
         return String.format(Locale.US, "%s%s", context.getPackageName(), suffix);
     }
@@ -152,8 +148,7 @@ class Storage {
      * @param context A valid application {@link Context}
      * @return The {@link File}
      */
-    @Nullable
-    File getFileForCamera(@NonNull Context context){
+    File getFileForCamera(Context context){
         final File cacheDir = getAttachmentDir(context, CAMERA_IMAGE_DIR);
 
         if(cacheDir == null){
@@ -175,8 +170,7 @@ class Storage {
      * @param uri {@link Uri} to the media from the gallery
      * @return The {@link File}
      */
-    @Nullable
-    File getTempFileForGalleryImage(@NonNull Context context, @NonNull Uri uri) {
+    File getTempFileForGalleryImage(Context context, Uri uri) {
         final File cacheDir = getAttachmentDir(context, GALLERY_IMAGE_DIR);
 
         if(cacheDir == null){
@@ -205,7 +199,6 @@ class Storage {
      * @param fileName The name of the file.
      * @return The File.
      */
-    @Nullable
     File getTempFileForRequestAttachment(Context context, String fileName) {
         final File cacheDir = getAttachmentDir(context, REQUEST_IMAGE_DIR);
 
@@ -222,7 +215,7 @@ class Storage {
      *
      * @param context A valid application {@link Context}.
      */
-    void clearStorage(@NonNull Context context) {
+    void clearStorage(Context context) {
         final File rootDir = new File(getRootDir(context) + File.separator + directoryName);
         if(rootDir.isDirectory()){
             clearDirectory(rootDir);
@@ -230,7 +223,7 @@ class Storage {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void clearDirectory(@NonNull File fileOrDirectory) {
+    private void clearDirectory(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()){
             for (File child : fileOrDirectory.listFiles()){
                 clearDirectory(child);
@@ -252,8 +245,7 @@ class Storage {
      * @param dir The directory, where the {@link File} should live.
      * @return The {@link File}
      */
-    @NonNull
-    private File createTempFile(@NonNull String fileName, @Nullable String suffix, @NonNull File dir){
+    private File createTempFile(String fileName, String suffix, File dir){
         return new File(dir, fileName + (!TextUtils.isEmpty(suffix) ? suffix : ""));
     }
 
@@ -268,8 +260,7 @@ class Storage {
      * @return A {@link File} pointing to the directory.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Nullable
-    private File getAttachmentDir(@NonNull Context context, @Nullable String subDirectory){
+    private File getAttachmentDir(Context context, String subDirectory){
 
         final String subDirectoryString;
         if(!TextUtils.isEmpty(subDirectory)){
@@ -299,8 +290,7 @@ class Storage {
      * @return A {@link File} pointing to the directory, where
      *      the Belvedere cache should live,
      */
-    @NonNull
-    private String getRootDir(@NonNull Context context) {
+    private String getRootDir(Context context) {
         return context.getCacheDir().getAbsolutePath();
     }
 
@@ -318,8 +308,7 @@ class Storage {
      * @param uri An {@link Uri}
      * @return The mime type as a {@link String}.
      */
-    @NonNull
-    private String getExtension(@NonNull Context context, @NonNull Uri uri){
+    private String getExtension(Context context, Uri uri){
         final ContentResolver cr = context.getContentResolver();
         final MimeTypeMap mime = MimeTypeMap.getSingleton();
         final String ext = mime.getExtensionFromMimeType(cr.getType(uri));
@@ -336,8 +325,7 @@ class Storage {
      * @param uri Link to the {@link Uri}
      * @return The name of the {@link File}, or an empty {@link String}
      */
-    @NonNull
-    private String getFileNameFromUri(@NonNull Context context, @NonNull Uri uri){
+    private String getFileNameFromUri(Context context, Uri uri){
         final String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
         final ContentResolver contentResolver = context.getContentResolver();
         final Cursor cursor = contentResolver.query(uri, projection, null, null, null);

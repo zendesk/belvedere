@@ -31,18 +31,6 @@ public class MediaIntent implements Parcelable {
         this.target = target;
     }
 
-    MediaIntent(Parcel in) {
-        this.requestCode = in.readInt();
-        this.intent = in.readParcelable(BelvedereIntent.class.getClassLoader());
-        this.permission = in.readString();
-
-        boolean[] isAvailable = new boolean[1];
-        in.readBooleanArray(isAvailable);
-        this.isAvailable = isAvailable[0];
-
-        this.target = in.readInt();
-    }
-
     public void open(Fragment fragment) {
         fragment.startActivityForResult(intent, requestCode);
     }
@@ -66,33 +54,6 @@ public class MediaIntent implements Parcelable {
     public int getTarget() {
         return target;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
-        dest.writeInt(requestCode);
-        dest.writeParcelable(intent, flags);
-        dest.writeString(permission);
-        dest.writeBooleanArray(new boolean[]{isAvailable});
-        dest.writeInt(target);
-    }
-
-    public static final Parcelable.Creator<MediaIntent> CREATOR
-            = new Parcelable.Creator<MediaIntent>() {
-        public MediaIntent createFromParcel(@NonNull Parcel in) {
-            return new MediaIntent(in);
-        }
-
-        @NonNull
-        public MediaIntent[] newArray(int size) {
-            return new MediaIntent[size];
-        }
-    };
-
 
     public static class DocumentIntentBuilder {
 
@@ -177,4 +138,41 @@ public class MediaIntent implements Parcelable {
         }
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+        dest.writeInt(requestCode);
+        dest.writeParcelable(intent, flags);
+        dest.writeString(permission);
+        dest.writeBooleanArray(new boolean[]{isAvailable});
+        dest.writeInt(target);
+    }
+
+    public static final Parcelable.Creator<MediaIntent> CREATOR
+            = new Parcelable.Creator<MediaIntent>() {
+        public MediaIntent createFromParcel(@NonNull Parcel in) {
+            return new MediaIntent(in);
+        }
+
+        @NonNull
+        public MediaIntent[] newArray(int size) {
+            return new MediaIntent[size];
+        }
+    };
+
+    MediaIntent(Parcel in) {
+        this.requestCode = in.readInt();
+        this.intent = in.readParcelable(BelvedereIntent.class.getClassLoader());
+        this.permission = in.readString();
+
+        boolean[] isAvailable = new boolean[1];
+        in.readBooleanArray(isAvailable);
+        this.isAvailable = isAvailable[0];
+
+        this.target = in.readInt();
+    }
 }

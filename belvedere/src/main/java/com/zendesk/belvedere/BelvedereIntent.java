@@ -5,24 +5,23 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 /**
  * Model class that is returned by {@link Belvedere#getBelvedereIntents()}.
  * <p>
- *      Holds an {@link Intent}, an expected requestId and a {@link BelvedereSource}.
+ * Holds an {@link Intent}, an expected requestId and a {@link BelvedereSource}.
  * </p>
  * <p>
- *      It's intended to use this object in e.g. a dialog to open an installed gallery
- *      or camera app. For convenience use {@link #open(Activity)} or {@link #open(Fragment)} to
- *      fire the {@link Intent}.
+ * It's intended to use this object in e.g. a dialog to open an installed gallery
+ * or camera app. For convenience use {@link #open(Activity)} or {@link #open(Fragment)} to
+ * fire the {@link Intent}.
  * </p>
  * <p>
- *      If you don't want to use one of the provided open methods, make sure to respect the provided
- *      {@link #getRequestCode()} when calling {@link Activity#startActivityForResult(Intent, int)}.
- *      {@link Belvedere#getFilesFromActivityOnResult(int, int, Intent, BelvedereCallback)} relies on
- *      that code.
+ * If you don't want to use one of the provided open methods, make sure to respect the provided
+ * {@link #getRequestCode()} when calling {@link Activity#startActivityForResult(Intent, int)}.
+ * {@link Belvedere#getFilesFromActivityOnResult(int, int, Intent, Callback)} relies on
+ * that code.
  * </p>
  */
 class BelvedereIntent implements Parcelable {
@@ -31,7 +30,7 @@ class BelvedereIntent implements Parcelable {
     private final Intent intent;
     private final String permission;
 
-    public BelvedereIntent(@NonNull Intent intent, int requestCode, @Nullable String permission){
+    BelvedereIntent(Intent intent, int requestCode, String permission) {
         this.intent = intent;
         this.requestCode = requestCode;
         this.permission = permission;
@@ -42,8 +41,7 @@ class BelvedereIntent implements Parcelable {
      *
      * @return The {@link Intent}
      */
-    @NonNull
-    public Intent getIntent() {
+    Intent getIntent() {
         return intent;
     }
 
@@ -52,26 +50,25 @@ class BelvedereIntent implements Parcelable {
      *
      * @return The request code.
      */
-    public int getRequestCode() {
+    int getRequestCode() {
         return requestCode;
     }
 
     /**
      * Return the name of permission, if it's necessary
      * to ask for it during run-time.
-     *
      * <p>
-     *     The returned {@link String} one of the constants defined
-     *     in {@code android.Manifest.permission.*}.
-     *     <br>
-     *     {@code null} will be returned, if there's no need to ask
-     *     of permission.
+     * <p>
+     * The returned {@link String} one of the constants defined
+     * in {@code android.Manifest.permission.*}.
+     * <br>
+     * {@code null} will be returned, if there's no need to ask
+     * of permission.
      * </p>
      *
      * @return the name of the permission or {@code null}
      */
-    @Nullable
-    public String getPermission() {
+    String getPermission() {
         return permission;
     }
 
@@ -82,7 +79,7 @@ class BelvedereIntent implements Parcelable {
      *
      * @param activity An {@link Activity}
      */
-    public void open(@NonNull Activity activity){
+    void open(Activity activity) {
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -93,7 +90,7 @@ class BelvedereIntent implements Parcelable {
      *
      * @param fragment A {@link Fragment}
      */
-    public void open(@NonNull Fragment fragment) {
+    void open(Fragment fragment) {
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -103,7 +100,7 @@ class BelvedereIntent implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(requestCode);
         dest.writeParcelable(intent, flags);
         dest.writeString(permission);
@@ -111,7 +108,7 @@ class BelvedereIntent implements Parcelable {
 
     public static final Parcelable.Creator<BelvedereIntent> CREATOR
             = new Parcelable.Creator<BelvedereIntent>() {
-        public BelvedereIntent createFromParcel(@NonNull Parcel in) {
+        public BelvedereIntent createFromParcel(Parcel in) {
             return new BelvedereIntent(in);
         }
 

@@ -4,8 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,16 +27,13 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
 
     private final static String LOG_TAG = "BelvedereResolveUriTask";
 
-    private final BelvedereCallback<List<BelvedereResult>> callback;
+    private final Callback<List<BelvedereResult>> callback;
     private final Context context;
     private final Logger log;
     private final Storage storage;
 
-    BelvedereResolveUriTask(
-            @NonNull Context context,
-            @NonNull Logger logger,
-            @NonNull Storage storage,
-            @Nullable BelvedereCallback<List<BelvedereResult>> callback) {
+    BelvedereResolveUriTask(Context context, Logger logger, Storage storage,
+                            Callback<List<BelvedereResult>> callback) {
         this.context = context;
         this.log = logger;
         this.storage = storage;
@@ -46,15 +41,14 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
     }
 
     @Override
-    protected List<BelvedereResult> doInBackground(@NonNull Uri... uris) {
+    protected List<BelvedereResult> doInBackground(Uri... uris) {
         final List<BelvedereResult> success = new ArrayList<>();
 
+        final byte[] buf = new byte[1024 * 1024];
+        InputStream inputStream = null;
+        FileOutputStream fileOutputStream = null;
+
         for (Uri uri : uris) {
-
-            InputStream inputStream = null;
-            FileOutputStream fileOutputStream = null;
-            final byte[] buf = new byte[1024 * 1024];
-
             try {
                 inputStream = context.getContentResolver().openInputStream(uri);
                 final File file = storage.getTempFileForGalleryImage(context, uri);
@@ -105,11 +99,12 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
                 }
             }
         }
+
         return success;
     }
 
     @Override
-    protected void onPostExecute(@NonNull List<BelvedereResult> resolvedUris) {
+    protected void onPostExecute(List<BelvedereResult> resolvedUris) {
         super.onPostExecute(resolvedUris);
         if (callback != null) {
             callback.internalSuccess(resolvedUris);
