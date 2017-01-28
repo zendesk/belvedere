@@ -3,6 +3,7 @@ package com.example.belvedere;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,15 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.zendesk.belvedere.Belvedere;
-import com.zendesk.belvedere.BelvedereResult;
-import com.zendesk.belvedere.Callback;
-import com.zendesk.belvedere.MediaIntent;
-import com.zendesk.belvedere.ui.BelvedereUi;
+import com.squareup.picasso.Picasso;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,10 +30,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import zendesk.belvedere.Belvedere;
+import zendesk.belvedere.BelvedereResult;
+import zendesk.belvedere.BelvedereUi;
+import zendesk.belvedere.Callback;
+import zendesk.belvedere.MediaIntent;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int IMAGE_STREAM = 123;
 
     private static final String BELVEDERE_IMG_URL = "https://upload.wikimedia.org/wikipedia/commons/f/f8/Belvedere-wien.jpg";
     private static final String BELVEDERE_FILE_NAME = "belvedere.jpg";
@@ -61,12 +57,10 @@ public class MainActivity extends AppCompatActivity {
     CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.sample_belvedere_gridlayout)
     GridLayout gridLayout;
-
     @BindView(R.id.sample_belvedere_btn_document)
     Button documentButton;
     @BindView(R.id.sample_belvedere_btn_camera)
     Button cameraButton;
-
     @BindView(R.id.main_content)
     CoordinatorLayout coordinatorLayout;
 
@@ -93,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 BelvedereUi.startImageStream(MainActivity.this, getMediaIntents());
             }
         });
+
 
     }
 
@@ -123,33 +118,39 @@ public class MainActivity extends AppCompatActivity {
     private void initBanner() {
         collapsingToolbar.setStatusBarScrimColor(getResources().getColor(android.R.color.transparent));
 
-        ImageLoader.getInstance()
-                .displayImage(BELVEDERE_IMG_URL,
-                        banner,
-                        new SimpleImageLoadingListener() {
+        Picasso.with(this)
+                .load(BELVEDERE_IMG_URL)
+                .into(banner, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        final Bitmap bitmap = ((BitmapDrawable) banner.getDrawable()).getBitmap();
+
+                        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                             @Override
-                            public void onLoadingComplete(String imageUri, View view, final Bitmap loadedImage) {
-                                super.onLoadingComplete(imageUri, view, loadedImage);
+                            public void onGenerated(Palette palette) {
+                                final int primary = getResources().getColor(R.color.colorPrimary);
 
-                                Palette.from(loadedImage).generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(Palette palette) {
-                                        final int primary = getResources().getColor(R.color.colorPrimary);
+                                final int darkVibrantColor = palette.getDarkVibrantColor(primary);
+                                final float[] hsv = new float[3];
+                                Color.colorToHSV(darkVibrantColor, hsv);
+                                hsv[2] *= 0.4f; // value component
+                                final int darkVibrantStatusBar = Color.HSVToColor(hsv);
 
-                                        final int darkVibrantColor = palette.getDarkVibrantColor(primary);
-                                        final float[] hsv = new float[3];
-                                        Color.colorToHSV(darkVibrantColor, hsv);
-                                        hsv[2] *= 0.4f; // value component
-                                        final int darkVibrantStatusBar = Color.HSVToColor(hsv);
+                                collapsingToolbar.setContentScrimColor(darkVibrantColor);
+                                collapsingToolbar.setStatusBarScrimColor(darkVibrantStatusBar);
 
-                                        collapsingToolbar.setContentScrimColor(darkVibrantColor);
-                                        collapsingToolbar.setStatusBarScrimColor(darkVibrantStatusBar);
-
-                                        initBannerListener(loadedImage);
-                                    }
-                                });
+                                initBannerListener(bitmap);
                             }
                         });
+
+
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
     }
 
     private void initBannerListener(final Bitmap bitmap) {
@@ -212,12 +213,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayImages(List<BelvedereResult> belvedereResults) {
-        final DisplayImageOptions build = new DisplayImageOptions.Builder()
-                .cacheInMemory(false)
-                .cacheOnDisk(false)
-                .displayer(new FadeInBitmapDisplayer(1000))
-                .build();
-
         final int imageSize = getResources().getDimensionPixelSize(R.dimen.sample_belvedere_image_size);
 
         for (final BelvedereResult r : belvedereResults) {
@@ -226,9 +221,10 @@ public class MainActivity extends AppCompatActivity {
             imageView.setLayoutParams(new GridLayout.LayoutParams(new ViewGroup.LayoutParams(imageSize, imageSize)));
             gridLayout.addView(imageView);
 
-            ImageLoader.getInstance()
-                    .displayImage(r.getUri().toString(), imageView, build);
-
+            Picasso.with(this)
+                    .load(r.getUri())
+                    .resize(imageSize, 0)
+                    .into(imageView);
             setListenerToImageView(imageView, r.getUri());
         }
     }
@@ -236,16 +232,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        this.belvedereResult = new Callback<List<BelvedereResult>>() {
-            @Override
-            public void success(final List<BelvedereResult> belvedereResults) {
-                displayImages(belvedereResults);
-            }
-        };
-
         Belvedere.from(this)
-                .getFilesFromActivityOnResult(requestCode, resultCode, data, belvedereResult);
+                .getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<BelvedereResult>>() {
+                    @Override
+                    public void success(List<BelvedereResult> result) {
+                        displayImages(result);
+                    }
+                });
     }
 
 }

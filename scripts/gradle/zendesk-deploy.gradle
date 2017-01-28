@@ -1,0 +1,45 @@
+apply plugin: 'maven'
+apply from: '../scripts/gradle/gradle-commons.gradle'
+
+ext {
+    sdkGroupId = 'com.zendesk'
+    sdkArtifactId = project.ext.artifactId
+    sdkVersionName = rootProject.ext.versionName
+
+    repoUsername = getConfigurationParameter("zdRepoUsername")
+    repoPassword = getConfigurationParameter("zdRepoPassword")
+}
+
+uploadArchives.enabled = versionName.endsWith('SNAPSHOT') || "$System.env.BUILD_PRODUCTION" != "null"
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                snapshotRepository(url: "https://zdrepo.artifactoryonline.com/zdrepo/simple/libs-snapshots-local/") {
+                    authentication(userName: repoUsername, password: repoPassword)
+                }
+
+                repository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/libs-releases-local/") {
+                    authentication(userName: repoUsername, password: repoPassword)
+                }
+
+                pom.project {
+                    groupId sdkGroupId
+                    artifactId sdkArtifactId
+                    packaging 'aar'
+                    version sdkVersionName
+
+                    licenses {
+                        license {
+                            name 'Apache License Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0'
+                            distribution 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

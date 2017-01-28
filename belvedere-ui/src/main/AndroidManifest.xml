@@ -1,9 +1,0 @@
-<manifest
-    package="com.zendesk.belvedere.ui"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <application>
-        <activity android:name=".ImageStream" android:theme="@style/BottomSheetTheme" />
-    </application>
-
-</manifest>
