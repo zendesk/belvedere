@@ -19,7 +19,7 @@ import java.util.UUID;
 
 class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<Item> items;
+    private List<Item> items;
 
     ImageStreamAdapter(Delegate delegate, List<Uri> images, boolean showCamera) {
         setHasStableIds(true);
@@ -38,7 +38,9 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ImageStreamAdapter(Delegate delegate) {
         setHasStableIds(true);
-        this.items = Arrays.asList(StaticItem.forCameraList(delegate), StaticItem.forDocumentList(delegate));
+        this.items = Arrays.asList(
+                StaticItem.forCameraList(delegate),
+                StaticItem.forDocumentList(delegate));
     }
 
     @Override
@@ -65,6 +67,17 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    void hideCameraOption() {
+        List<Item> list = new ArrayList<>();
+        for(Item item : items) {
+            if (!(item instanceof StaticItem) || ((StaticItem)item).getType() != StaticItem.TYPE_CAMERA) {
+                list.add(item);
+            }
+        }
+        this.items = list;
+        notifyDataSetChanged();
     }
 
     interface Item {
@@ -100,6 +113,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override
         public void bind(View view) {
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
+            final int itemWith = view.getContext().getResources().getDimensionPixelSize(R.dimen.image_width);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -109,13 +123,16 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             Picasso.with(imageView.getContext())
                     .load(uri)
-                    .resize(250, 0)
+                    .resize(itemWith, 0)
                     .onlyScaleDown()
                     .into(imageView);
         }
     }
 
     private static class StaticItem implements Item {
+
+        private final static int TYPE_CAMERA = 1;
+        private final static int TYPE_GALLERY = 2;
 
         private final static int PIC_CAMERA = R.drawable.ic_camera_black;
         private final static int PIC_DOCUMENT = R.drawable.ic_image_black;
@@ -127,7 +144,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final static int TEXT_DOCUMENT = R.string.belvedere_dialog_gallery;
 
         static Item forCameraSquare(final Delegate delegate) {
-            return new StaticItem(LAYOUT_GRID, PIC_CAMERA, -1, new View.OnClickListener() {
+            return new StaticItem(LAYOUT_GRID, PIC_CAMERA, -1, TYPE_CAMERA, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     delegate.openCamera();
@@ -136,7 +153,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         static Item forCameraList(final Delegate delegate) {
-            return new StaticItem(LAYOUT_LIST, PIC_CAMERA, TEXT_CAMERA, new View.OnClickListener() {
+            return new StaticItem(LAYOUT_LIST, PIC_CAMERA, TEXT_CAMERA, TYPE_CAMERA, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     delegate.openCamera();
@@ -145,7 +162,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         static Item forDocumentList(final Delegate delegate) {
-            return new StaticItem(LAYOUT_LIST, PIC_DOCUMENT, TEXT_DOCUMENT, new View.OnClickListener() {
+            return new StaticItem(LAYOUT_LIST, PIC_DOCUMENT, TEXT_DOCUMENT, TYPE_GALLERY, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     delegate.openGallery();
@@ -154,13 +171,14 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         private final long id;
-        private final int iconId, layoutId, textId;
+        private final int iconId, layoutId, textId, type;
         private final View.OnClickListener onClickListener;
 
-        private StaticItem(int layoutId, int iconId, int textId, View.OnClickListener onClickListener) {
+        private StaticItem(int layoutId, int iconId, int textId, int type, View.OnClickListener onClickListener) {
             this.layoutId = layoutId;
             this.iconId = iconId;
             this.textId = textId;
+            this.type = type;
             this.onClickListener = onClickListener;
             this.id = UUID.randomUUID().hashCode();
         }
@@ -184,6 +202,10 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if(textView != null) {
                 ((TextView)textView).setText(textId);
             }
+        }
+
+        int getType() {
+            return type;
         }
     }
 

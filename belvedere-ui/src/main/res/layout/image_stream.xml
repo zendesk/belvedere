@@ -17,7 +17,8 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="?actionBarSize">
+        android:paddingTop="?actionBarSize"
+        android:visibility="gone">
 
         <android.support.v7.widget.RecyclerView
             android:background="#ffffff"

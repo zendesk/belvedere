@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.zendesk.belvedere.MediaIntent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     private ListView listView;
     private MediaIntent waitingForPermission;
     private List<MediaIntent> mediaIntents;
-    private BelvedereSharedPreferences preferences;
+    private PermissionStorage preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = new BelvedereSharedPreferences(getContext());
+        preferences = new PermissionStorage(getContext());
         if (savedInstanceState != null) {
             waitingForPermission = savedInstanceState.getParcelable(STATE_WAITING_FOR_PERMISSION);
         }
@@ -65,7 +66,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        mediaIntents = BelvedereUi.getMediaIntents(preferences, getArguments());
+        mediaIntents = getMediaIntents();
         fillList(mediaIntents);
     }
 
@@ -95,7 +96,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
                     if (!showRationale) {
                         preferences.neverEverAskForThatPermissionAgain(waitingForPermission.getPermission());
-                        mediaIntents = BelvedereUi.getMediaIntents(preferences, getArguments());
+                        mediaIntents = getMediaIntents();
                         fillList(mediaIntents);
                     }
 
@@ -181,6 +182,19 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         } else {
             askForPermission(belvedereIntent);
         }
+    }
+
+    private List<MediaIntent> getMediaIntents() {
+        List<MediaIntent> intents = BelvedereUi.getMediaIntents(getArguments());
+        List<MediaIntent> filter = new ArrayList<>();
+        for (MediaIntent belvedereIntent : intents) {
+            if (TextUtils.isEmpty(belvedereIntent.getPermission())
+                    || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())) {
+                filter.add(belvedereIntent);
+            }
+        }
+
+        return filter;
     }
 
     private static class Adapter extends ArrayAdapter<MediaIntent> {

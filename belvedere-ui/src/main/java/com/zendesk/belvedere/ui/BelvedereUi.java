@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 
 import com.zendesk.belvedere.MediaIntent;
 
@@ -77,8 +76,8 @@ public class BelvedereUi {
     private static Bundle getBundle(List<MediaIntent> mediaIntent) {
         final ArrayList<MediaIntent> filteredList = new ArrayList<>();
         if (mediaIntent != null && mediaIntent.size() != 0) {
-            for(MediaIntent intent : mediaIntent) {
-                if(intent.isAvailable()) {
+            for (MediaIntent intent : mediaIntent) {
+                if (intent.isAvailable()) {
                     filteredList.add(intent);
                 }
             }
@@ -90,22 +89,15 @@ public class BelvedereUi {
         return bundle;
     }
 
-    static List<MediaIntent> getMediaIntents(BelvedereSharedPreferences preferences, Bundle bundle) {
+    static List<MediaIntent> getMediaIntents(Bundle bundle) {
         List<MediaIntent> intents = bundle.getParcelableArrayList(EXTRA_MEDIA_INTENT);
 
         if (intents == null || intents.size() == 0) {
             return new ArrayList<>();
         }
 
-        List<MediaIntent> filter = new ArrayList<>();
-        for (MediaIntent belvedereIntent : intents) {
-            if (TextUtils.isEmpty(belvedereIntent.getPermission())
-                    || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())) {
-                filter.add(belvedereIntent);
-            }
-        }
+        return intents;
 
-        return filter;
     }
 
 }

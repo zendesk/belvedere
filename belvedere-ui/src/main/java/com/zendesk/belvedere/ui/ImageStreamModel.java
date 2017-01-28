@@ -3,8 +3,8 @@ package com.zendesk.belvedere.ui;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import com.zendesk.belvedere.MediaIntent;
 
@@ -12,18 +12,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-class SomeModel implements ImageStreamMvp.Model {
+class ImageStreamModel implements ImageStreamMvp.Model {
 
-    private static final int MAX_IMAGES = 100;
+    private static final int MAX_IMAGES = 500;
 
     private final Context context;
-    private final BelvedereSharedPreferences belvedereSharedPreferences;
-    private final List<MediaIntent> mediaIntents;
+    private final PermissionStorage preferences;
 
-    SomeModel(Context context, Bundle bundle, BelvedereSharedPreferences belvedereSharedPreferences) {
+    private List<MediaIntent> mediaIntents;
+
+    ImageStreamModel(Context context, List<MediaIntent> mediaIntents,
+                     PermissionStorage preferences) {
         this.context = context;
-        this.belvedereSharedPreferences = belvedereSharedPreferences;
-        this.mediaIntents = BelvedereUi.getMediaIntents(belvedereSharedPreferences, bundle);
+        this.preferences = preferences;
+        this.mediaIntents = filterIntents(mediaIntents);
     }
 
     @Override
@@ -77,6 +79,28 @@ class SomeModel implements ImageStreamMvp.Model {
     @Override
     public MediaIntent getDocumentIntent() {
         return getIntentWithTarget(MediaIntent.TARGET_DOCUMENT);
+    }
+
+    @Override
+    public void dontAskForPermissionAgain(String permission) {
+        preferences.neverEverAskForThatPermissionAgain(permission);
+        mediaIntents = filterIntents(mediaIntents);
+    }
+
+    @Override
+    public boolean canAskForPermission(String permission) {
+        return !preferences.shouldINeverEverAskForThatPermissionAgain(permission);
+    }
+
+    private List<MediaIntent> filterIntents(List<MediaIntent> mediaIntents) {
+        List<MediaIntent> filter = new ArrayList<>();
+        for (MediaIntent intent : mediaIntents) {
+            if (TextUtils.isEmpty(intent.getPermission())
+                    || !preferences.shouldINeverEverAskForThatPermissionAgain(intent.getPermission())) {
+                filter.add(intent);
+            }
+        }
+        return filter;
     }
 
     private MediaIntent getIntentWithTarget(int target) {

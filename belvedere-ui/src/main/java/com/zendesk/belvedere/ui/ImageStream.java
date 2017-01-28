@@ -34,44 +34,55 @@ public class ImageStream extends AppCompatActivity
 
     private static final int PERMISSION_REQUEST_CODE = 9842;
 
-    public static final String RESULT_KEY = "belvedere_internal_result";
+    private static final String RESULT_KEY = "belvedere_internal_result";
+    private static final String VIEW_STATE = "view_state";
 
     private ImageStreamMvp.Presenter presenter;
 
     private View bottomSheet, dismissArea;
     private RecyclerView imageList;
     private Toolbar toolbar;
-
     private MenuItem galleryMenuItem;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private ImageStreamAdapter imageStreamAdapter;
+
+    private ImageStreamMvp.ViewState viewState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_stream);
         bindViews();
-        initToolbar();
-        initBottomSheet();
 
-        BelvedereSharedPreferences preferences = new BelvedereSharedPreferences(this);
-        Bundle startParameter = getIntent().getExtras();
-        final ImageStreamMvp.Model model = new SomeModel(this, startParameter, preferences);
+        if(savedInstanceState != null) {
+            viewState = savedInstanceState.getParcelable(VIEW_STATE);
+        } else {
+            viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+
+        PermissionStorage preferences = new PermissionStorage(this);
+        final List<MediaIntent> mediaIntents = BelvedereUi.getMediaIntents(getIntent().getExtras());
+        final ImageStreamMvp.Model model = new ImageStreamModel(this, mediaIntents, preferences);
+
         presenter = new ImageStreamPresenter(model, this);
         presenter.init();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    presenter.permissionGranted(true, permissions[0]);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                presenter.permissionGranted(true, permissions[0]);
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                boolean showRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]);
+                if(!showRationale) {
+                    presenter.dontAskForPermissionAgain(permissions[0]);
                 } else {
                     presenter.permissionGranted(false, permissions[0]);
                 }
-                break;
             }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -110,6 +121,17 @@ public class ImageStream extends AppCompatActivity
 
         }
     }
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(VIEW_STATE, new ImageStreamMvp.ViewState(bottomSheetBehavior.getState()));
+    }
+
+    @Override
+    public void initUiComponents() {
+        initToolbar();
+        initBottomSheet();
+    }
 
     @Override
     public boolean isPermissionGranted(String permission) {
@@ -125,9 +147,11 @@ public class ImageStream extends AppCompatActivity
     @Override
     public void showImageStream(List<Uri> images, boolean showCamera) {
 
+        int columns = getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 4;
+
         final ImageStreamAdapter adapter = new ImageStreamAdapter(this, images, showCamera);
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
         // https://code.google.com/p/android/issues/detail?id=230295
         staggeredGridLayoutManager.setItemPrefetchEnabled(false);
 
@@ -149,6 +173,33 @@ public class ImageStream extends AppCompatActivity
     }
 
     @Override
+    public void openMediaIntent(MediaIntent mediaIntent) {
+        mediaIntent.open(this);
+    }
+
+    @Override
+    public void finishWithoutResult() {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
+    @Override
+    public void finishIfNothingIsLeft() {
+        if(imageStreamAdapter == null) {
+            finishWithoutResult();
+        }
+    }
+
+    @Override
+    public void hideCameraOption() {
+        if(imageStreamAdapter != null) {
+            imageStreamAdapter.hideCameraOption();
+        } else {
+            finishWithoutResult();
+        }
+    }
+
+    @Override
     public void imagesSelected(List<Uri> uris) {
         Belvedere.from(this).resolveUris(uris, new Callback<List<BelvedereResult>>() {
             @Override
@@ -160,21 +211,20 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void openCamera() {
-        Belvedere.from(this).camera().open(this);
+        presenter.openCamera();
     }
 
     @Override
     public void openGallery() {
-        Belvedere.from(this).document().contentType("image/*").open(this);
+        presenter.openGallery();
     }
 
-
-    private void initRecycler(RecyclerView.Adapter adapter, RecyclerView.LayoutManager layoutManager) {
-        imageList.setHasFixedSize(true);
+    private void initRecycler(ImageStreamAdapter adapter, RecyclerView.LayoutManager layoutManager) {
+        this.imageStreamAdapter = adapter;
         imageList.setAdapter(adapter);
-        imageList.setAnimation(null);
+        imageList.setItemAnimator(null);
         imageList.setLayoutManager(layoutManager);
-        imageList.setAdapter(adapter);
+        imageList.setHasFixedSize(true);
     }
 
     private void finishWithResult(List<BelvedereResult> belvedereResults) {
@@ -205,10 +255,12 @@ public class ImageStream extends AppCompatActivity
         UiUtils.dimStatusBar(this);
         UiUtils.hideToolbar(this);
 
+        bottomSheet.setVisibility(View.VISIBLE);
+
         ViewCompat.setElevation(imageList, getResources().getDimensionPixelSize(R.dimen.bottom_sheet_elevation));
 
-        final BottomSheetBehavior<View> from = BottomSheetBehavior.from(bottomSheet);
-        from.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
@@ -230,6 +282,11 @@ public class ImageStream extends AppCompatActivity
             }
         });
 
+        if(viewState.getBottomSheetState() == BottomSheetBehavior.STATE_EXPANDED) {
+            UiUtils.showToolbar(ImageStream.this);
+        }
+
+        bottomSheetBehavior.setState(viewState.getBottomSheetState());
         dismissArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
