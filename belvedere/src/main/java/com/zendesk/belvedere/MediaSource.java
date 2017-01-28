@@ -25,6 +25,7 @@ import java.util.Locale;
 class MediaSource {
 
     private final static String LOG_TAG = "BelvedereImagePicker";
+    private final static String INTERNAL_RESULT_KEY = "belvedere_internal_result";
 
     private final Storage storage;
     private final IntentRegistry intentRegistry;
@@ -150,10 +151,15 @@ class MediaSource {
                 log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Gallery - Ok: %s", (resultCode == Activity.RESULT_OK)));
 
                 if(resultCode == Activity.RESULT_OK) {
-                    final List<Uri> uris = extractUrisFromIntent(data);
-                    log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
-                    new BelvedereResolveUriTask(context, log, storage, callback).execute(uris.toArray(new Uri[uris.size()]));
-                    return;
+                    if(data.hasExtra(INTERNAL_RESULT_KEY)) {
+                        result.addAll(data.<BelvedereResult>getParcelableArrayListExtra(INTERNAL_RESULT_KEY));
+
+                    } else {
+                        final List<Uri> uris = extractUrisFromIntent(data);
+                        log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
+                        new BelvedereResolveUriTask(context, log, storage, callback).execute(uris.toArray(new Uri[uris.size()]));
+                        return;
+                    }
                 }
 
             } else {
@@ -212,22 +218,17 @@ class MediaSource {
     private List<Uri> extractUrisFromIntent(Intent intent){
         final List<Uri> images = new ArrayList<>();
 
-        /*
-            Support for selecting multiple images starts with JellyBean. Selected images
-            were attached to an Intent as ClipData
-         */
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && intent.getClipData() != null){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && intent.getClipData() != null) {
             final ClipData clipData = intent.getClipData();
 
-            for(int i = 0, itemCount = clipData.getItemCount(); i < itemCount; i++){
+            for (int i = 0, itemCount = clipData.getItemCount(); i < itemCount; i++) {
                 final ClipData.Item itemAt = clipData.getItemAt(i);
 
-                if(itemAt.getUri() != null){
+                if (itemAt.getUri() != null) {
                     images.add(itemAt.getUri());
                 }
             }
-        }
-        else if(intent.getData() != null){
+        } else if(intent.getData() != null){
             images.add(intent.getData());
         }
 

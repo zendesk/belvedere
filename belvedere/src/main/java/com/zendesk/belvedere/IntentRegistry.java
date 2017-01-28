@@ -2,11 +2,9 @@ package com.zendesk.belvedere;
 
 import android.util.SparseArray;
 
-import java.io.File;
-
 class IntentRegistry {
 
-    final static File DUMMY_FILE = new File("/");
+    private final static int PLACE_HOLDER_CODE = 42;
 
     private final static int START_REQUEST_CODE = 1600;
     private final static int END_REQUEST_CODE = 1700;
@@ -39,6 +37,10 @@ class IntentRegistry {
     }
 
     BelvedereResult getForRequestCode(int requestCode) {
+        if(requestCode == PLACE_HOLDER_CODE) {
+            return BelvedereResult.empty();
+        }
+
         synchronized (this) {
             return pendingIntents.get(requestCode);
         }

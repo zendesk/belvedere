@@ -2,33 +2,48 @@ package com.zendesk.belvedere.ui;
 
 import android.net.Uri;
 
+import com.zendesk.belvedere.MediaIntent;
+
 import java.util.List;
 
 interface ImageStreamMvp {
 
     interface Model {
 
-        List<Uri> queryLatestImages();
+        List<Uri> getLatestImages();
+
+        List<MediaIntent> getMediaIntent();
+
+        boolean hasCameraIntent();
+
+        boolean hasDocumentIntent();
+
+        MediaIntent getCameraIntent();
+
+        MediaIntent getDocumentIntent();
 
     }
 
     interface View {
 
-        boolean isPermissionGranted();
+        boolean isPermissionGranted(String permission);
 
-        void askForPermission();
+        void askForPermission(String permission);
 
-        void loadImageStream();
+        void showImageStream(List<Uri> images, boolean showCamera);
 
-        void loadMediaSelector();
+        void showList(MediaIntent cameraIntent, MediaIntent documentIntent);
 
+        void showDocumentMenuItem(boolean visible);
     }
 
     interface Presenter {
 
         void init();
 
-        void permissionGranted(boolean granted);
+        void initMenu();
+
+        void permissionGranted(boolean granted, String permission);
 
         List<Uri> getImages();
 

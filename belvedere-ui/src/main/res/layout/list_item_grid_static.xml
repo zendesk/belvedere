@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_photo_camera_black_24dp"/>
+            android:src="@drawable/ic_camera_black"/>
 
     </FrameLayout>
 

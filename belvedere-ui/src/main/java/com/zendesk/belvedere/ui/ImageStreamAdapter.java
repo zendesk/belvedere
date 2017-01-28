@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -18,26 +19,26 @@ import java.util.UUID;
 
 class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final Delegate delegate;
     private final List<Item> items;
 
-    ImageStreamAdapter(Delegate delegate, List<Uri> images) {
+    ImageStreamAdapter(Delegate delegate, List<Uri> images, boolean showCamera) {
         setHasStableIds(true);
         final List<Item> items = new ArrayList<>();
-        items.add(StaticItem.forCamera(delegate));
+
+        if(showCamera) {
+            items.add(StaticItem.forCameraSquare(delegate));
+        }
 
         for (Uri uri : images) {
             items.add(new StreamItemImage(delegate, uri));
         }
 
-        this.delegate = delegate;
         this.items = items;
     }
 
     ImageStreamAdapter(Delegate delegate) {
         setHasStableIds(true);
-        this.delegate = delegate;
-        this.items = Arrays.asList(StaticItem.forCamera(delegate), StaticItem.forGallery(delegate));
+        this.items = Arrays.asList(StaticItem.forCameraList(delegate), StaticItem.forDocumentList(delegate));
     }
 
     @Override
@@ -116,8 +117,17 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static class StaticItem implements Item {
 
-        static Item forCamera(final Delegate delegate) {
-            return new StaticItem(R.drawable.ic_photo_camera_black_24dp, new View.OnClickListener() {
+        private final static int PIC_CAMERA = R.drawable.ic_camera_black;
+        private final static int PIC_DOCUMENT = R.drawable.ic_image_black;
+
+        private final static int LAYOUT_GRID = R.layout.list_item_grid_static;
+        private final static int LAYOUT_LIST = R.layout.list_item_static;
+
+        private final static int TEXT_CAMERA = R.string.belvedere_dialog_camera;
+        private final static int TEXT_DOCUMENT = R.string.belvedere_dialog_gallery;
+
+        static Item forCameraSquare(final Delegate delegate) {
+            return new StaticItem(LAYOUT_GRID, PIC_CAMERA, -1, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     delegate.openCamera();
@@ -125,8 +135,17 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         }
 
-        static Item forGallery(final Delegate delegate) {
-            return new StaticItem(R.drawable.ic_image, new View.OnClickListener() {
+        static Item forCameraList(final Delegate delegate) {
+            return new StaticItem(LAYOUT_LIST, PIC_CAMERA, TEXT_CAMERA, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    delegate.openCamera();
+                }
+            });
+        }
+
+        static Item forDocumentList(final Delegate delegate) {
+            return new StaticItem(LAYOUT_LIST, PIC_DOCUMENT, TEXT_DOCUMENT, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     delegate.openGallery();
@@ -135,18 +154,20 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         private final long id;
-        private final int iconId;
+        private final int iconId, layoutId, textId;
         private final View.OnClickListener onClickListener;
 
-        private StaticItem(int iconId, View.OnClickListener onClickListener) {
-            this.onClickListener = onClickListener;
+        private StaticItem(int layoutId, int iconId, int textId, View.OnClickListener onClickListener) {
+            this.layoutId = layoutId;
             this.iconId = iconId;
+            this.textId = textId;
+            this.onClickListener = onClickListener;
             this.id = UUID.randomUUID().hashCode();
         }
 
         @Override
         public int getLayoutId() {
-            return R.layout.list_item_camera;
+            return layoutId;
         }
 
         @Override
@@ -158,6 +179,11 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void bind(View view) {
             ((ImageView)view.findViewById(R.id.list_item_static_image)).setImageResource(iconId);
             view.findViewById(R.id.list_item_static_click_area).setOnClickListener(onClickListener);
+
+            final View textView = view.findViewById(R.id.list_item_static_text);
+            if(textView != null) {
+                ((TextView)textView).setText(textId);
+            }
         }
     }
 

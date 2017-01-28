@@ -27,8 +27,7 @@ import com.zendesk.belvedere.Belvedere;
 import com.zendesk.belvedere.BelvedereResult;
 import com.zendesk.belvedere.Callback;
 import com.zendesk.belvedere.MediaIntent;
-import com.zendesk.belvedere.ui.BelvedereDialog;
-import com.zendesk.belvedere.ui.ImageStream;
+import com.zendesk.belvedere.ui.BelvedereUi;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -84,25 +83,14 @@ public class MainActivity extends AppCompatActivity {
         documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Belvedere from = Belvedere.from(MainActivity.this);
-                final List<MediaIntent> mediaIntents = new ArrayList<>();
-
-                if (switchCamera.isChecked()) {
-                    mediaIntents.add(from.camera().build());
-                }
-
-                if (switchGallery.isChecked()) {
-                    mediaIntents.add(from.document().contentType("image/*").allowMultiple(switchMultiple.isChecked()).build());
-                }
-
-                BelvedereDialog.showDialog(getSupportFragmentManager(), mediaIntents);
+                BelvedereUi.showDialog(getSupportFragmentManager(), getMediaIntents());
             }
         });
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                startActivityForResult(new Intent(MainActivity.this, ImageStream.class), IMAGE_STREAM);
+                BelvedereUi.startImageStream(MainActivity.this, getMediaIntents());
             }
         });
 
@@ -115,6 +103,21 @@ public class MainActivity extends AppCompatActivity {
             belvedereResult.cancel();
             belvedereResult = null;
         }
+    }
+
+    private List<MediaIntent> getMediaIntents() {
+        final Belvedere from = Belvedere.from(MainActivity.this);
+        final List<MediaIntent> mediaIntents = new ArrayList<>();
+
+        if (switchCamera.isChecked()) {
+            mediaIntents.add(from.camera().build());
+        }
+
+        if (switchGallery.isChecked()) {
+            mediaIntents.add(from.document().contentType("image/*").allowMultiple(switchMultiple.isChecked()).build());
+        }
+
+        return mediaIntents;
     }
 
     private void initBanner() {
@@ -241,13 +244,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        if (requestCode == IMAGE_STREAM && resultCode == RESULT_OK) {
-            final ArrayList<BelvedereResult> result = data.getParcelableArrayListExtra(ImageStream.RESULT_KEY);
-            displayImages(result);
-        } else {
-            Belvedere.from(this)
-                    .getFilesFromActivityOnResult(requestCode, resultCode, data, belvedereResult);
-        }
+        Belvedere.from(this)
+                .getFilesFromActivityOnResult(requestCode, resultCode, data, belvedereResult);
     }
 
 }

@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
@@ -24,8 +23,6 @@ import android.widget.TextView;
 
 import com.zendesk.belvedere.MediaIntent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,45 +35,15 @@ import java.util.List;
  */
 public class BelvedereDialog extends AppCompatDialogFragment {
 
-    private static final int REQUEST_ID = 12;
+    private static final int REQUEST_ID = 1212;
 
     private final static String LOG_TAG = "BelvedereDialog";
-    private final static String FRAGMENT_TAG = "BelvedereDialog";
-    private final static String EXTRA_INTENT = "extra_intent";
     private final static String STATE_WAITING_FOR_PERMISSION = "waiting_for_permission";
 
     private ListView listView;
     private MediaIntent waitingForPermission;
     private List<MediaIntent> mediaIntents;
     private BelvedereSharedPreferences preferences;
-
-    public static void showDialog(FragmentManager fm, MediaIntent... mediaIntent) {
-        if (mediaIntent == null || mediaIntent.length == 0) {
-            return;
-        }
-
-        showDialog(fm, Arrays.asList(mediaIntent));
-    }
-
-    public static void showDialog(FragmentManager fm, List<MediaIntent> mediaIntent) {
-        if (mediaIntent == null || mediaIntent.size() == 0) {
-            return;
-        }
-
-        final ArrayList<MediaIntent> filteredList = new ArrayList<>();
-        for(MediaIntent intent : mediaIntent) {
-            if(intent.isAvailable()) {
-                filteredList.add(intent);
-            }
-        }
-
-        final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(EXTRA_INTENT, filteredList);
-
-        final BelvedereDialog dialog = new BelvedereDialog();
-        dialog.setArguments(bundle);
-        dialog.show(fm.beginTransaction(), FRAGMENT_TAG);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -98,7 +65,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        mediaIntents = getMediaIntents();
+        mediaIntents = BelvedereUi.getMediaIntents(preferences, getArguments());
         fillList(mediaIntents);
     }
 
@@ -128,7 +95,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
                     if (!showRationale) {
                         preferences.neverEverAskForThatPermissionAgain(waitingForPermission.getPermission());
-                        mediaIntents = getMediaIntents();
+                        mediaIntents = BelvedereUi.getMediaIntents(preferences, getArguments());
                         fillList(mediaIntents);
                     }
 
@@ -146,24 +113,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(STATE_WAITING_FOR_PERMISSION, waitingForPermission);
-    }
-
-    private List<MediaIntent> getMediaIntents() {
-        List<MediaIntent> intents = getArguments().getParcelableArrayList(EXTRA_INTENT);
-
-        if (intents == null || intents.size() == 0) {
-            return new ArrayList<>();
-        }
-
-        List<MediaIntent> filter = new ArrayList<>();
-        for (MediaIntent belvedereIntent : intents) {
-            if (TextUtils.isEmpty(belvedereIntent.getPermission())
-                    || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())) {
-                filter.add(belvedereIntent);
-            }
-        }
-
-        return filter;
     }
 
     private void fillList(final List<MediaIntent> intents) {
