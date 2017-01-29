@@ -51,7 +51,7 @@ public class Belvedere implements InstanceBuilder {
         synchronized (Belvedere.class) {
             if (instance == null) {
                 if (context != null && context.getApplicationContext() != null) {
-                    return new Builder(context.getApplicationContext()).build();
+                    instance = new Builder(context.getApplicationContext()).build();
                 } else {
                     throw new IllegalArgumentException("Invalid context provided");
                 }
