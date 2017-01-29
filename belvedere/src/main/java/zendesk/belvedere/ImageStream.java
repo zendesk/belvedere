@@ -46,7 +46,7 @@ public class ImageStream extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.image_stream);
+        setContentView(R.layout.activity_image_stream);
         bindViews();
 
         viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -270,7 +270,7 @@ public class ImageStream extends AppCompatActivity
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 float offset = 0.6f;
                 if (slideOffset >= offset) {
-                    ViewCompat.setAlpha(toolbar, 1f - ((1f - slideOffset) / offset));
+                    ViewCompat.setAlpha(toolbar, 1f - (1f - slideOffset) / (1f - offset));
                     UiUtils.showToolbar(ImageStream.this);
                 } else {
                     UiUtils.hideToolbar(ImageStream.this);

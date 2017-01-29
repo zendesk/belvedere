@@ -71,12 +71,12 @@ class ImageStreamModel implements ImageStreamMvp.Model {
 
     @Override
     public MediaIntent getCameraIntent() {
-        return getIntentWithTarget(MediaIntent.TARGET_CAMERA);
+        return getIntentForTarget(MediaIntent.TARGET_CAMERA);
     }
 
     @Override
     public MediaIntent getDocumentIntent() {
-        return getIntentWithTarget(MediaIntent.TARGET_DOCUMENT);
+        return getIntentForTarget(MediaIntent.TARGET_DOCUMENT);
     }
 
     @Override
@@ -102,7 +102,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         return filter;
     }
 
-    private MediaIntent getIntentWithTarget(int target) {
+    private MediaIntent getIntentForTarget(int target) {
         for (MediaIntent mediaIntent : mediaIntents) {
             if (mediaIntent.getTarget() == target) {
                 return mediaIntent;

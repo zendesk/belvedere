@@ -63,7 +63,7 @@ public class Belvedere implements InstanceBuilder {
 
     public static void setSingletonInstance(@NonNull Belvedere belvedere) {
         if (belvedere == null) {
-            throw new IllegalArgumentException("Picasso must not be null.");
+            throw new IllegalArgumentException("Belvedere must not be null.");
         }
         synchronized (Belvedere.class) {
             if (instance != null) {

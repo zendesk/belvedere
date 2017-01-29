@@ -35,6 +35,20 @@ public class BelvedereUi {
         showDialog(fm, Arrays.asList(mediaIntent));
     }
 
+    public static void startImageStream(Activity activity) {
+        final Belvedere from = Belvedere.from(activity);
+        final MediaIntent camera = from.camera().build();
+        final MediaIntent document = from.document().allowMultiple(true).contentType("image/*").build();
+        startImageStream(activity, camera, document);
+    }
+
+    public static void startImageStream(Fragment fragment) {
+        final Belvedere from = Belvedere.from(fragment.getContext());
+        final MediaIntent camera = from.camera().build();
+        final MediaIntent document = from.document().allowMultiple(true).contentType("image/*").build();
+        startImageStream(fragment, camera, document);
+    }
+
     public static void startImageStream(Activity activity, List<MediaIntent> mediaIntent) {
         final Intent intent = new Intent(activity, ImageStream.class);
         intent.putExtras(getBundle(mediaIntent));

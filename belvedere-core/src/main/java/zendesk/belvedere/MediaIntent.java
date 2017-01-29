@@ -10,8 +10,8 @@ import android.support.v4.util.Pair;
 
 public class MediaIntent implements Parcelable {
 
-    static int TARGET_DOCUMENT = 1;
-    static int TARGET_CAMERA = 2;
+    final static int TARGET_DOCUMENT = 1;
+    final static int TARGET_CAMERA = 2;
 
     static MediaIntent notAvailable() {
         return new MediaIntent(-1, null, null, false, -1);

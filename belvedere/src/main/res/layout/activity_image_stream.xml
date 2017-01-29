@@ -23,6 +23,7 @@
         <android.support.v7.widget.RecyclerView
             android:background="#ffffff"
             android:id="@+id/image_list"
+            android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"

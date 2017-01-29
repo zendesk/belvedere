@@ -97,7 +97,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private StreamItemImage(Delegate delegate, Uri uri) {
             this.delegate = delegate;
             this.uri = uri;
-            this.layoutId = R.layout.list_item;
+            this.layoutId = R.layout.stream_list_item;
             this.id = UUID.randomUUID().hashCode();
         }
 
@@ -138,8 +138,8 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final static int PIC_CAMERA = R.drawable.ic_camera_black;
         private final static int PIC_DOCUMENT = R.drawable.ic_image_black;
 
-        private final static int LAYOUT_GRID = R.layout.list_item_grid_static;
-        private final static int LAYOUT_LIST = R.layout.list_item_static;
+        private final static int LAYOUT_GRID = R.layout.stream_list_item_square_static;
+        private final static int LAYOUT_LIST = R.layout.stream_list_item_static;
 
         private final static int TEXT_CAMERA = R.string.belvedere_dialog_camera;
         private final static int TEXT_DOCUMENT = R.string.belvedere_dialog_gallery;
