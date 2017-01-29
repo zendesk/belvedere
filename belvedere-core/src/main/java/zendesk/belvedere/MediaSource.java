@@ -157,7 +157,7 @@ class MediaSource {
                     } else {
                         final List<Uri> uris = extractUrisFromIntent(data);
                         log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
-                        new ResolveUriTask(context, log, storage, callback).execute(uris.toArray(new Uri[uris.size()]));
+                        ResolveUriTask.start(context, log, storage, callback, uris);
                         return;
                     }
                 }

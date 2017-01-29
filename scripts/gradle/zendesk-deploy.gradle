@@ -2,7 +2,7 @@ apply plugin: 'maven'
 apply from: '../scripts/gradle/gradle-commons.gradle'
 
 ext {
-    sdkGroupId = 'com.zendesk'
+    sdkGroupId = 'com.zendesk.belvedere2'
     sdkArtifactId = project.ext.artifactId
     sdkVersionName = rootProject.ext.versionName
 

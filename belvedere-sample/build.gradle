@@ -38,6 +38,6 @@ dependencies {
     if (useLocalDependency()) {
         compile project(':belvedere')
     } else {
-        compile group: 'com.zendesk', name: 'belvedere', version: rootProject.ext.versionName, changing: true
+        compile group: 'com.zendesk.belvedere2', name: 'belvedere', version: rootProject.ext.versionName, changing: true
     }
 }

@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,12 +28,24 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
     private final static String LOG_TAG = "BelvedereResolveUriTask";
 
+    static void start(Context context, Logger logger, Storage storage,
+                      Callback<List<MediaResult>> callback, List<Uri> uriList){
+        final ResolveUriTask resolveUriTask = new ResolveUriTask(context, logger, storage, callback);
+        final Uri[] uris = uriList.toArray(new Uri[uriList.size()]);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            resolveUriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, uris);
+        } else {
+            resolveUriTask.execute(uris);
+        }
+    }
+
     private final Callback<List<MediaResult>> callback;
     private final Context context;
     private final Logger log;
     private final Storage storage;
 
-    ResolveUriTask(Context context, Logger logger, Storage storage,
+    private ResolveUriTask(Context context, Logger logger, Storage storage,
                    Callback<List<MediaResult>> callback) {
         this.context = context;
         this.log = logger;
