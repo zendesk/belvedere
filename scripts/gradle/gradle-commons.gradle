@@ -1,0 +1,44 @@
+
+ext {
+
+    /**
+     * Looks for the specified configuration key in this order:
+     *
+     * <ol>
+     *     <li>system environment</li>
+     *     <li>project properties</li>
+     * </ol>
+     *
+     * If it isn't found, then the empty string is returned. This stops the gradlew from failing until
+     * it actually needs those values.
+     *
+     * @param keyName The key to look for
+     * @return The value or the empty string if not found
+     */
+    getConfigurationParameter = { keyName ->
+        return System.getenv(keyName) ?:
+                rootProject.hasProperty(keyName) ? rootProject.properties[keyName] : ''
+    }
+
+    /**
+     * Checks if we're building on CI, false otherwise
+     *
+     * <p>
+     *     Test mode is based on the existence of an environmental variable called CI. This is set
+     *     by the CI environment, not us.
+     * <p>
+     *
+     * @return true if we're building on CI, false otherwise
+     */
+    buildingOnCi = {
+        "$System.env.CI" != "null"
+    }
+
+    useLocalDependency = {
+        if("$System.env.LOCAL_BUILD" != "null") {
+            return System.env.LOCAL_BUILD.toBoolean()
+        }
+
+        return rootProject.ext.buildSettings.localBuild
+    }
+}

@@ -1,0 +1,45 @@
+apply plugin: 'maven'
+apply from: '../scripts/gradle/gradle-commons.gradle'
+
+ext {
+    sdkGroupId = 'com.zendesk.belvedere2'
+    sdkArtifactId = project.ext.artifactId
+    sdkVersionName = rootProject.ext.versionName
+
+    repoUsername = getConfigurationParameter("zendeskOssRepoUsername")
+    repoPassword = getConfigurationParameter("zendeskOssRepoPassword")
+}
+
+uploadArchives.enabled = versionName.endsWith('SNAPSHOT') || "$System.env.BUILD_PRODUCTION" != "null"
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                snapshotRepository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/oss-snapshots-local/") {
+                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
+                }
+
+                repository(url: "http://zendesk.artifactoryonline.com/zendesk/simple/oss-releases-local/") {
+                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
+                }
+
+                pom.project {
+                    groupId sdkGroupId
+                    artifactId sdkArtifactId
+                    packaging 'aar'
+                    version sdkVersionName
+
+                    licenses {
+                        license {
+                            name 'Apache License Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0'
+                            distribution 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

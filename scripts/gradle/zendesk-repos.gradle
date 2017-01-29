@@ -1,0 +1,26 @@
+
+apply from: 'scripts/gradle/gradle-commons.gradle'
+
+ext {
+    repoUsername = getConfigurationParameter("zendeskOssRepoUsername")
+    repoPassword = getConfigurationParameter("zendeskOssRepoPassword")
+}
+
+allprojects {
+    repositories {
+        jcenter()
+
+        maven {
+            url 'https://zendesk.artifactoryonline.com/zendesk/repo'
+        }
+
+        maven {
+            credentials {
+                username repoUsername
+                password repoPassword
+            }
+
+            url 'https://zdrepo.artifactoryonline.com/zdrepo/repo/'
+        }
+    }
+}

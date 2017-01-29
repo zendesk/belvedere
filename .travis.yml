@@ -1,30 +1,32 @@
 sudo: false
+language: android
+
 jdk:
   - oraclejdk8
-language: android
+
 notifications:
   email: false
+
 android:
   components:
     - tools
     - platform-tools
-    - android-23
-    - build-tools-23.0.3
+    - android-25
+    - build-tools-25.0.2
     - extra-android-m2repository
     - extra-google-m2repository
   licenses:
     - android-sdk-license-[0-9a-f]{8}
+
 branches:
   only:
     - master
     - v2.0
+
 env:
   global:
     - secure: "LQV/PkISndIqUlJpGxhmnKPYnVufNOpAb3lJ9GKyI9YbGmxEVf01hn1tmNHKtTL+TP/ONv1KvsF5MB8PLWQYxRtfzQVWNMEj5429T5vWPJIb/m753fqJObjG0/NueywGTQ+3A1h0llPkx57Bu8NA/jVnjnChEABcHM4l1WBM6qen5d0xTWqPZ00hNowmjJD3xKsyogR/xA3oJXptpHSWMPRx0mK3fOM2RZEnX7ZHyIAHPNiVdY2PuTDpaHXi2bkSFgNTrkR90p9llUYXhGR7fAlApOyvbJsDvKGtdL5A2h/gRaFPH2LCrY33iONiYnQyZhrJFh1+j25FWbY4mrKmPM9N31NXDMOLW/WO8Qiamsi8QAEOYwGCBMX6g+ptLxQgzGL8WWM4QJMtwtbfZgEJ/IMwZQRtjbchnh3xdnf/l4HcAgePDIFd+QDEWScW1SiY5E9FjQyNSI77vXy5ywOPU11u2RwYMOem7PlChhDg08ul+loCsB7M4iKUwsaDSMlDHhZ4ikpwWt+hdlJlz5Gafm0EpuXFy+APfx8UeS4cW+QciGdReYlJlYIQJxCIWKGBO0PTkawsAx2KKPt7fmP4INugH7AdNZ0/rt3IJk4oT2FfWUhI7Z6yHnSJSUMZjiKnErAPq9fPzLWH3Q/VQLXFCU8NLb295AOUVj8d14NpOkI="
     - secure: "KAQUmA6t1oYs7TG/uLohLk9W1YiFqCvZ3wwyWFyyDeg+XXrxDiwyWw8SXmz1UEsJKvzm4PTTzSAYPrFE7oV95CM0MQpMA9/MGSNn5GDcCaGYyTut9TKfM95hkAGZAQaqecA8xE0SJDV8C2bBZL7pjpPRDKpG5I0MbXl4iv2TU8+XUCxMaCzLI2vx6e6tRWw6QCmwIfeK/oqfyMBEsaTSwwK5MypAti/u0Ui6g0YqawYGkq+f8526lrEP+NzUgEt47QQgD0mjQUB5Aj87Ni3d15BAEjlNJqcNW7sh9qIZQXM1pALa9q9n8wj8DbmNYk9vz/Jz3YxklePawgmk+SbYlrBA8gI8P/G2fy+xZye57/jj9Zq3GN6ik202gWDMCPoGyi9De5uoI3Wq0RK7nKOyTMk5NdHYjRRJES1xI2cnilBjvNbT/mZUjJfGOtR8JBgpz4i8TtCjjcj1AYHKuTW5zYY0+b8YzkCgShQur9w4mnMRWpmUzqTW2+Ewb1EDq3O9HJuw8AiUISud9hoDrmrJgvypFQ82cLxIaiE6vha0d0SWaZBpYu+7HUYYufNo3D5l7YE/u2809p2mS3B9sX4Z/yCYINAMsfjYMARyVAYXCLp3WCu7zE4yHLKNcIDcztBQTj6lQonLjQumUHvQnP2VoHVdA0QpucQPwH0gVXN3jnQ="
-before_script:
-  - echo no | android create avd --force -n test -t android-10 --abi armeabi --skin HVGA
-  - echo "hw.keyboard=yes" >> ~/.android/avd/test.avd/config.ini
-  - emulator -avd test -no-skin -no-audio -no-window -netspeed full -netdelay none &
+
 script:
-  - ./scripts/test_belvedere.sh && ./scripts/test_sample.sh && ./scripts/build_belvedere.sh
+  - ./scripts/build.sh

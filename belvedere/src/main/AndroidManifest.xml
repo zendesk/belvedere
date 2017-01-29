@@ -1,14 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.zendesk.belvedere">
+<manifest
+    package="zendesk.belvedere.ui"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
     <application>
-        <provider
-            android:name="com.zendesk.belvedere.BelvedereFileProvider"
-            android:authorities="${applicationId}${belvedereFileProviderAuthoritySuffix}"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/belvedere_attachment_storage" />
-        </provider>
+        <activity android:name="zendesk.belvedere.ImageStream" android:theme="@style/BottomSheetTheme" />
     </application>
+
 </manifest>
