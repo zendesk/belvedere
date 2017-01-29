@@ -4,7 +4,6 @@ import android.app.Application;
 
 import zendesk.belvedere.Belvedere;
 
-
 public class Global extends Application {
 
     @Override

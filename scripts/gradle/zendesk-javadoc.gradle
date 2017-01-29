@@ -36,7 +36,7 @@ android.libraryVariants.all { variant ->
     }
 
     // Only add to archives when we are releasing
-    if (!buildingInTestMode() && variant.name == "release") {
+    if (variant.name == "release") {
         project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
     }
 }

@@ -80,7 +80,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     }
 
     @Override
-    public void dontAskForPermissionAgain(String permission) {
+    public void neverAskForPermissionAgain(String permission) {
         preferences.neverEverAskForThatPermissionAgain(permission);
         mediaIntents = filterIntents(mediaIntents);
     }
@@ -94,7 +94,8 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         List<MediaIntent> filter = new ArrayList<>();
         for (MediaIntent intent : mediaIntents) {
             if (TextUtils.isEmpty(intent.getPermission())
-                    || !preferences.shouldINeverEverAskForThatPermissionAgain(intent.getPermission())) {
+                    || !preferences.shouldINeverEverAskForThatPermissionAgain(intent.getPermission())
+                    || intent.isAvailable()) {
                 filter.add(intent);
             }
         }

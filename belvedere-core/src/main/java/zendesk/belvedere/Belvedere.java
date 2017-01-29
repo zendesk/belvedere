@@ -113,10 +113,10 @@ public class Belvedere implements InstanceBuilder {
      * @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
      * @param resultCode  The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
      * @param data        The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param callback    {@link Callback} that will deliver a list of {@link BelvedereResult}
+     * @param callback    {@link Callback} that will deliver a list of {@link MediaResult}
      */
     public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data,
-                                             @NonNull Callback<List<BelvedereResult>> callback) {
+                                             @NonNull Callback<List<MediaResult>> callback) {
         mediaSource.getFilesFromActivityOnResult(context, requestCode, resultCode, data, callback);
     }
 
@@ -128,24 +128,24 @@ public class Belvedere implements InstanceBuilder {
      * Belvedere doesn't keep track of your files, you have to manage them.
      *
      * @param fileName The file name
-     * @return A {@link BelvedereResult}
+     * @return A {@link MediaResult}
      */
     @Nullable
-    public BelvedereResult getFile(@NonNull String fileName) {
+    public MediaResult getFile(@NonNull String fileName) {
         final File file = storage.getTempFileForRequestAttachment(context, fileName);
         log.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
 
         final Uri uri;
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
-            return new BelvedereResult(file, uri);
+            return new MediaResult(file, uri);
         }
 
         return null;
     }
 
-    public void resolveUris(@NonNull List<Uri> uris, @NonNull Callback<List<BelvedereResult>> callback) {
-        new BelvedereResolveUriTask(context, log, storage, callback)
+    public void resolveUris(@NonNull List<Uri> uris, @NonNull Callback<List<MediaResult>> callback) {
+        new ResolveUriTask(context, log, storage, callback)
                 .execute(uris.toArray(new Uri[uris.size()]));
     }
 

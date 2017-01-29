@@ -31,7 +31,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import zendesk.belvedere.Belvedere;
-import zendesk.belvedere.BelvedereResult;
+import zendesk.belvedere.MediaResult;
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.Callback;
 import zendesk.belvedere.MediaIntent;
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String BELVEDERE_IMG_URL = "https://upload.wikimedia.org/wikipedia/commons/f/f8/Belvedere-wien.jpg";
     private static final String BELVEDERE_FILE_NAME = "belvedere.jpg";
 
-    private Callback<List<BelvedereResult>> belvedereResult;
+    private Callback<List<MediaResult>> belvedereResult;
 
     @BindView(R.id.sample_belvedere_multiple)
     SwitchCompat switchMultiple;
@@ -87,8 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 BelvedereUi.startImageStream(MainActivity.this, getMediaIntents());
             }
         });
-
-
     }
 
     @Override
@@ -154,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initBannerListener(final Bitmap bitmap) {
-        final BelvedereResult file = Belvedere.from(MainActivity.this).getFile(BELVEDERE_FILE_NAME);
+        final MediaResult file = Belvedere.from(MainActivity.this).getFile(BELVEDERE_FILE_NAME);
         if (file == null) {
             return;
         }
@@ -212,10 +210,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void displayImages(List<BelvedereResult> belvedereResults) {
+    private void displayImages(List<MediaResult> belvedereResults) {
         final int imageSize = getResources().getDimensionPixelSize(R.dimen.sample_belvedere_image_size);
 
-        for (final BelvedereResult r : belvedereResults) {
+        for (final MediaResult r : belvedereResults) {
             final ImageView imageView = new ImageView(MainActivity.this);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setLayoutParams(new GridLayout.LayoutParams(new ViewGroup.LayoutParams(imageSize, imageSize)));
@@ -233,9 +231,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Belvedere.from(this)
-                .getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<BelvedereResult>>() {
+                .getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
                     @Override
-                    public void success(List<BelvedereResult> result) {
+                    public void success(List<MediaResult> result) {
                         displayImages(result);
                     }
                 });

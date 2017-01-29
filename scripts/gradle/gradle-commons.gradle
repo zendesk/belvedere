@@ -21,18 +21,6 @@ ext {
     }
 
     /**
-     * Checks if we're building in a test mode, false otherwise
-     * <p>
-     *     Test mode is based on the existence of an environmental variable called zdRunTestSdk
-     * <p>
-     *
-     * @return if we're building in a test mode, false otherwise
-     */
-    buildingInTestMode = {
-        return "$System.env.zdRunTestSdk" != "null"
-    }
-
-    /**
      * Checks if we're building on CI, false otherwise
      *
      * <p>
@@ -44,5 +32,13 @@ ext {
      */
     buildingOnCi = {
         "$System.env.CI" != "null"
+    }
+
+    useLocalDependency = {
+        if("$System.env.LOCAL_BUILD" != "null") {
+            return System.env.LOCAL_BUILD.toBoolean()
+        }
+
+        return rootProject.ext.buildSettings.localBuild
     }
 }

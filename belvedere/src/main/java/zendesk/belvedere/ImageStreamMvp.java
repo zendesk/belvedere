@@ -22,7 +22,7 @@ interface ImageStreamMvp {
 
         MediaIntent getDocumentIntent();
 
-        void dontAskForPermissionAgain(String permission);
+        void neverAskForPermissionAgain(String permission);
 
         boolean canAskForPermission(String permission);
     }

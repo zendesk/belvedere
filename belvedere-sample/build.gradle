@@ -13,8 +13,13 @@ android {
     }
 
     buildTypes {
+
         debug {
             minifyEnabled false
+        }
+
+        travis {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -30,5 +35,9 @@ dependencies {
     compile group: 'com.jakewharton', name: 'butterknife', version: '8.5.1'
     annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.5.1'
 
-    compile project(':belvedere')
+    if (useLocalDependency()) {
+        compile project(':belvedere')
+    } else {
+        compile group: 'com.zendesk', name: 'belvedere', version: rootProject.ext.versionName, changing: true
+    }
 }

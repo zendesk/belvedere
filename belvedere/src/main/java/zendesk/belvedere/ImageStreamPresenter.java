@@ -58,7 +58,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
     @Override
     public void dontAskForPermissionAgain(String permission) {
-        model.dontAskForPermissionAgain(permission);
+        model.neverAskForPermissionAgain(permission);
 
         if (Manifest.permission.READ_EXTERNAL_STORAGE.equals(permission)) {
             presentList();

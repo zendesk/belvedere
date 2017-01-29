@@ -7,6 +7,7 @@ ext {
 apply plugin: 'com.android.library'
 apply from: '../scripts/gradle/zendesk-javadoc.gradle'
 apply from: '../scripts/gradle/zendesk-deploy.gradle'
+apply from: '../scripts/gradle/gradle-commons.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -29,5 +30,9 @@ dependencies {
     compile group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
     compile group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
 
-    compile project(':belvedere-core')
+    if (useLocalDependency()) {
+        compile project(':belvedere-core')
+    } else {
+        compile group: 'com.zendesk', name: 'belvedere-core', version: rootProject.ext.versionName, changing: true
+    }
 }

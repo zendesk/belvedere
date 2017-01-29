@@ -1,0 +1,3 @@
+rootProject.name = 'belvedere'
+rootProject.projectDir = new File(settingsDir, "./../../")
+include ':belvedere'

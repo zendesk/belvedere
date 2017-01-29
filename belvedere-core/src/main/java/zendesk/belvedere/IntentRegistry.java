@@ -9,7 +9,7 @@ class IntentRegistry {
     private final static int START_REQUEST_CODE = 1600;
     private final static int END_REQUEST_CODE = 1700;
 
-    private SparseArray<BelvedereResult> pendingIntents;
+    private SparseArray<MediaResult> pendingIntents;
 
     IntentRegistry() {
         this.pendingIntents = new SparseArray<>();
@@ -19,7 +19,7 @@ class IntentRegistry {
         final int requestCode;
         synchronized (this) {
             requestCode = getRequestCode();
-            pendingIntents.put(requestCode, BelvedereResult.empty());
+            pendingIntents.put(requestCode, MediaResult.empty());
         }
         return requestCode;
     }
@@ -30,15 +30,15 @@ class IntentRegistry {
         }
     }
 
-    void updateRequestCode(int requestCode, BelvedereResult belvedereResult) {
+    void updateRequestCode(int requestCode, MediaResult belvedereResult) {
         synchronized (this) {
             pendingIntents.put(requestCode, belvedereResult);
         }
     }
 
-    BelvedereResult getForRequestCode(int requestCode) {
+    MediaResult getForRequestCode(int requestCode) {
         if(requestCode == PLACE_HOLDER_CODE) {
-            return BelvedereResult.empty();
+            return MediaResult.empty();
         }
 
         synchronized (this) {

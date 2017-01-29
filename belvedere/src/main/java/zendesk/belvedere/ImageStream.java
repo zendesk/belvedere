@@ -49,10 +49,9 @@ public class ImageStream extends AppCompatActivity
         setContentView(R.layout.image_stream);
         bindViews();
 
-        if(savedInstanceState != null) {
+        viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
+        if(savedInstanceState != null && savedInstanceState.getParcelable(VIEW_STATE) != null) {
             viewState = savedInstanceState.getParcelable(VIEW_STATE);
-        } else {
-            viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
         }
 
         PermissionStorage preferences = new PermissionStorage(this);
@@ -84,9 +83,9 @@ public class ImageStream extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<BelvedereResult>>() {
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
             @Override
-            public void success(List<BelvedereResult> result) {
+            public void success(List<MediaResult> result) {
                 finishWithResult(result);
             }
         });
@@ -119,7 +118,9 @@ public class ImageStream extends AppCompatActivity
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(VIEW_STATE, new ImageStreamMvp.ViewState(bottomSheetBehavior.getState()));
+        if(bottomSheetBehavior != null) {
+            outState.putParcelable(VIEW_STATE, new ImageStreamMvp.ViewState(bottomSheetBehavior.getState()));
+        }
     }
 
     @Override
@@ -196,9 +197,9 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void imagesSelected(List<Uri> uris) {
-        Belvedere.from(this).resolveUris(uris, new Callback<List<BelvedereResult>>() {
+        Belvedere.from(this).resolveUris(uris, new Callback<List<MediaResult>>() {
             @Override
-            public void success(List<BelvedereResult> result) {
+            public void success(List<MediaResult> result) {
                 finishWithResult(result);
             }
         });
@@ -222,7 +223,7 @@ public class ImageStream extends AppCompatActivity
         imageList.setHasFixedSize(true);
     }
 
-    private void finishWithResult(List<BelvedereResult> belvedereResults) {
+    private void finishWithResult(List<MediaResult> belvedereResults) {
         final Intent intent = ImageStream.this.getIntent();
         intent.putParcelableArrayListExtra(MediaSource.INTERNAL_RESULT_KEY, new ArrayList<>(belvedereResults));
         setResult(RESULT_OK, intent);
@@ -279,6 +280,8 @@ public class ImageStream extends AppCompatActivity
 
         if(viewState.getBottomSheetState() == BottomSheetBehavior.STATE_EXPANDED) {
             UiUtils.showToolbar(ImageStream.this);
+        } else {
+            UiUtils.hideToolbar(ImageStream.this);
         }
 
         bottomSheetBehavior.setState(viewState.getBottomSheetState());

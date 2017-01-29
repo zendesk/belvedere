@@ -23,17 +23,17 @@ import java.util.Locale;
  * be copied into the private cache of the app.
  * </p>
  */
-class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>> {
+class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
     private final static String LOG_TAG = "BelvedereResolveUriTask";
 
-    private final Callback<List<BelvedereResult>> callback;
+    private final Callback<List<MediaResult>> callback;
     private final Context context;
     private final Logger log;
     private final Storage storage;
 
-    BelvedereResolveUriTask(Context context, Logger logger, Storage storage,
-                            Callback<List<BelvedereResult>> callback) {
+    ResolveUriTask(Context context, Logger logger, Storage storage,
+                   Callback<List<MediaResult>> callback) {
         this.context = context;
         this.log = logger;
         this.storage = storage;
@@ -41,8 +41,8 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
     }
 
     @Override
-    protected List<BelvedereResult> doInBackground(Uri... uris) {
-        final List<BelvedereResult> success = new ArrayList<>();
+    protected List<MediaResult> doInBackground(Uri... uris) {
+        final List<MediaResult> success = new ArrayList<>();
 
         final byte[] buf = new byte[1024 * 1024];
         InputStream inputStream = null;
@@ -62,7 +62,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
                         fileOutputStream.write(buf, 0, len);
                     }
 
-                    success.add(new BelvedereResult(file, storage.getFileProviderUri(context, file)));
+                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file)));
 
                 } else {
                     log.w(
@@ -104,7 +104,7 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
     }
 
     @Override
-    protected void onPostExecute(List<BelvedereResult> resolvedUris) {
+    protected void onPostExecute(List<MediaResult> resolvedUris) {
         super.onPostExecute(resolvedUris);
         if (callback != null) {
             callback.internalSuccess(resolvedUris);

@@ -10,16 +10,16 @@ import java.io.File;
 /**
  * Model object, used to return results.
  */
-public class BelvedereResult implements Parcelable {
+public class MediaResult implements Parcelable {
 
-    static BelvedereResult empty() {
-        return new BelvedereResult(null, null);
+    static MediaResult empty() {
+        return new MediaResult(null, null);
     }
 
     private final File file;
     private final Uri uri;
 
-    BelvedereResult(final File file, final Uri uri) {
+    MediaResult(final File file, final Uri uri) {
         this.file = file;
         this.uri = uri;
     }
@@ -58,21 +58,21 @@ public class BelvedereResult implements Parcelable {
         dest.writeParcelable(uri, flags);
     }
 
-    public static final Parcelable.Creator<BelvedereResult> CREATOR
-            = new Parcelable.Creator<BelvedereResult>() {
-        public BelvedereResult createFromParcel(Parcel in) {
-            return new BelvedereResult(in);
+    public static final Parcelable.Creator<MediaResult> CREATOR
+            = new Parcelable.Creator<MediaResult>() {
+        public MediaResult createFromParcel(Parcel in) {
+            return new MediaResult(in);
         }
 
         @NonNull
-        public BelvedereResult[] newArray(int size) {
-            return new BelvedereResult[size];
+        public MediaResult[] newArray(int size) {
+            return new MediaResult[size];
         }
     };
 
-    private BelvedereResult(Parcel in) {
+    private MediaResult(Parcel in) {
         this.file = (File) in.readSerializable();
-        this.uri = in.readParcelable(BelvedereResult.class.getClassLoader());
+        this.uri = in.readParcelable(MediaResult.class.getClassLoader());
     }
 
 }

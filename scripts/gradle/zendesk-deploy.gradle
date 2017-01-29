@@ -6,8 +6,8 @@ ext {
     sdkArtifactId = project.ext.artifactId
     sdkVersionName = rootProject.ext.versionName
 
-    repoUsername = getConfigurationParameter("zdRepoUsername")
-    repoPassword = getConfigurationParameter("zdRepoPassword")
+    repoUsername = getConfigurationParameter("zendeskOssRepoUsername")
+    repoPassword = getConfigurationParameter("zendeskOssRepoPassword")
 }
 
 uploadArchives.enabled = versionName.endsWith('SNAPSHOT') || "$System.env.BUILD_PRODUCTION" != "null"
@@ -17,12 +17,12 @@ afterEvaluate { project ->
         repositories {
             mavenDeployer {
 
-                snapshotRepository(url: "https://zdrepo.artifactoryonline.com/zdrepo/simple/libs-snapshots-local/") {
-                    authentication(userName: repoUsername, password: repoPassword)
+                snapshotRepository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/oss-snapshots-local/") {
+                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
                 }
 
-                repository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/libs-releases-local/") {
-                    authentication(userName: repoUsername, password: repoPassword)
+                repository(url: "http://zendesk.artifactoryonline.com/zendesk/simple/oss-releases-local/") {
+                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
                 }
 
                 pom.project {

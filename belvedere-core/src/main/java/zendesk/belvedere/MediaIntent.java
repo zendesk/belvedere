@@ -111,9 +111,9 @@ public class MediaIntent implements Parcelable {
         }
 
         public MediaIntent build() {
-            final Pair<MediaIntent, BelvedereResult> cameraIntent = mediaSource.getCameraIntent(requestCode);
+            final Pair<MediaIntent, MediaResult> cameraIntent = mediaSource.getCameraIntent(requestCode);
             final MediaIntent mediaIntent = cameraIntent.first;
-            final BelvedereResult result = cameraIntent.second;
+            final MediaResult result = cameraIntent.second;
 
             if(mediaIntent.isAvailable()){
                 intentRegistry.updateRequestCode(requestCode, result);

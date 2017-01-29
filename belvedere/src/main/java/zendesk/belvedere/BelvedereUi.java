@@ -36,48 +36,44 @@ public class BelvedereUi {
     }
 
     public static void startImageStream(Activity activity, List<MediaIntent> mediaIntent) {
-        if (mediaIntent == null) {
-            return;
-        }
-
         final Intent intent = new Intent(activity, ImageStream.class);
         intent.putExtras(getBundle(mediaIntent));
         activity.startActivityForResult(intent, IntentRegistry.PLACE_HOLDER_CODE);
     }
 
     public static void startImageStream(Activity activity, MediaIntent... mediaIntent) {
-        if (mediaIntent == null || mediaIntent.length == 0) {
-            return;
+        final List<MediaIntent> mediaIntentList;
+        if (mediaIntent != null) {
+            mediaIntentList = Arrays.asList(mediaIntent);
+        } else {
+            mediaIntentList = new ArrayList<>(0);
         }
 
-        startImageStream(activity, Arrays.asList(mediaIntent));
+        startImageStream(activity, mediaIntentList);
     }
 
     public static void startImageStream(Fragment fragment, List<MediaIntent> mediaIntent) {
-        if (mediaIntent == null || mediaIntent.size() == 0) {
-            return;
-        }
-
         final Intent intent = new Intent(fragment.getContext(), ImageStream.class);
         intent.putExtras(getBundle(mediaIntent));
         fragment.startActivityForResult(intent, IntentRegistry.PLACE_HOLDER_CODE);
     }
 
     public static void startImageStream(Fragment fragment, MediaIntent... mediaIntent) {
-        if (mediaIntent == null || mediaIntent.length == 0) {
-            return;
+        final List<MediaIntent> mediaIntentList;
+        if (mediaIntent != null) {
+            mediaIntentList = Arrays.asList(mediaIntent);
+        } else {
+            mediaIntentList = new ArrayList<>(0);
         }
 
-        startImageStream(fragment, mediaIntent);
+        startImageStream(fragment, mediaIntentList);
     }
 
     private static Bundle getBundle(List<MediaIntent> mediaIntent) {
         final ArrayList<MediaIntent> filteredList = new ArrayList<>();
-        if (mediaIntent != null && mediaIntent.size() != 0) {
+        if (mediaIntent != null && mediaIntent.size() > 0) {
             for (MediaIntent intent : mediaIntent) {
-                if (intent.isAvailable()) {
-                    filteredList.add(intent);
-                }
+                filteredList.add(intent);
             }
         }
 

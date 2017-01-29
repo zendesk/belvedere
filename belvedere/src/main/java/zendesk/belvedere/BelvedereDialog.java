@@ -189,7 +189,8 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         List<MediaIntent> filter = new ArrayList<>();
         for (MediaIntent belvedereIntent : intents) {
             if (TextUtils.isEmpty(belvedereIntent.getPermission())
-                    || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())) {
+                    || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())
+                    || belvedereIntent.isAvailable()) {
                 filter.add(belvedereIntent);
             }
         }
