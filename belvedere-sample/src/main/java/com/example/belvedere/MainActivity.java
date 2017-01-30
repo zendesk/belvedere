@@ -31,10 +31,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import zendesk.belvedere.Belvedere;
+import zendesk.belvedere.MediaResult;
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.Callback;
 import zendesk.belvedere.MediaIntent;
-import zendesk.belvedere.MediaResult;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
     CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.sample_belvedere_gridlayout)
     GridLayout gridLayout;
-    @BindView(R.id.sample_belvedere_btn_dialog)
-    Button buttonDialog;
+    @BindView(R.id.sample_belvedere_btn_document)
+    Button documentButton;
+    @BindView(R.id.sample_belvedere_btn_camera)
+    Button cameraButton;
     @BindView(R.id.main_content)
     CoordinatorLayout coordinatorLayout;
 
@@ -72,10 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
         initBanner();
 
-        buttonDialog.setOnClickListener(new View.OnClickListener() {
+        documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 BelvedereUi.showDialog(getSupportFragmentManager(), getMediaIntents());
+            }
+        });
+
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                BelvedereUi.startImageStream(MainActivity.this, getMediaIntents());
             }
         });
     }
