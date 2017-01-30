@@ -57,7 +57,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
     protected List<MediaResult> doInBackground(Uri... uris) {
         final List<MediaResult> success = new ArrayList<>();
 
-        final byte[] buf = new byte[1024 * 1024];
+        final byte[] buf = new byte[1024];
         InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
 
