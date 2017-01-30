@@ -1,0 +1,42 @@
+
+ext {
+    artifactId = 'belvedere-core'
+    javadocTitle = "Belvedere Core - ${rootProject.ext.versionName}"
+    belvedereFileProviderAuthoritySuffix = ".belvedere2.attachments"
+}
+
+apply plugin: 'com.android.library'
+apply from: '../scripts/gradle/zendesk-javadoc.gradle'
+apply from: '../scripts/gradle/zendesk-deploy.gradle'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersionCore
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName rootProject.ext.versionName
+
+        // Replace ${belvedereFileProviderAuthoritySuffix} with the content of project.ext.belvedereFileProviderAuthoritySuffix
+        // in the AndroidManifest
+        manifestPlaceholders = [belvedereFileProviderAuthoritySuffix:project.ext.belvedereFileProviderAuthoritySuffix]
+        // Add project.ext.belvedereFileProviderAuthoritySuffix as a string resource to the SDK
+        resValue "string", "belvedere_sdk_fpa_suffix", project.ext.belvedereFileProviderAuthoritySuffix
+    }
+}
+
+dependencies {
+    compile group: 'com.android.support', name: 'support-fragment', version: rootProject.ext.supportLibVersion
+    compile group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.6.6'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
+
+    androidTestCompile group: 'com.android.support.test', name: 'runner', version: '0.5'
+    androidTestCompile group: 'com.android.support.test', name: 'rules', version: '0.5'
+    androidTestCompile group: 'com.android.support.test.espresso', name: 'espresso-core', version: '2.2.2'
+    androidTestCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+}

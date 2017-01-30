@@ -1,141 +1,38 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply from: '../quality/quality.gradle'
 
-project.ext {
-    belvedereFileProviderAuthoritySuffix = ".belvedere.attachments"
+ext {
+    artifactId = 'belvedere'
+    javadocTitle = "Belvedere - ${rootProject.ext.versionName}"
 }
+
+apply plugin: 'com.android.library'
+apply from: '../scripts/gradle/zendesk-javadoc.gradle'
+apply from: '../scripts/gradle/zendesk-deploy.gradle'
+apply from: '../scripts/gradle/gradle-commons.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion rootProject.ext.minSdkVersionUi
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName rootProject.ext.versionName
 
-        // Replace ${belvedereFileProviderAuthoritySuffix} with the content of project.ext.belvedereFileProviderAuthoritySuffix
-        // in the AndroidManifest
-        manifestPlaceholders = [belvedereFileProviderAuthoritySuffix:project.ext.belvedereFileProviderAuthoritySuffix]
-        // Add project.ext.belvedereFileProviderAuthoritySuffix as a string resource to the SDK
-        resValue "string", "belvedere_sdk_fpa_suffix", project.ext.belvedereFileProviderAuthoritySuffix
-    }
+        consumerProguardFiles 'consumer-proguard.pro'
 
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
-
-    dexOptions {
-        if (buildingOnCi()) {
-            println "Disabling preDexLibraries on CI environment"
-            preDexLibraries = false
-        } else {
-            println "Enabling preDexLibraries on non CI environment"
-            preDexLibraries = true
-        }
-    }
-}
-
-/**
- * Add some dynamic gradle tasks to generate Javadoc. Note that we are excluding R which will result
- * in some warnings but they are less warnings than we'll get if we leave R in.
- */
-android.libraryVariants.all { variant ->
-    task("${variant.name}Javadoc", type: Javadoc) {
-        source = variant.javaCompile.source
-
-        title = "Belvedere - ${rootProject.ext.versionName} API"
-        options.links("http://docs.oracle.com/javase/8/docs/api/");
-        options.linksOffline("http://d.android.com/reference", file("extra/javadoc/android-sdk/reference/").absolutePath);
-        options.encoding = "UTF-8";
-
-        classpath += files(variant.javaCompile.classpath.files)
-        classpath += files(android.getBootClasspath())
-
-        exclude '**/R.java'
-    }
-}
-
-
-uploadArchives {
-
-    repositories {
-        mavenDeployer {
-
-            // Snapshots & releases should be available through the public repo
-            snapshotRepository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/oss-snapshots-local/") {
-                authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
-            }
-
-            repository(url: "http://zendesk.artifactoryonline.com/zendesk/simple/oss-releases-local/") {
-                authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
-            }
-
-            pom.project {
-                groupId 'com.zendesk'
-                artifactId 'belvedere'
-                packaging 'aar'
-                version rootProject.ext.versionName
-                licenses {
-                    license {
-                        name 'Apache License Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0'
-                        distribution 'repo'
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * We only want the upload to be enabled in two cases
- *
- * 1: This is a SNAPSHOT version
- *
- * OR
- *
- * 2: This is non-snapshot and we have explicitly allowed the
- * upload by running ./scripts/build_belvedere.sh
- */
-uploadArchives.enabled = rootProject.ext.versionName.endsWith('SNAPSHOT') || "$System.env.BUILD_PRODUCTION" != "null"
-
-
-/**
- * Add some more dynamic javadoc jar tasks which depend on the dynamic javadoc tasks above. We
- * also add the artifacts to the project which will automatically upload the javadoc jars for us
- * when we invoke :belvedere:uploadArchives.
- */
-android.libraryVariants.all { variant ->
-    task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
-        classifier = 'javadoc'
-        from tasks["${variant.name}Javadoc"].destinationDir
-    }
-
-    // There's no point in building javadoc when we're testing
-    if (!buildingInTestMode() && variant.name == "release") {
-        project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibVersion"
+    compile group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
+    compile group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
+    compile group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.android.support.test:runner:0.4'
-    testCompile 'com.android.support.test:rules:0.4'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-
-    androidTestCompile 'com.android.support.test:runner:0.4'
-    androidTestCompile 'com.android.support.test:rules:0.4'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
-    androidTestCompile 'org.mockito:mockito-core:1.10.19'
+    if (useLocalDependency()) {
+        compile project(':belvedere-core')
+    } else {
+        compile group: 'com.zendesk.belvedere2', name: 'belvedere-core', version: rootProject.ext.versionName, changing: true
+    }
 }

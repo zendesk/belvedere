@@ -13,9 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zendesk.belvedere.BelvedereLogger;
 
 import java.util.Locale;
+
+import zendesk.belvedere.BelvedereLogger;
 
 class SampleLogger implements BelvedereLogger {
 

@@ -1,40 +1,45 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion rootProject.ext.minSdkVersionUi
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "com.example.belvedere"
         versionCode 1
         versionName rootProject.ext.versionName
     }
+
     buildTypes {
-        release {
+
+        debug {
             minifyEnabled false
+        }
+
+        travis {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
-repositories {
-    maven { url 'https://zendesk.artifactoryonline.com/zendesk/repo' }
-}
-
 dependencies {
-    compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibVersion"
-    compile "com.android.support:design:$rootProject.ext.supportLibVersion"
-    compile "com.android.support:cardview-v7:$rootProject.ext.supportLibVersion"
-    compile "com.android.support:gridlayout-v7:$rootProject.ext.supportLibVersion"
-    compile "com.android.support:palette-v7:$rootProject.ext.supportLibVersion"
+    compile group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
+    compile group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
+    compile group: 'com.android.support', name: 'gridlayout-v7', version: rootProject.ext.supportLibVersion
+    compile group: 'com.android.support', name: 'palette-v7', version: rootProject.ext.supportLibVersion
+    compile group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
 
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
-    compile 'com.jakewharton:butterknife:8.0.1'
-    apt 'com.jakewharton:butterknife-compiler:8.0.1'
+    compile group: 'com.jakewharton', name: 'butterknife', version: '8.5.1'
+    annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.5.1'
 
-    // compile project(':belvedere')
-    compile group: 'com.zendesk', name: 'belvedere', version: '1.2.0.1-SNAPSHOT', changing: true
+    if (useLocalDependency()) {
+        compile project(':belvedere')
+    } else {
+        compile group: 'com.zendesk.belvedere2', name: 'belvedere', version: rootProject.ext.versionName, changing: true
+    }
 }

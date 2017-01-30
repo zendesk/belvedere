@@ -30,10 +30,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.zendesk.belvedere.Belvedere;
-import com.zendesk.belvedere.BelvedereCallback;
-import com.zendesk.belvedere.BelvedereResult;
-import com.zendesk.belvedere.BelvedereSource;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,6 +39,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import zendesk.belvedere.Belvedere;
+import zendesk.belvedere.BelvedereCallback;
+import zendesk.belvedere.BelvedereResult;
+import zendesk.belvedere.BelvedereSource;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Layouts -->
+    <public type="layout" name="belvedere_dialog"/>
+    <public type="layout" name="belvedere_dialog_row"/>
+
+    <!-- Styles -->
+    <public type="style" name="BelvedereDialogListView"/>
+    <public type="style" name="BelvedereDialogListRow"/>
+    <public type="style" name="BelvedereListRowIcon"/>
+    <public type="style" name="BelvedereListRowText"/>
+
+    <!-- String -->
+    <public type="string" name="belvedere_dialog_gallery"/>
+    <public type="string" name="belvedere_dialog_camera"/>
+    <public type="string" name="belvedere_dialog_unknown"/>
+
+    <!-- Drawable -->
+    <public type="drawable" name="ic_camera" />
+    <public type="drawable" name="ic_image" />
+
+</resources>
