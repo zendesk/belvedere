@@ -3,7 +3,6 @@ package zendesk.belvedere;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 /**
@@ -18,7 +17,7 @@ class PermissionUtil {
      * @param permissionName Name of the permission
      * @return {@code true} if the permission was granted, {@code false} if not
      */
-    static boolean isPermissionGranted(@NonNull Context context, @NonNull String permissionName) {
+    static boolean isPermissionGranted(Context context, String permissionName) {
         return ContextCompat.checkSelfPermission(context, permissionName) == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -30,7 +29,7 @@ class PermissionUtil {
      * @param permissionName Name of the permission
      * @return {@code true} if permissions is declared, {@code false} if not
      */
-    static boolean hasPermissionInManifest(@NonNull Context context, @NonNull String permissionName) {
+    static boolean hasPermissionInManifest(Context context, String permissionName) {
         final String packageName = context.getPackageName();
         try {
             final PackageInfo packageInfo = context.getPackageManager()

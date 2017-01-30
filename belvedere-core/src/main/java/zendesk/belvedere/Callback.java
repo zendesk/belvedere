@@ -17,11 +17,11 @@ import android.support.v4.app.Fragment;
  *
  * @param <E> The result type.
  */
-public abstract class BelvedereCallback<E> {
+public abstract class Callback<E> {
 
     private boolean canceled = false;
 
-    public BelvedereCallback(){
+    public Callback(){
         // Intentionally empty
     }
 
@@ -37,7 +37,7 @@ public abstract class BelvedereCallback<E> {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    BelvedereCallback.this.success(result);
+                    Callback.this.success(result);
                 }
             });
         }
