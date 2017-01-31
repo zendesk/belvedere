@@ -8,17 +8,12 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +23,7 @@ import java.util.Locale;
  * Internal helper class. Responsible for creating files
  * and handling the {@link BelvedereFileProvider}.
  */
-class BelvedereStorage {
+class Storage {
 
     private final static String LOG_TAG = "BelvedereStorage";
 
@@ -37,24 +32,16 @@ class BelvedereStorage {
     private final static String REQUEST_IMAGE_DIR = "request";
 
     private final static String ATTACHMENT_NAME = "attachment_%s";
-    final static String CAMERA_IMG_PREFIX = "camera_image_";
-    private final static String CAMERA_IMG_NAME = "%s%s";
+    private final static String CAMERA_IMG_NAME = "camera_image_%s";
     private final static String CAMERA_IMG_SUFFIX = ".jpg";
     private final static String CAMERA_DATETIME_STRING_FORMAT = "yyyyMMddHHmmssSSS";
 
-    private BelvedereConfig belvedereConfig;
-    private BelvedereLogger log;
+    private Logger log;
+    private String directoryName;
 
-    @IntDef(flag = true, value = {
-            Intent.FLAG_GRANT_READ_URI_PERMISSION,
-            Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface IntentPermissions{}
-
-    BelvedereStorage(BelvedereConfig belvedereConfig){
-        this.belvedereConfig = belvedereConfig;
-        this.log = belvedereConfig.getBelvedereLogger();
+    Storage(String directoryName, Logger log){
+        this.directoryName = directoryName;
+        this.log = log;
     }
 
     /**
@@ -66,7 +53,7 @@ class BelvedereStorage {
      * @param uri An {@link Uri} to a file, managed by our {@link BelvedereFileProvider}
      * @param permission Permission that should be granted to the Apps, opened by the provided Intent
      */
-    void grantPermissionsForUri(@NonNull Context context, @NonNull Intent intent, @NonNull Uri uri, @IntentPermissions int permission){
+    void grantPermissionsForUri(Context context, Intent intent, Uri uri, int permission){
         List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         for (ResolveInfo resolveInfo : resInfoList) {
             String packageName = resolveInfo.activityInfo.packageName;
@@ -81,7 +68,7 @@ class BelvedereStorage {
      * @param uri An {@link Uri} to a file, managed by our {@link BelvedereFileProvider}
      * @param permission Permissions that should be revoked
      */
-    void revokePermissionsFromUri(@NonNull Context context, @NonNull Uri uri, @IntentPermissions int permission){
+    void revokePermissionsFromUri(Context context, Uri uri, int permission){
         context.revokeUriPermission(uri, permission);
     }
 
@@ -93,8 +80,7 @@ class BelvedereStorage {
      * @param file A {@link File}, accessible through our {@link BelvedereFileProvider}
      * @return The {@link Uri} pointing to the provided File.
      */
-    @Nullable
-    Uri getFileProviderUri(@NonNull Context context, @NonNull File file){
+    Uri getFileProviderUri(Context context, File file){
         final String authority = getFileProviderAuthority(context);
 
         try {
@@ -119,7 +105,7 @@ class BelvedereStorage {
                     "            android:grantUriPermissions=\"true\">\n" +
                     "            <meta-data\n" +
                     "                android:name=\"android.support.FILE_PROVIDER_PATHS\"\n" +
-                    "                android:resource=\"@xml/belvedere_attachment_storage\" />\n" +
+                    "                android:resource=\"@xml/belvedere_attachment_storage_v2\" />\n" +
                     "        </provider>\n" +
                     "=====================",
                     authority);
@@ -127,7 +113,7 @@ class BelvedereStorage {
             Log.e(LOG_TAG, msg, e);
             log.e(LOG_TAG, msg, e);
 
-            return null;
+            throw new RuntimeException("Please specify your application id");
         }
     }
 
@@ -139,8 +125,7 @@ class BelvedereStorage {
      * @param context A valid application {@link Context}
      * @return The authority as a {@link String}
      */
-    @NonNull
-    String getFileProviderAuthority(@NonNull Context context){
+    String getFileProviderAuthority(Context context){
         final String suffix = context.getString(R.string.belvedere_sdk_fpa_suffix);
         return String.format(Locale.US, "%s%s", context.getPackageName(), suffix);
     }
@@ -151,8 +136,7 @@ class BelvedereStorage {
      * @param context A valid application {@link Context}
      * @return The {@link File}
      */
-    @Nullable
-    File getFileForCamera(@NonNull Context context){
+    File getFileForCamera(Context context){
         final File cacheDir = getAttachmentDir(context, CAMERA_IMAGE_DIR);
 
         if(cacheDir == null){
@@ -161,8 +145,7 @@ class BelvedereStorage {
         }
 
         final SimpleDateFormat sdf = new SimpleDateFormat(CAMERA_DATETIME_STRING_FORMAT, Locale.US);
-        final String fileName = String.format(Locale.US, CAMERA_IMG_NAME, belvedereConfig.getCameraImagePrefix(),
-                sdf.format(new Date(System.currentTimeMillis())));
+        final String fileName = String.format(Locale.US, CAMERA_IMG_NAME, sdf.format(new Date(System.currentTimeMillis())));
 
         return createTempFile(fileName, CAMERA_IMG_SUFFIX, cacheDir);
     }
@@ -174,8 +157,7 @@ class BelvedereStorage {
      * @param uri {@link Uri} to the media from the gallery
      * @return The {@link File}
      */
-    @Nullable
-    File getTempFileForGalleryImage(@NonNull Context context, @NonNull Uri uri) {
+    File getTempFileForGalleryImage(Context context, Uri uri) {
         final File cacheDir = getAttachmentDir(context, GALLERY_IMAGE_DIR);
 
         if(cacheDir == null){
@@ -204,7 +186,6 @@ class BelvedereStorage {
      * @param fileName The name of the file.
      * @return The File.
      */
-    @Nullable
     File getTempFileForRequestAttachment(Context context, String fileName) {
         final File cacheDir = getAttachmentDir(context, REQUEST_IMAGE_DIR);
 
@@ -221,15 +202,15 @@ class BelvedereStorage {
      *
      * @param context A valid application {@link Context}.
      */
-    void clearStorage(@NonNull Context context) {
-        final File rootDir = new File(getRootDir(context) + File.separator + belvedereConfig.getDirectoryName());
+    void clearStorage(Context context) {
+        final File rootDir = new File(getRootDir(context) + File.separator + directoryName);
         if(rootDir.isDirectory()){
             clearDirectory(rootDir);
         }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void clearDirectory(@NonNull File fileOrDirectory) {
+    private void clearDirectory(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()){
             for (File child : fileOrDirectory.listFiles()){
                 clearDirectory(child);
@@ -251,8 +232,7 @@ class BelvedereStorage {
      * @param dir The directory, where the {@link File} should live.
      * @return The {@link File}
      */
-    @NonNull
-    private File createTempFile(@NonNull String fileName, @Nullable String suffix, @NonNull File dir){
+    private File createTempFile(String fileName, String suffix, File dir){
         return new File(dir, fileName + (!TextUtils.isEmpty(suffix) ? suffix : ""));
     }
 
@@ -267,8 +247,7 @@ class BelvedereStorage {
      * @return A {@link File} pointing to the directory.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Nullable
-    private File getAttachmentDir(@NonNull Context context, @Nullable String subDirectory){
+    private File getAttachmentDir(Context context, String subDirectory){
 
         final String subDirectoryString;
         if(!TextUtils.isEmpty(subDirectory)){
@@ -277,7 +256,7 @@ class BelvedereStorage {
             subDirectoryString = "";
         }
 
-        final File dir = new File(getRootDir(context) + File.separator + belvedereConfig.getDirectoryName() + File.separator + subDirectoryString);
+        final File dir = new File(getRootDir(context) + File.separator + directoryName + File.separator + subDirectoryString);
 
         if(!dir.isDirectory()){
             dir.mkdirs();
@@ -298,8 +277,7 @@ class BelvedereStorage {
      * @return A {@link File} pointing to the directory, where
      *      the Belvedere cache should live,
      */
-    @NonNull
-    private String getRootDir(@NonNull Context context) {
+    private String getRootDir(Context context) {
         return context.getCacheDir().getAbsolutePath();
     }
 
@@ -317,12 +295,25 @@ class BelvedereStorage {
      * @param uri An {@link Uri}
      * @return The mime type as a {@link String}.
      */
-    @NonNull
-    private String getExtension(@NonNull Context context, @NonNull Uri uri){
-        final ContentResolver cr = context.getContentResolver();
+    private String getExtension(Context context, Uri uri){
         final MimeTypeMap mime = MimeTypeMap.getSingleton();
-        final String ext = mime.getExtensionFromMimeType(cr.getType(uri));
-        return String.format(Locale.US, ".%s", !TextUtils.isEmpty(ext) ? ext : "tmp");
+        final String schema = uri.getScheme();
+        String ext = "tmp";
+
+        if(ContentResolver.SCHEME_CONTENT.equals(schema)) {
+            final ContentResolver cr = context.getContentResolver();
+            ext = mime.getExtensionFromMimeType(cr.getType(uri));
+
+        } else if(ContentResolver.SCHEME_FILE.equals(schema)) {
+            final String fullFileName = uri.getLastPathSegment();
+            final int i = fullFileName.lastIndexOf(".");
+
+            if(i != -1) {
+                ext = fullFileName.substring(i, fullFileName.length());
+            }
+        }
+
+        return String.format(Locale.US, ".%s", ext);
     }
 
     /**
@@ -335,21 +326,29 @@ class BelvedereStorage {
      * @param uri Link to the {@link Uri}
      * @return The name of the {@link File}, or an empty {@link String}
      */
-    @NonNull
-    private String getFileNameFromUri(@NonNull Context context, @NonNull Uri uri){
-        final String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
-        final ContentResolver contentResolver = context.getContentResolver();
-        final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+    private String getFileNameFromUri(Context context, Uri uri){
+        final String schema = uri.getScheme();
         String path = "";
 
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    path = cursor.getString(0);
+        if(ContentResolver.SCHEME_CONTENT.equals(schema)) {
+            final String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+            final ContentResolver contentResolver = context.getContentResolver();
+            final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+
+
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        path = cursor.getString(0);
+                    }
+                } finally {
+                    cursor.close();
                 }
-            } finally {
-                cursor.close();
             }
+
+        } else if(ContentResolver.SCHEME_FILE.equals(schema)) {
+            path = uri.getLastPathSegment();
+
         }
 
         return path;

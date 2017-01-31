@@ -4,8 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.os.Build;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,51 +24,58 @@ import java.util.Locale;
  * be copied into the private cache of the app.
  * </p>
  */
-class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>> {
+class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
     private final static String LOG_TAG = "BelvedereResolveUriTask";
 
-    final BelvedereCallback<List<BelvedereResult>> callback;
-    final Context context;
-    final BelvedereLogger log;
-    final BelvedereStorage belvedereStorage;
+    static void start(Context context, Logger logger, Storage storage,
+                      Callback<List<MediaResult>> callback, List<Uri> uriList){
+        final ResolveUriTask resolveUriTask = new ResolveUriTask(context, logger, storage, callback);
+        final Uri[] uris = uriList.toArray(new Uri[uriList.size()]);
 
-    BelvedereResolveUriTask(
-            @NonNull Context context,
-            @NonNull BelvedereLogger belvedereLogger,
-            @NonNull BelvedereStorage belvedereStorage,
-            @Nullable BelvedereCallback<List<BelvedereResult>> callback) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            resolveUriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, uris);
+        } else {
+            resolveUriTask.execute(uris);
+        }
+    }
+
+    private final Callback<List<MediaResult>> callback;
+    private final Context context;
+    private final Logger log;
+    private final Storage storage;
+
+    private ResolveUriTask(Context context, Logger logger, Storage storage,
+                   Callback<List<MediaResult>> callback) {
         this.context = context;
-        this.log = belvedereLogger;
-        this.belvedereStorage = belvedereStorage;
+        this.log = logger;
+        this.storage = storage;
         this.callback = callback;
     }
 
     @Override
-    protected List<BelvedereResult> doInBackground(@NonNull Uri... uris) {
-        final List<BelvedereResult> success = new ArrayList<>();
+    protected List<MediaResult> doInBackground(Uri... uris) {
+        final List<MediaResult> success = new ArrayList<>();
+
+        final byte[] buf = new byte[1024 * 1024];
+        InputStream inputStream = null;
+        FileOutputStream fileOutputStream = null;
 
         for (Uri uri : uris) {
-
-            InputStream inputStream = null;
-            FileOutputStream fileOutputStream = null;
-
             try {
                 inputStream = context.getContentResolver().openInputStream(uri);
-                final File file = belvedereStorage.getTempFileForGalleryImage(context, uri);
+                final File file = storage.getTempFileForGalleryImage(context, uri);
 
                 if (inputStream != null && file != null) {
                     log.d(LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
-
                     fileOutputStream = new FileOutputStream(file);
 
-                    final byte[] buf = new byte[1024];
                     int len;
                     while ((len = inputStream.read(buf)) > 0) {
                         fileOutputStream.write(buf, 0, len);
                     }
 
-                    success.add(new BelvedereResult(file, belvedereStorage.getFileProviderUri(context, file)));
+                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file)));
 
                 } else {
                     log.w(
@@ -106,11 +112,12 @@ class BelvedereResolveUriTask extends AsyncTask<Uri, Void, List<BelvedereResult>
                 }
             }
         }
+
         return success;
     }
 
     @Override
-    protected void onPostExecute(@NonNull List<BelvedereResult> resolvedUris) {
+    protected void onPostExecute(List<MediaResult> resolvedUris) {
         super.onPostExecute(resolvedUris);
         if (callback != null) {
             callback.internalSuccess(resolvedUris);

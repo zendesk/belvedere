@@ -7,12 +7,12 @@ import android.content.SharedPreferences;
  * Belvedere's own {@link SharedPreferences}. Used to store
  * information about permission handling.
  */
-class BelvedereSharedPreferences {
+class PermissionStorage {
 
     private static final String BELVEDERE_SHARED_PREFERENCES = "belvedere_prefs";
     private final SharedPreferences sharedPreferences;
 
-    BelvedereSharedPreferences(Context context) {
+    PermissionStorage(Context context) {
         sharedPreferences = context.getSharedPreferences(BELVEDERE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 

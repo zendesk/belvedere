@@ -8,7 +8,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/belvedere_attachment_storage" />
+                android:resource="@xml/belvedere_attachment_storage_v2" />
         </provider>
     </application>
 </manifest>

@@ -10,12 +10,16 @@ import java.io.File;
 /**
  * Model object, used to return results.
  */
-public class BelvedereResult implements Parcelable {
+public class MediaResult implements Parcelable {
+
+    static MediaResult empty() {
+        return new MediaResult(null, null);
+    }
 
     private final File file;
     private final Uri uri;
 
-    public BelvedereResult(@NonNull final File file, @NonNull final Uri uri) {
+    MediaResult(final File file, final Uri uri) {
         this.file = file;
         this.uri = uri;
     }
@@ -25,7 +29,6 @@ public class BelvedereResult implements Parcelable {
      *
      * @return The {@link File}
      */
-    @NonNull
     public File getFile() {
         return file;
     }
@@ -40,7 +43,6 @@ public class BelvedereResult implements Parcelable {
      *
      * @return The {@link Uri}
      */
-    @NonNull
     public Uri getUri() {
         return uri;
     }
@@ -51,26 +53,26 @@ public class BelvedereResult implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeSerializable(file);
         dest.writeParcelable(uri, flags);
     }
 
-    public static final Parcelable.Creator<BelvedereResult> CREATOR
-            = new Parcelable.Creator<BelvedereResult>() {
-        public BelvedereResult createFromParcel(@NonNull Parcel in) {
-            return new BelvedereResult(in);
+    public static final Parcelable.Creator<MediaResult> CREATOR
+            = new Parcelable.Creator<MediaResult>() {
+        public MediaResult createFromParcel(Parcel in) {
+            return new MediaResult(in);
         }
 
         @NonNull
-        public BelvedereResult[] newArray(int size) {
-            return new BelvedereResult[size];
+        public MediaResult[] newArray(int size) {
+            return new MediaResult[size];
         }
     };
 
-    private BelvedereResult(Parcel in) {
+    private MediaResult(Parcel in) {
         this.file = (File) in.readSerializable();
-        this.uri = in.readParcelable(BelvedereResult.class.getClassLoader());
+        this.uri = in.readParcelable(MediaResult.class.getClassLoader());
     }
 
 }

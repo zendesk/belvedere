@@ -2,9 +2,7 @@ package com.example.belvedere;
 
 import android.app.Application;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import zendesk.belvedere.Belvedere;
 
 public class Global extends Application {
 
@@ -15,15 +13,9 @@ public class Global extends Application {
     }
 
     private void initImageLoader(){
-        DisplayImageOptions build = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
+        Belvedere belvedere = new Belvedere.Builder(this)
+                .debug(true)
                 .build();
-
-        ImageLoaderConfiguration builder = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .defaultDisplayImageOptions(build)
-                .build();
-
-        ImageLoader.getInstance().init(builder);
+        Belvedere.setSingletonInstance(belvedere);
     }
 }

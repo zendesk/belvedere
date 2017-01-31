@@ -8,10 +8,9 @@ import android.support.annotation.NonNull;
  * Could be used to pipe log messages into the
  * host apps own logger. To do that implement the methods below
  * and register your instance by calling
- * {@link BelvedereConfig.Builder#withCustomLogger(BelvedereLogger)}.
- *
+ * {@link Belvedere.Builder#logger(Logger)}.
  */
-public interface BelvedereLogger {
+public interface Logger {
 
     /**
      * Send a debug log message.
