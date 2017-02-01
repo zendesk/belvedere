@@ -46,11 +46,13 @@ public class ImageStream extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.slide_in, R.anim.no_change);
+
         setContentView(R.layout.activity_image_stream);
         bindViews();
 
         viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
-        if(savedInstanceState != null && savedInstanceState.getParcelable(VIEW_STATE) != null) {
+        if (savedInstanceState != null && savedInstanceState.getParcelable(VIEW_STATE) != null) {
             viewState = savedInstanceState.getParcelable(VIEW_STATE);
         }
 
@@ -69,7 +71,7 @@ public class ImageStream extends AppCompatActivity
                 presenter.permissionGranted(true, permissions[0]);
             } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 boolean showRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]);
-                if(!showRationale) {
+                if (!showRationale) {
                     presenter.dontAskForPermissionAgain(permissions[0]);
                 } else {
                     presenter.permissionGranted(false, permissions[0]);
@@ -115,10 +117,11 @@ public class ImageStream extends AppCompatActivity
 
         }
     }
+
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(bottomSheetBehavior != null) {
+        if (bottomSheetBehavior != null) {
             outState.putParcelable(VIEW_STATE, new ImageStreamMvp.ViewState(bottomSheetBehavior.getState()));
         }
     }
@@ -193,14 +196,14 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void finishIfNothingIsLeft() {
-        if(imageStreamAdapter == null) {
+        if (imageStreamAdapter == null) {
             finishWithoutResult();
         }
     }
 
     @Override
     public void hideCameraOption() {
-        if(imageStreamAdapter != null) {
+        if (imageStreamAdapter != null) {
             imageStreamAdapter.hideCameraOption();
         } else {
             finishWithoutResult();
@@ -290,7 +293,7 @@ public class ImageStream extends AppCompatActivity
             }
         });
 
-        if(viewState.getBottomSheetState() == BottomSheetBehavior.STATE_EXPANDED) {
+        if (viewState.getBottomSheetState() == BottomSheetBehavior.STATE_EXPANDED) {
             UiUtils.showToolbar(ImageStream.this);
         } else {
             UiUtils.hideToolbar(ImageStream.this);

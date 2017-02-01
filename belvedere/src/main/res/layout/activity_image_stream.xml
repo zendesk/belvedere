@@ -11,29 +11,29 @@
         android:layout_height="match_parent"/>
 
     <FrameLayout
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_peekHeight="@dimen/bottom_sheet_height"
-        app:behavior_hideable="true"
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="?actionBarSize"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="@dimen/bottom_sheet_height"
+        app:layout_behavior="@string/bottom_sheet_behavior">
 
         <android.support.v7.widget.RecyclerView
-            android:background="#ffffff"
             android:id="@+id/image_list"
-            android:layout_gravity="bottom"
+            android:background="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:layout_gravity="bottom"
+            android:clipToPadding="false"
             android:paddingBottom="8dp"
             android:paddingEnd="4dp"
             android:paddingStart="4dp"
-            android:clipToPadding="false"/>
+            android:paddingTop="8dp"/>
 
     </FrameLayout>
 
-    <include layout="@layout/image_stream_toolbar" />
+    <include layout="@layout/image_stream_toolbar"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -46,25 +46,14 @@
     <style name="BelvedereListRowText" parent="_BelvedereListRowText" />
 
 
-
-
-
-    <style name="MediaChooserTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:backgroundDimEnabled">true</item>
-    </style>
-
-
-    <style name="BottomSheetTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="MediaChooserTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">true</item>
 
         <item name="colorPrimary">@android:color/white</item>
+        <item name="android:textColorPrimary">#DD000000</item>
     </style>
-
 
 </resources>
