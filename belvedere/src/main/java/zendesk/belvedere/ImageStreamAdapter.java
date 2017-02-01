@@ -114,7 +114,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override
         public void bind(View view) {
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
-            final int itemWith = view.getContext().getResources().getDimensionPixelSize(R.dimen.image_width);
+            final int itemWith = view.getContext().getResources().getDimensionPixelSize(R.dimen.image_stream_image_width);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -135,8 +135,8 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final static int TYPE_CAMERA = 1;
         private final static int TYPE_GALLERY = 2;
 
-        private final static int PIC_CAMERA = R.drawable.ic_camera_black;
-        private final static int PIC_DOCUMENT = R.drawable.ic_image_black;
+        private final static int PIC_CAMERA = R.drawable.belvedere_ic_camera_black;
+        private final static int PIC_DOCUMENT = R.drawable.belvedere_ic_image_black;
 
         private final static int LAYOUT_GRID = R.layout.stream_list_item_square_static;
         private final static int LAYOUT_LIST = R.layout.stream_list_item_static;

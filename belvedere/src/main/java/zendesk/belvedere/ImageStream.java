@@ -246,7 +246,7 @@ public class ImageStream extends AppCompatActivity
     }
 
     private void initToolbar() {
-        toolbar.setNavigationIcon(R.drawable.ic_close);
+        toolbar.setNavigationIcon(R.drawable.belvedere_ic_close);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

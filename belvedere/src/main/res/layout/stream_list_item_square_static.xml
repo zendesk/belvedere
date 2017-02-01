@@ -10,7 +10,7 @@
         android:id="@+id/list_item_static_click_area"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        android:background="@drawable/round_corner"
+        android:background="@drawable/belvedere_round_corner_background"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground">
 
@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_camera_black"/>
+            android:src="@drawable/belvedere_ic_camera_black"/>
 
     </FrameLayout>
 
