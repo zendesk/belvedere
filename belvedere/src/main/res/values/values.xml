@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="belvedere_animation_duration">@android:integer/config_longAnimTime</integer>
+    <integer name="belvedere_animation_duration">250</integer>
 </resources>

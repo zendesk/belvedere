@@ -3,6 +3,7 @@ package zendesk.belvedere;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -46,10 +47,12 @@ public class ImageStream extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        overridePendingTransition(R.anim.slide_in, R.anim.no_change);
 
         setContentView(R.layout.activity_image_stream);
         bindViews();
+
+        UiUtils.dimStatusBar(this);
+        UiUtils.hideToolbar(this);
 
         viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
         if (savedInstanceState != null && savedInstanceState.getParcelable(VIEW_STATE) != null) {
@@ -129,13 +132,19 @@ public class ImageStream extends AppCompatActivity
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.no_change, R.anim.slide_out);
+        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
+                || Build.VERSION.SDK_INT < 23) { //TODO check
+            overridePendingTransition(R.anim.no_change, R.anim.slide_out);
+        }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.no_change, R.anim.slide_out);
+        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
+                || Build.VERSION.SDK_INT < 23) { //TODO check
+            overridePendingTransition(R.anim.no_change, R.anim.slide_out);
+        }
     }
 
     @Override
@@ -158,7 +167,7 @@ public class ImageStream extends AppCompatActivity
     @Override
     public void showImageStream(List<Uri> images, boolean showCamera) {
 
-        int columns = getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 4;
+        int columns = getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
 
         final ImageStreamAdapter adapter = new ImageStreamAdapter(this, images, showCamera);
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
@@ -263,9 +272,6 @@ public class ImageStream extends AppCompatActivity
     }
 
     private void initBottomSheet() {
-        UiUtils.dimStatusBar(this);
-        UiUtils.hideToolbar(this);
-
         bottomSheet.setVisibility(View.VISIBLE);
 
         ViewCompat.setElevation(imageList, getResources().getDimensionPixelSize(R.dimen.bottom_sheet_elevation));
