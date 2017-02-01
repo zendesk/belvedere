@@ -34,14 +34,6 @@
 
     </FrameLayout>
 
-    <android.support.v7.widget.Toolbar
-        android:elevation="4dp"
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:visibility="gone" />
+    <include layout="@layout/image_stream_toolbar" />
 
 </android.support.design.widget.CoordinatorLayout>

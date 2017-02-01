@@ -124,6 +124,18 @@ public class ImageStream extends AppCompatActivity
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.no_change, R.anim.slide_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.no_change, R.anim.slide_out);
+    }
+
+    @Override
     public void initUiComponents() {
         initToolbar();
         initBottomSheet();
@@ -244,7 +256,7 @@ public class ImageStream extends AppCompatActivity
         this.bottomSheet = findViewById(R.id.bottom_sheet);
         this.dismissArea = findViewById(R.id.dismiss_area);
         this.imageList = (RecyclerView) findViewById(R.id.image_list);
-        this.toolbar = (Toolbar) findViewById(R.id.toolbar);
+        this.toolbar = (Toolbar) findViewById(R.id.image_stream_toolbar);
     }
 
     private void initBottomSheet() {

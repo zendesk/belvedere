@@ -33,9 +33,7 @@ class UiUtils {
     static void dimStatusBar(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final int transparent = ContextCompat.getColor(activity, android.R.color.transparent);
-            activity.getWindow()
-                    .setStatusBarColor(transparent);
+            activity.getWindow().setStatusBarColor(transparent);
         }
     }
-
 }
