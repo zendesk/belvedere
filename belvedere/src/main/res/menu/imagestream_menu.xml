@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/image_stream_system_gallery"
-          android:title="System gallery"
+          android:title="@string/belvedere_system_gallery"
           app:showAsAction="never"/>
 </menu>
