@@ -31,6 +31,10 @@ class UiUtils {
         showToolbarContainer(appCompatActivity, true);
     }
 
+    static boolean shouldOverrideActivityAnimation() {
+        return Build.VERSION.SDK_INT < 23; // TODO check
+    }
+
     private static void showToolbarContainer(Activity activity, boolean show) {
         View toolbarContainer = activity.findViewById(R.id.image_stream_toolbar_container);
         if(toolbarContainer != null) {

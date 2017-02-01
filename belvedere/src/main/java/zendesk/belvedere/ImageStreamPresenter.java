@@ -2,8 +2,11 @@ package zendesk.belvedere;
 
 
 import android.Manifest;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+
+import java.util.List;
 
 class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
@@ -87,8 +90,13 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     }
 
     private void presentStream() {
-        view.initUiComponents();
-        view.showImageStream(model.getLatestImages(), model.hasCameraIntent());
+        final List<Uri> latestImages = model.getLatestImages();
+        if(latestImages.size() > 0) {
+            view.initUiComponents();
+            view.showImageStream(latestImages, model.hasCameraIntent());
+        } else {
+            presentList();
+        }
     }
 
     private void presentList() {

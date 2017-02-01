@@ -20,11 +20,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import zendesk.belvedere.ui.R;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static zendesk.belvedere.UiUtils.shouldOverrideActivityAnimation;
 
 public class ImageStream extends AppCompatActivity
         implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
@@ -47,6 +52,10 @@ public class ImageStream extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(shouldOverrideActivityAnimation()) {
+            overridePendingTransition(R.anim.slide_in, R.anim.no_change);
+        }
 
         setContentView(R.layout.activity_image_stream);
         bindViews();
@@ -133,7 +142,7 @@ public class ImageStream extends AppCompatActivity
     public void finish() {
         super.finish();
         if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
-                || Build.VERSION.SDK_INT < 23) { //TODO check
+                || shouldOverrideActivityAnimation()) {
             overridePendingTransition(R.anim.no_change, R.anim.slide_out);
         }
     }
@@ -142,7 +151,7 @@ public class ImageStream extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
-                || Build.VERSION.SDK_INT < 23) { //TODO check
+                || shouldOverrideActivityAnimation()) {
             overridePendingTransition(R.anim.no_change, R.anim.slide_out);
         }
     }
@@ -166,6 +175,9 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void showImageStream(List<Uri> images, boolean showCamera) {
+        final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+        layoutParams.height = MATCH_PARENT;
+        bottomSheet.setLayoutParams(layoutParams);
 
         int columns = getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
 
@@ -180,6 +192,10 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void showList(MediaIntent cameraIntent, MediaIntent documentIntent) {
+        final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+        layoutParams.height = WRAP_CONTENT;
+        bottomSheet.setLayoutParams(layoutParams);
+
         final ImageStreamAdapter adapter = new ImageStreamAdapter(this);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         initRecycler(adapter, linearLayoutManager);

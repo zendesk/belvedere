@@ -13,7 +13,7 @@
     <FrameLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="?actionBarSize"
         android:visibility="gone"
         app:behavior_hideable="true"
@@ -24,13 +24,14 @@
             android:id="@+id/image_list"
             android:background="@android:color/white"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
             android:clipToPadding="false"
             android:paddingBottom="8dp"
             android:paddingEnd="4dp"
             android:paddingStart="4dp"
-            android:paddingTop="8dp"/>
+            android:paddingTop="8dp"
+            />
 
     </FrameLayout>
 
