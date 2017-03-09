@@ -1,6 +1,9 @@
 package zendesk.belvedere;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import java.util.ArrayList;
@@ -30,6 +33,54 @@ public class BelvedereUi {
         }
 
         showDialog(fm, Arrays.asList(mediaIntent));
+    }
+
+    public static void startImageStream(Activity activity) {
+        final Belvedere from = Belvedere.from(activity);
+        final MediaIntent camera = from.camera().build();
+        final MediaIntent document = from.document().allowMultiple(true).contentType("image/*").build();
+        startImageStream(activity, camera, document);
+    }
+
+    public static void startImageStream(Fragment fragment) {
+        final Belvedere from = Belvedere.from(fragment.getContext());
+        final MediaIntent camera = from.camera().build();
+        final MediaIntent document = from.document().allowMultiple(true).contentType("image/*").build();
+        startImageStream(fragment, camera, document);
+    }
+
+    public static void startImageStream(Activity activity, List<MediaIntent> mediaIntent) {
+        final Intent intent = new Intent(activity, ImageStream.class);
+        intent.putExtras(getBundle(mediaIntent));
+        activity.startActivityForResult(intent, IntentRegistry.PLACE_HOLDER_CODE);
+    }
+
+    public static void startImageStream(Activity activity, MediaIntent... mediaIntent) {
+        final List<MediaIntent> mediaIntentList;
+        if (mediaIntent != null) {
+            mediaIntentList = Arrays.asList(mediaIntent);
+        } else {
+            mediaIntentList = new ArrayList<>(0);
+        }
+
+        startImageStream(activity, mediaIntentList);
+    }
+
+    public static void startImageStream(Fragment fragment, List<MediaIntent> mediaIntent) {
+        final Intent intent = new Intent(fragment.getContext(), ImageStream.class);
+        intent.putExtras(getBundle(mediaIntent));
+        fragment.startActivityForResult(intent, IntentRegistry.PLACE_HOLDER_CODE);
+    }
+
+    public static void startImageStream(Fragment fragment, MediaIntent... mediaIntent) {
+        final List<MediaIntent> mediaIntentList;
+        if (mediaIntent != null) {
+            mediaIntentList = Arrays.asList(mediaIntent);
+        } else {
+            mediaIntentList = new ArrayList<>(0);
+        }
+
+        startImageStream(fragment, mediaIntentList);
     }
 
     private static Bundle getBundle(List<MediaIntent> mediaIntent) {

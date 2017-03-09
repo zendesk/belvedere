@@ -2,5 +2,4 @@
 <ListView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/belvedere_dialog_listview"
-    style="@style/BelvedereDialogListView"
-    />
+    style="@style/BelvedereDialogListView"/>

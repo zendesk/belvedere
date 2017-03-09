@@ -32,8 +32,6 @@ dependencies {
     compile group: 'com.android.support', name: 'palette-v7', version: rootProject.ext.supportLibVersion
     compile group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
 
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-
     compile group: 'com.jakewharton', name: 'butterknife', version: '8.5.1'
     annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.5.1'
 

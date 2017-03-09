@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bottom_sheet_height">350dp</dimen>
+    <dimen name="bottom_sheet_elevation">4dp</dimen>
+
+    <dimen name="image_stream_image_width">100dp</dimen>
+
+    <bool name="bottom_sheet_portrait">true</bool>
+</resources>
