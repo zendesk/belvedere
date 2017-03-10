@@ -25,7 +25,6 @@ public class Belvedere implements InstanceBuilder {
     private static Belvedere instance;
 
     private final Context context;
-    private final Logger log;
     private final boolean debug;
     private final String directoryName;
 
@@ -35,15 +34,16 @@ public class Belvedere implements InstanceBuilder {
 
     Belvedere(Builder builder) {
         this.context = builder.context;
-        this.log = builder.logger;
+        builder.logger.setLoggable(true);
+        L.setLogger(builder.logger);
         this.debug = builder.debug;
         this.directoryName = builder.directoryName;
-
         this.intentRegistry = new IntentRegistry();
-        this.storage = new Storage(directoryName, log);
-        this.mediaSource = new MediaSource(context, log, storage, intentRegistry);
+        this.storage = new Storage(directoryName);
+        this.mediaSource = new MediaSource(context, storage, intentRegistry);
 
-        log.d(LOG_TAG, "Belvedere initialized");
+        L.d(LOG_TAG, "Belvedere initialized");
+        L.d(LOG_TAG, "Belvedere initialized");
     }
 
     @NonNull
@@ -146,13 +146,13 @@ public class Belvedere implements InstanceBuilder {
     @Nullable
     public MediaResult getFile(@NonNull String dir, @NonNull String fileName) {
         final File file = storage.getFile(context, dir, fileName);
-        log.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
+        L.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
 
         final Uri uri;
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
             final String mimeType = storage.getMimeTypeForUri(context, uri);
-            return new MediaResult(file, uri, fileName, mimeType);
+            return new MediaResult(file, uri, uri, fileName, mimeType);
         }
 
         return null;
@@ -167,7 +167,7 @@ public class Belvedere implements InstanceBuilder {
      */
     public void resolveUris(@NonNull List<Uri> uris, @NonNull String directory, @NonNull Callback<List<MediaResult>> callback) {
         if(uris != null && uris.size() > 0) {
-            ResolveUriTask.start(context, log, storage, callback, uris, directory);
+            ResolveUriTask.start(context, storage, callback, uris);
         } else {
             callback.internalSuccess(new ArrayList<MediaResult>(0));
         }
@@ -181,7 +181,7 @@ public class Belvedere implements InstanceBuilder {
      * @param uri    An {@link Uri}
      */
     public void grantPermissionsForUri(@NonNull Intent intent, @NonNull Uri uri) {
-        log.d(LOG_TAG, String.format(Locale.US, "Grant Permission - Intent: %s - Uri: %s", intent, uri));
+        L.d(LOG_TAG, String.format(Locale.US, "Grant Permission - Intent: %s - Uri: %s", intent, uri));
         int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
         storage.grantPermissionsForUri(context, intent, uri, permissions);
     }
@@ -193,7 +193,7 @@ public class Belvedere implements InstanceBuilder {
      * @param uri An {@link Uri}
      */
     public void revokePermissionsForUri(@NonNull Uri uri) {
-        log.d(LOG_TAG, String.format(Locale.US, "Revoke Permission - Uri: %s", uri));
+        L.d(LOG_TAG, String.format(Locale.US, "Revoke Permission - Uri: %s", uri));
         int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
         storage.revokePermissionsFromUri(context, uri, permissions);
     }
@@ -202,7 +202,7 @@ public class Belvedere implements InstanceBuilder {
      * Clear the internal Belvedere cache.
      */
     public void clearStorage() {
-        log.d(LOG_TAG, "Clear Belvedere cache");
+        L.d(LOG_TAG, "Clear Belvedere cache");
         storage.clearStorage(context);
     }
 }

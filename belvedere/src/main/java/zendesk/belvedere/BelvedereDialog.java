@@ -185,7 +185,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     }
 
     private List<MediaIntent> getMediaIntents() {
-        List<MediaIntent> intents = BelvedereUi.getMediaIntents(getArguments());
+        List<MediaIntent> intents = BelvedereUi.getUiConfig(getArguments()).getIntents();
         List<MediaIntent> filter = new ArrayList<>();
         for (MediaIntent belvedereIntent : intents) {
             if (TextUtils.isEmpty(belvedereIntent.getPermission())

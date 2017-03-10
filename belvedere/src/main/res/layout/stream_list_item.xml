@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="4dp">
+    android:padding="@dimen/image_stream_image_padding">
+
 
     <ImageView
         android:id="@+id/list_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="200dp"
         android:adjustViewBounds="true"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
+        android:scaleType="centerCrop"
+        android:minHeight="200dp"
+        android:layout_gravity="center"
+        />
+
+    <ImageView
+        android:id="@+id/list_item_image_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AAffffff"
+        android:scaleType="center"
+        android:src="@android:drawable/checkbox_on_background"
+        android:visibility="gone"
+        android:layout_gravity="center"
         />
 
 </FrameLayout>

@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -22,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import zendesk.belvedere.ui.R;
@@ -38,6 +41,8 @@ public class ImageStream extends AppCompatActivity
     private static final String VIEW_STATE = "view_state";
 
     private ImageStreamMvp.Presenter presenter;
+    private ImageStreamDataSource dataSource;
+    private ImageStreamMvp.ViewState viewState;
 
     private View bottomSheet, dismissArea;
     private FloatingActionMenu floatingActionMenu;
@@ -47,15 +52,10 @@ public class ImageStream extends AppCompatActivity
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private ImageStreamAdapter imageStreamAdapter;
 
-    private ImageStreamMvp.ViewState viewState;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if(shouldOverrideActivityAnimation()) {
-            overridePendingTransition(R.anim.slide_in, R.anim.no_change);
-        }
+        overridePendingTransition(R.anim.slide_in, R.anim.no_change);
 
         setContentView(R.layout.activity_image_stream);
         bindViews();
@@ -69,10 +69,11 @@ public class ImageStream extends AppCompatActivity
         }
 
         PermissionStorage preferences = new PermissionStorage(this);
-        final List<MediaIntent> mediaIntents = BelvedereUi.getMediaIntents(getIntent().getExtras());
-        final ImageStreamMvp.Model model = new ImageStreamModel(this, mediaIntents, preferences);
+        final BelvedereUi.UiConfig startConfig = BelvedereUi.getUiConfig(getIntent().getExtras());
+        final ImageStreamMvp.Model model = new ImageStreamModel(this, startConfig, preferences);
+        this.dataSource = new ImageStreamDataSource();
 
-        presenter = new ImageStreamPresenter(model, this);
+        presenter = new ImageStreamPresenter(model, this, dataSource);
         presenter.init();
     }
 
@@ -141,19 +142,13 @@ public class ImageStream extends AppCompatActivity
     @Override
     public void finish() {
         super.finish();
-        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
-                || shouldOverrideActivityAnimation()) {
-            overridePendingTransition(R.anim.no_change, R.anim.slide_out);
-        }
+        overridePendingTransition(R.anim.no_change, R.anim.slide_out);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
-                || shouldOverrideActivityAnimation()) {
-            overridePendingTransition(R.anim.no_change, R.anim.slide_out);
-        }
+        overridePendingTransition(R.anim.no_change, R.anim.slide_out);
     }
 
     @Override
@@ -174,19 +169,32 @@ public class ImageStream extends AppCompatActivity
     }
 
     @Override
-    public void showImageStream(List<Uri> images, boolean showCamera) {
+    public void showImageStream(List<Uri> images, List<MediaResult> selectedImages, boolean showCamera) {
         final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = MATCH_PARENT;
         bottomSheet.setLayoutParams(layoutParams);
 
         int columns = getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
 
-        final ImageStreamAdapter adapter = new ImageStreamAdapter(this, images, showCamera);
+        final ImageStreamAdapter adapter = new ImageStreamAdapter(dataSource);
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
-        // https://code.google.com/p/android/issues/detail?id=230295
-        staggeredGridLayoutManager.setItemPrefetchEnabled(false);
 
+        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, getApplicationContext()));
+
+        final List<Uri> selectedUris = new ArrayList<>();
+        for(MediaResult mediaResult : selectedImages) {
+            selectedUris.add(mediaResult.getOriginalUri());
+        }
+        dataSource.setItemsSelected(selectedUris);
+
+        if(showCamera){
+            dataSource.addStaticItem(ImageStreamItems.forCameraSquare(this));
+        }
+
+        // https://code.google.com/p/android/issues/detail?id=230295
+        //staggeredGridLayoutManager.setItemPrefetchEnabled(false);
+        //staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         initRecycler(adapter, staggeredGridLayoutManager);
     }
 
@@ -196,7 +204,11 @@ public class ImageStream extends AppCompatActivity
         layoutParams.height = WRAP_CONTENT;
         bottomSheet.setLayoutParams(layoutParams);
 
-        final ImageStreamAdapter adapter = new ImageStreamAdapter(this);
+        final ImageStreamAdapter adapter = new ImageStreamAdapter(dataSource);
+
+        dataSource.addStaticItem(ImageStreamItems.forCameraList(this));
+        dataSource.addStaticItem(ImageStreamItems.forDocumentList(this));
+
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         initRecycler(adapter, linearLayoutManager);
     }
@@ -250,7 +262,7 @@ public class ImageStream extends AppCompatActivity
     @Override
     public void hideCameraOption() {
         if (imageStreamAdapter != null) {
-            imageStreamAdapter.hideCameraOption();
+            //imageStreamAdapter.hideCameraOption();
         } else {
             finishWithoutResult();
         }
@@ -260,7 +272,7 @@ public class ImageStream extends AppCompatActivity
     public void imagesSelected(List<Uri> uris) {
         final List<MediaResult> mediaResults = new ArrayList<>(uris.size());
         for(Uri uri : uris) {
-            mediaResults.add(new MediaResult(null, uri, null, null)); // FIXME: temp workaround, this will go away
+            mediaResults.add(new MediaResult(null, uri, null, null, null)); // FIXME: temp workaround, this will go away
         }
         finishWithResult(mediaResults);
     }
@@ -275,12 +287,31 @@ public class ImageStream extends AppCompatActivity
         presenter.openGallery();
     }
 
+    @Override
+    public void update() {
+        imageStreamAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void setSelected(Uri uri) {
+        for(int i = 0, c = dataSource.getItemCount(); i < c; i++) {
+            if(dataSource.getItemForPos(i) instanceof ImageStreamItems.StreamItemImage) {
+                if(((ImageStreamItems.StreamItemImage)dataSource.getItemForPos(i)).getUri().equals(uri)){
+                    imageStreamAdapter.notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
     private void initRecycler(ImageStreamAdapter adapter, RecyclerView.LayoutManager layoutManager) {
         this.imageStreamAdapter = adapter;
-        imageList.setAdapter(adapter);
         imageList.setItemAnimator(null);
-        imageList.setLayoutManager(layoutManager);
         imageList.setHasFixedSize(true);
+        imageList.setItemViewCacheSize(25);
+        imageList.setDrawingCacheEnabled(true);
+        imageList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        imageList.setAdapter(adapter);
+        imageList.setLayoutManager(layoutManager);
     }
 
     private void finishWithResult(List<MediaResult> belvedereResults) {
@@ -351,4 +382,5 @@ public class ImageStream extends AppCompatActivity
         });
         bottomSheet.setClickable(true);
     }
+
 }

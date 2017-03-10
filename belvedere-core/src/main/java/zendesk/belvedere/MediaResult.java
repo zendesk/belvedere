@@ -13,17 +13,19 @@ import java.io.File;
 public class MediaResult implements Parcelable {
 
     static MediaResult empty() {
-        return new MediaResult(null, null, null, null);
+        return new MediaResult(null, null, null, null, null);
     }
 
     private final File file;
     private final Uri uri;
+    private final Uri originalUri;
     private final String name;
     private final String mimeType;
 
-    MediaResult(final File file, final Uri uri, final String name, final String mimeType) {
+    MediaResult(final File file, final Uri uri, final Uri originalUri, final String name, final String mimeType) {
         this.file = file;
         this.uri = uri;
+        this.originalUri = originalUri;
         this.mimeType = mimeType;
         this.name = name;
     }
@@ -51,6 +53,10 @@ public class MediaResult implements Parcelable {
         return uri;
     }
 
+    public Uri getOriginalUri() {
+        return originalUri;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -76,6 +82,7 @@ public class MediaResult implements Parcelable {
         dest.writeParcelable(uri, flags);
         dest.writeString(name);
         dest.writeString(mimeType);
+        dest.writeParcelable(originalUri, flags);
     }
 
     public static final Parcelable.Creator<MediaResult> CREATOR
@@ -95,6 +102,7 @@ public class MediaResult implements Parcelable {
         this.uri = in.readParcelable(MediaResult.class.getClassLoader());
         this.name = in.readString();
         this.mimeType = in.readString();
+        this.originalUri = in.readParcelable(MediaResult.class.getClassLoader());
     }
 
 }

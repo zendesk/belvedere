@@ -13,9 +13,12 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     private final ImageStreamMvp.Model model;
     private final ImageStreamMvp.View view;
 
-    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamMvp.View view) {
+    private final ImageStreamDataSource imageStreamDataSource;
+
+    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamMvp.View view, ImageStreamDataSource imageStreamDataSource) {
         this.model = model;
         this.view = view;
+        this.imageStreamDataSource = imageStreamDataSource;
     }
 
     @Override
@@ -25,10 +28,13 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
         if (isBelowKitkat || hasReadPermission) {
             presentStream();
+
         } else if (model.canAskForPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             view.askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+
         } else {
             presentList();
+
         }
     }
 
@@ -99,9 +105,10 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
     private void presentStream() {
         final List<Uri> latestImages = model.getLatestImages();
+        final List<MediaResult> selectedImages = model.getSelectedImages();
         if(latestImages.size() > 0) {
             view.initUiComponents();
-            view.showImageStream(latestImages, model.hasCameraIntent());
+            view.showImageStream(latestImages, selectedImages, model.hasCameraIntent());
         } else {
             presentList();
         }

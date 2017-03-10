@@ -3,7 +3,7 @@
     <dimen name="bottom_sheet_height">350dp</dimen>
     <dimen name="bottom_sheet_elevation">4dp</dimen>
 
-    <dimen name="image_stream_image_width">100dp</dimen>
+    <dimen name="image_stream_image_width">125dp</dimen>
 
     <dimen name="fam_margin">16dp</dimen>
     <dimen name="fam_item_margin">8dp</dimen>
@@ -11,4 +11,7 @@
     <dimen name="fam_item_size">40dp</dimen>
 
     <bool name="bottom_sheet_portrait">true</bool>
+
+    <dimen name="image_stream_image_padding">4dp</dimen>
+    <dimen name="image_stream_image_padding_selected">16dp</dimen>
 </resources>

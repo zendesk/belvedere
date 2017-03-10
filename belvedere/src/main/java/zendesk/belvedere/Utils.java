@@ -34,7 +34,8 @@ class Utils {
     }
 
     static boolean shouldOverrideActivityAnimation() {
-        return Build.VERSION.SDK_INT < 23; // TODO check
+        return true;
+        //return Build.VERSION.SDK_INT < 23; // TODO check
     }
 
     private static void showToolbarContainer(Activity activity, boolean show) {

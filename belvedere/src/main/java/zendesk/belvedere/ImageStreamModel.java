@@ -18,13 +18,18 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     private final Context context;
     private final PermissionStorage preferences;
 
+    private final BelvedereUi.UiConfig startConfig;
     private List<MediaIntent> mediaIntents;
 
-    ImageStreamModel(Context context, List<MediaIntent> mediaIntents,
+    private final List<MediaResult> selectedImages;
+
+    ImageStreamModel(Context context, BelvedereUi.UiConfig startConfig,
                      PermissionStorage preferences) {
         this.context = context;
         this.preferences = preferences;
-        this.mediaIntents = filterIntents(mediaIntents);
+        this.startConfig = startConfig;
+        this.mediaIntents = filterIntents(startConfig.getIntents());
+        this.selectedImages = startConfig.getSelectedItems();
     }
 
     @Override
@@ -103,6 +108,11 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     @Override
     public boolean canAskForPermission(String permission) {
         return !preferences.shouldINeverEverAskForThatPermissionAgain(permission);
+    }
+
+    @Override
+    public List<MediaResult> getSelectedImages() {
+        return selectedImages;
     }
 
     private List<MediaIntent> filterIntents(List<MediaIntent> mediaIntents) {

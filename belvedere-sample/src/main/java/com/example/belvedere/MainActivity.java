@@ -65,7 +65,11 @@ public class MainActivity extends AppCompatActivity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                BelvedereUi.startImageStream(MainActivity.this, getMediaIntents());
+                BelvedereUi
+                        .imageStream(MainActivity.this)
+                        .withCameraIntent()
+                        .withDocumentIntent("*/*", true)
+                        .show(MainActivity.this);
             }
         });
     }

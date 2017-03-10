@@ -29,6 +29,8 @@ interface ImageStreamMvp {
         void neverAskForPermissionAgain(String permission);
 
         boolean canAskForPermission(String permission);
+
+        List<MediaResult> getSelectedImages();
     }
 
     interface View {
@@ -39,7 +41,7 @@ interface ImageStreamMvp {
 
         void askForPermission(String permission);
 
-        void showImageStream(List<Uri> images, boolean showCamera);
+        void showImageStream(List<Uri> images, List<MediaResult> selectedImages, boolean showCamera);
 
         void showList(MediaIntent cameraIntent, MediaIntent documentIntent);
 

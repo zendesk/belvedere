@@ -35,12 +35,10 @@ class Storage {
     private final static String CAMERA_IMG_SUFFIX = ".jpg";
     private final static String CAMERA_DATETIME_STRING_FORMAT = "yyyyMMddHHmmssSSS";
 
-    private Logger log;
     private String directoryName;
 
-    Storage(String directoryName, Logger log){
+    Storage(String directoryName){
         this.directoryName = directoryName;
-        this.log = log;
     }
 
     /**
@@ -83,10 +81,10 @@ class Storage {
         final String authority = getFileProviderAuthority(context);
 
         try {
-            return FileProvider.getUriForFile(context, authority, file);
+            return BelvedereFileProvider.getUriForFile(context, authority, file);
 
         } catch(IllegalArgumentException e){
-            log.e(LOG_TAG, String.format(Locale.US, "The selected file can't be shared %s", file.toString()));
+            L.e(LOG_TAG, String.format(Locale.US, "The selected file can't be shared %s", file.toString()));
             return null;
 
         } catch(NullPointerException e){
@@ -110,7 +108,7 @@ class Storage {
                     authority);
 
             Log.e(LOG_TAG, msg, e);
-            log.e(LOG_TAG, msg, e);
+            L.e(LOG_TAG, msg, e);
 
             throw new RuntimeException("Please specify your application id");
         }
@@ -139,7 +137,7 @@ class Storage {
         final File cacheDir = getAttachmentDir(context, FILE_DIR_MEDIA);
 
         if(cacheDir == null){
-            log.w(LOG_TAG, "Error creating cache directory");
+            L.w(LOG_TAG, "Error creating cache directory");
             return null;
         }
 
@@ -168,7 +166,7 @@ class Storage {
         final File cacheDir = getAttachmentDir(context, path);
 
         if(cacheDir == null){
-            log.w(LOG_TAG, "Error creating cache directory");
+            L.w(LOG_TAG, "Error creating cache directory");
             return null;
         }
 
@@ -205,7 +203,7 @@ class Storage {
         final File cacheDir = getAttachmentDir(context, path);
 
         if (cacheDir == null) {
-            log.w(LOG_TAG, "Error creating cache directory");
+            L.w(LOG_TAG, "Error creating cache directory");
             return null;
         }
 

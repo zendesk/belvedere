@@ -1,8 +1,11 @@
 package zendesk.belvedere;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -15,6 +18,59 @@ public class BelvedereUi {
     private final static String FRAGMENT_TAG = "BelvedereDialog";
     private final static String EXTRA_MEDIA_INTENT = "extra_intent";
 
+
+    public static ImageStreamBuilder imageStream(Context context) {
+        return new ImageStreamBuilder(context);
+    }
+
+
+    public static class ImageStreamBuilder {
+
+        private final Context context;
+        private List<MediaIntent> mediaIntents = new ArrayList<>();
+        private List<MediaResult> selectedItems = new ArrayList<>();
+
+        private ImageStreamBuilder(Context context){
+            this.context = context;
+        }
+
+        public ImageStreamBuilder withMediaIntents(List<MediaIntent> mediaIntents) {
+            this.mediaIntents = mediaIntents;
+            return this;
+        }
+
+        public ImageStreamBuilder withMediaIntents(MediaIntent... mediaIntents) {
+            this.mediaIntents = Arrays.asList(mediaIntents);
+            return this;
+        }
+
+        public ImageStreamBuilder withCameraIntent() {
+            this.mediaIntents.add(Belvedere.from(context).camera().build());
+            return this;
+        }
+
+        public ImageStreamBuilder withDocumentIntent(String contentType, boolean allowMultiple) {
+            this.mediaIntents.add(Belvedere.from(context).document().allowMultiple(allowMultiple).contentType(contentType).build());
+            return this;
+        }
+
+        public ImageStreamBuilder withSelectedItems(List<MediaResult> mediaResults) {
+            this.selectedItems = mediaResults;
+            return this;
+        }
+
+        public void show(Activity activity) {
+            final Intent imageStreamIntent = getImageStreamIntent(activity, mediaIntents, selectedItems);
+            activity.startActivityForResult(imageStreamIntent, IntentRegistry.PLACE_HOLDER_CODE);
+        }
+
+        public void show(Fragment fragment) {
+            final Intent imageStreamIntent = getImageStreamIntent(fragment.getContext(), mediaIntents, selectedItems);
+            fragment.startActivityForResult(imageStreamIntent, IntentRegistry.PLACE_HOLDER_CODE);
+        }
+
+    }
+
     @Deprecated
     public static void showDialog(FragmentManager fm, List<MediaIntent> mediaIntent) {
         if (mediaIntent == null || mediaIntent.size() == 0) {
@@ -22,7 +78,7 @@ public class BelvedereUi {
         }
 
         final BelvedereDialog dialog = new BelvedereDialog();
-        dialog.setArguments(getBundle(mediaIntent));
+        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>()));
         dialog.show(fm.beginTransaction(), FRAGMENT_TAG);
     }
 
@@ -35,78 +91,94 @@ public class BelvedereUi {
         showDialog(fm, Arrays.asList(mediaIntent));
     }
 
-    public static void startImageStream(Activity activity) {
-        final Belvedere from = Belvedere.from(activity);
-        final MediaIntent camera = from.camera().build();
-        final MediaIntent document = from.document().allowMultiple(true).contentType("*/*").build();
-
-        startImageStream(activity, camera, document);
+    private static Intent getImageStreamIntent(Context context, List<MediaIntent> mediaIntents, List<MediaResult> selectedItems) {
+        final Intent intent = new Intent(context, ImageStream.class);
+        intent.putExtras(getBundle(mediaIntents, selectedItems));
+        return intent;
     }
 
-    public static void startImageStream(Fragment fragment) {
-        final Belvedere from = Belvedere.from(fragment.getContext());
-        final MediaIntent camera = from.camera().build();
-        final MediaIntent document = from.document().allowMultiple(true).contentType("*/*").build();
-        startImageStream(fragment, camera, document);
-    }
+    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems) {
 
-    public static void startImageStream(Activity activity, List<MediaIntent> mediaIntent) {
-        final Intent intent = new Intent(activity, ImageStream.class);
-        intent.putExtras(getBundle(mediaIntent));
-        activity.startActivityForResult(intent, IntentRegistry.PLACE_HOLDER_CODE);
-    }
+        final List<MediaIntent> intents = new ArrayList<>();
+        final List<MediaResult> selected = new ArrayList<>();
 
-    public static void startImageStream(Activity activity, MediaIntent... mediaIntent) {
-        final List<MediaIntent> mediaIntentList;
-        if (mediaIntent != null) {
-            mediaIntentList = Arrays.asList(mediaIntent);
-        } else {
-            mediaIntentList = new ArrayList<>(0);
+        if(mediaIntent != null) {
+            intents.addAll(mediaIntent);
         }
 
-        startImageStream(activity, mediaIntentList);
-    }
-
-    public static void startImageStream(Fragment fragment, List<MediaIntent> mediaIntent) {
-        final Intent intent = new Intent(fragment.getContext(), ImageStream.class);
-        intent.putExtras(getBundle(mediaIntent));
-        fragment.startActivityForResult(intent, IntentRegistry.PLACE_HOLDER_CODE);
-    }
-
-    public static void startImageStream(Fragment fragment, MediaIntent... mediaIntent) {
-        final List<MediaIntent> mediaIntentList;
-        if (mediaIntent != null) {
-            mediaIntentList = Arrays.asList(mediaIntent);
-        } else {
-            mediaIntentList = new ArrayList<>(0);
+        if(selectedItems != null) {
+            selected.addAll(selectedItems);
         }
 
-        startImageStream(fragment, mediaIntentList);
-    }
-
-    private static Bundle getBundle(List<MediaIntent> mediaIntent) {
-        final ArrayList<MediaIntent> filteredList = new ArrayList<>();
-        if (mediaIntent != null && mediaIntent.size() > 0) {
-            for (MediaIntent intent : mediaIntent) {
-                filteredList.add(intent);
-            }
-        }
-
+        final UiConfig uiConfig = new UiConfig(intents, selected);
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(EXTRA_MEDIA_INTENT, filteredList);
+        bundle.putParcelable(EXTRA_MEDIA_INTENT, uiConfig);
 
         return bundle;
     }
 
-    static List<MediaIntent> getMediaIntents(Bundle bundle) {
-        List<MediaIntent> intents = bundle.getParcelableArrayList(EXTRA_MEDIA_INTENT);
+    static UiConfig getUiConfig(Bundle bundle) {
+        UiConfig config = bundle.getParcelable(EXTRA_MEDIA_INTENT);
 
-        if (intents == null || intents.size() == 0) {
-            return new ArrayList<>();
+        if (config == null) {
+            return new UiConfig();
         }
 
-        return intents;
+        return config;
+    }
 
+
+    public static class UiConfig implements Parcelable {
+
+        private final List<MediaIntent> intents;
+        private final List<MediaResult> selectedItems;
+
+        public UiConfig() {
+            this.intents = new ArrayList<>();
+            this.selectedItems = new ArrayList<>();
+        }
+
+        public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems) {
+            this.intents = intents;
+            this.selectedItems = selectedItems;
+        }
+
+
+        protected UiConfig(Parcel in) {
+            intents = in.createTypedArrayList(MediaIntent.CREATOR);
+            selectedItems = in.createTypedArrayList(MediaResult.CREATOR);
+        }
+
+        public List<MediaIntent> getIntents() {
+            return intents;
+        }
+
+        public List<MediaResult> getSelectedItems() {
+            return selectedItems;
+        }
+
+        public static final Creator<UiConfig> CREATOR = new Creator<UiConfig>() {
+            @Override
+            public UiConfig createFromParcel(Parcel in) {
+                return new UiConfig(in);
+            }
+
+            @Override
+            public UiConfig[] newArray(int size) {
+                return new UiConfig[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeTypedList(intents);
+            dest.writeTypedList(selectedItems);
+        }
     }
 
 }

@@ -16,7 +16,7 @@ interface InstanceBuilder {
         public Builder(Context context) {
             this.context = context;
             this.logger = new DefaultLogger();
-            this.debug = false;
+            this.debug = true;
             this.directoryName = "belvedere-data-v2";
         }
 
