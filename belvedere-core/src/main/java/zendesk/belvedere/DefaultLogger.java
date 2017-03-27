@@ -11,7 +11,7 @@ import android.util.Log;
  */
 class DefaultLogger implements Logger {
 
-    private boolean loggable = false;
+    private boolean loggable = true;
 
     @Override
     public void d(final String tag, final String msg) {

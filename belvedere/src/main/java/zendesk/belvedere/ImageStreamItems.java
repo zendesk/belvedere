@@ -165,7 +165,8 @@ class ImageStreamItems {
                 doSizingStuff(imageView, container, h, w);
             }
 
-            Picasso.with(imageView.getContext()).cancelRequest(imageView);
+            Picasso.with(imageView.getContext())
+                    .cancelRequest(imageView);
             Picasso.with(imageView.getContext())
                     .load(uri)
                     .resize(itemWidth, 0)
@@ -174,7 +175,7 @@ class ImageStreamItems {
 
         }
 
-        class Bla implements ViewTreeObserver.OnGlobalLayoutListener, View.OnLayoutChangeListener{
+        class Bla implements View.OnLayoutChangeListener{
 
             WeakReference<ImageView> imageView;
             WeakReference<View> container;
@@ -185,8 +186,7 @@ class ImageStreamItems {
                 L.d(LOG_TAG, getUri() + " " + this);
             }
 
-            @Override
-            public void onGlobalLayout() {
+            void onGlobalLayout() {
                 ImageView imageView = this.imageView.get();
 
                 if(imageView != null && imageView.getTag().equals(getUri().toString())) {

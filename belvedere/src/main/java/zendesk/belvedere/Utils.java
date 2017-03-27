@@ -33,6 +33,17 @@ class Utils {
         showToolbarContainer(appCompatActivity, true);
     }
 
+    static void showToolbar(View view, boolean show) {
+        final View toolbar = view.findViewById(R.id.image_stream_toolbar);
+        toolbar.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        View toolbarContainer = view.findViewById(R.id.image_stream_toolbar_container);
+        if(toolbarContainer != null) {
+            toolbarContainer.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+
+    }
+
     static boolean shouldOverrideActivityAnimation() {
         return true;
         //return Build.VERSION.SDK_INT < 23; // TODO check

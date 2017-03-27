@@ -8,6 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,9 @@ public class BelvedereUi {
         return new ImageStreamBuilder(context);
     }
 
+    public static KeyboardHelper install(Activity activity) {
+        return KeyboardHelper.inject(activity);
+    }
 
     public static class ImageStreamBuilder {
 
@@ -67,6 +71,11 @@ public class BelvedereUi {
         public void show(Fragment fragment) {
             final Intent imageStreamIntent = getImageStreamIntent(fragment.getContext(), mediaIntents, selectedItems);
             fragment.startActivityForResult(imageStreamIntent, IntentRegistry.PLACE_HOLDER_CODE);
+        }
+
+        public ImageStreamPopup showPopup(final Activity activity, ImageStreamPopup.Listener listener) {
+            final KeyboardHelper inject = KeyboardHelper.inject(activity);
+            return ImageStreamPopup.show(activity, (ViewGroup) activity.getWindow().getDecorView(), inject.getKeyboardHeight(), listener, new UiConfig(mediaIntents, selectedItems));
         }
 
     }

@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -23,15 +22,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import zendesk.belvedere.ui.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static zendesk.belvedere.Utils.shouldOverrideActivityAnimation;
 
 public class ImageStream extends AppCompatActivity
         implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
@@ -288,7 +284,7 @@ public class ImageStream extends AppCompatActivity
     }
 
     @Override
-    public void update() {
+    public void updateList() {
         imageStreamAdapter.notifyDataSetChanged();
     }
 

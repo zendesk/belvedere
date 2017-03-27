@@ -17,6 +17,7 @@
         android:scaleType="centerCrop"
         android:minHeight="200dp"
         android:layout_gravity="center"
+        android:background="#ff0000"
         />
 
     <ImageView
