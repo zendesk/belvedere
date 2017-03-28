@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
         documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                BelvedereUi.showDialog(getSupportFragmentManager(), getMediaIntents());
+                BelvedereUi
+                        .showDialog(getSupportFragmentManager(), getMediaIntents());
             }
         });
 

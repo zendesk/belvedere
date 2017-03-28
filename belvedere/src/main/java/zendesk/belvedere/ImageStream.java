@@ -2,6 +2,7 @@ package zendesk.belvedere;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -176,7 +178,12 @@ public class ImageStream extends AppCompatActivity
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
 
-        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, getApplicationContext()));
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final int itemWidth = size.x / columns;
+
+        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, getApplicationContext(), itemWidth));
 
         final List<Uri> selectedUris = new ArrayList<>();
         for(MediaResult mediaResult : selectedImages) {

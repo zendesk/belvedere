@@ -1,8 +1,10 @@
 package zendesk.belvedere;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -12,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,7 +108,14 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
 
-        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext()));
+
+        final Activity context = (Activity) getContentView().getContext();
+        Display display = context.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final int width = size.x / columns;
+
+        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext(), width));
 
         final List<Uri> selectedUris = new ArrayList<>();
         for(MediaResult mediaResult : selectedImages) {
@@ -147,12 +157,12 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     @Override
     public void finishWithoutResult() {
-
+        dismiss();
     }
 
     @Override
     public void finishIfNothingIsLeft() {
-
+        dismiss();
     }
 
     @Override

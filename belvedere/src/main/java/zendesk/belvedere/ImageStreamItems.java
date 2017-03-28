@@ -7,7 +7,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,10 +34,11 @@ class ImageStreamItems {
     private final static int TEXT_CAMERA = R.string.belvedere_dialog_camera;
     private final static int TEXT_DOCUMENT = R.string.belvedere_dialog_gallery;
 
-    static List<StreamItemImage> fromUris(List<Uri> uris, ImageStreamAdapter.Delegate delegate, Context context) {
+    static List<StreamItemImage> fromUris(List<Uri> uris, ImageStreamAdapter.Delegate delegate, Context context, int itemWidth) {
         List<StreamItemImage> items = new ArrayList<>(uris.size());
+
         for(Uri uri : uris) {
-            items.add(new StreamItemImage(delegate, uri, context));
+            items.add(new StreamItemImage(delegate, uri, context, itemWidth));
         }
         return items;
     }
@@ -114,14 +114,14 @@ class ImageStreamItems {
         private final int padding;
         private final int paddingSelectedHorizontal;
 
-        StreamItemImage(ImageStreamAdapter.Delegate delegate, Uri uri, Context context) {
+        StreamItemImage(ImageStreamAdapter.Delegate delegate, Uri uri, Context context, int itemWidth) {
             super(R.layout.stream_list_item);
             this.delegate = delegate;
             this.uri = uri;
 
             this.padding = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding);
             this.paddingSelectedHorizontal = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding_selected);
-            this.itemWidth = context.getResources().getDimensionPixelSize(R.dimen.image_stream_image_width);
+            this.itemWidth = itemWidth;
         }
 
         @Override

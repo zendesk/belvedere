@@ -17,13 +17,15 @@ afterEvaluate { project ->
         repositories {
             mavenDeployer {
 
-                snapshotRepository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/oss-snapshots-local/") {
-                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
-                }
+//                snapshotRepository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/oss-snapshots-local/") {
+//                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
+//                }
+//
+//                repository(url: "http://zendesk.artifactoryonline.com/zendesk/simple/oss-releases-local/") {
+//                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
+//                }
 
-                repository(url: "http://zendesk.artifactoryonline.com/zendesk/simple/oss-releases-local/") {
-                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
-                }
+                repository(url: "file:///tmp/repo")
 
                 pom.project {
                     groupId sdkGroupId

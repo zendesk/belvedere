@@ -11,6 +11,10 @@ allprojects {
         jcenter()
 
         maven {
+            url 'file:///tmp/repo'
+        }
+
+        maven {
             url 'https://zendesk.artifactoryonline.com/zendesk/repo'
         }
 
@@ -22,5 +26,7 @@ allprojects {
 
             url 'https://zdrepo.artifactoryonline.com/zdrepo/repo/'
         }
+
+
     }
 }
