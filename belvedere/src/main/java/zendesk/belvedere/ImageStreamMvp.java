@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.List;
+import java.util.Map;
 
 interface ImageStreamMvp {
 
@@ -65,15 +66,20 @@ interface ImageStreamMvp {
 
         void initMenu();
 
-        void permissionGranted(boolean granted, String permission);
-
-        void dontAskForPermissionAgain(String permission);
-
         void openCamera();
 
         void openGallery();
 
         void openGooglePhotos();
+    }
+
+
+    interface PermissionListener {
+
+        void permissionResult(Map<String, Boolean> permissionResult, List<String> dontAskAgain);
+
+//        void permissionGranted(boolean granted, String permission);
+//        void dontAskForPermissionAgain(String permission);
     }
 
     class ViewState implements Parcelable {

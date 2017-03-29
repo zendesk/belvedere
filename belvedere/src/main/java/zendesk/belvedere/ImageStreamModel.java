@@ -23,7 +23,8 @@ class ImageStreamModel implements ImageStreamMvp.Model {
 
     private final List<MediaResult> selectedImages;
 
-    ImageStreamModel(Context context, BelvedereUi.UiConfig startConfig,
+    ImageStreamModel(Context context,
+                     BelvedereUi.UiConfig startConfig,
                      PermissionStorage preferences) {
         this.context = context;
         this.preferences = preferences;

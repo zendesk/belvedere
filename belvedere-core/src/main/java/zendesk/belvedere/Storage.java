@@ -89,7 +89,7 @@ class Storage {
 
         } catch(NullPointerException e){
 
-            final String msg = String.format(Locale.US,
+            final String msg = String.format(Locale.US, //FIXME
                     "=====================\n" +
                     "FileProvider failed to retrieve file uri. There might be an issue with the FileProvider \n" +
                     "Please make sure that manifest-merger is working, and that you have defined the applicationId (package name) in the build.gradle\n" +

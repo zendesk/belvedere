@@ -2,6 +2,7 @@ package zendesk.belvedere;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -9,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 
 import java.lang.reflect.Field;
@@ -35,12 +39,24 @@ public class KeyboardHelper extends FrameLayout {
     private int viewInset = -1;
     private int keyboardHeight = -1;
     private boolean isKeyboardVisible = false;
+
     private Listener keyboardListener;
+    private SizeListener keyboardSizeListener;
+
+    public EditText inputTrap;
 
     private KeyboardHelper(@NonNull Activity activity) {
         super(activity);
         this.statusBarHeight = getStatusBarHeight();
         setLayoutParams(new ViewGroup.LayoutParams(0, 0));
+
+        inputTrap = new EditText(activity);
+        inputTrap.setFocusable(true);
+        inputTrap.setFocusableInTouchMode(true);
+        inputTrap.setVisibility(View.VISIBLE);
+        inputTrap.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+
+        addView(inputTrap);
 
         final View rootView = activity.getWindow().getDecorView().findViewById(Window.ID_ANDROID_CONTENT);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new KeyboardTreeObserver(activity));
@@ -91,6 +107,14 @@ public class KeyboardHelper extends FrameLayout {
         return 0;
     }
 
+    public void hideKeyboard() {
+        final View view = ((Activity) getContext()).getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
     public int getKeyboardHeight() {
         return keyboardHeight;
     }
@@ -101,6 +125,10 @@ public class KeyboardHelper extends FrameLayout {
 
     public void setListener(Listener keyboardListener) {
         this.keyboardListener = keyboardListener;
+    }
+
+    void setKeyboardHeightListener(SizeListener sizeListener) {
+        this.keyboardSizeListener = sizeListener;
     }
 
     private class KeyboardTreeObserver implements ViewTreeObserver.OnGlobalLayoutListener {
@@ -118,6 +146,10 @@ public class KeyboardHelper extends FrameLayout {
 
             if(keyboardHeight > 0 && KeyboardHelper.this.keyboardHeight != keyboardHeight) {
                 KeyboardHelper.this.keyboardHeight = keyboardHeight;
+
+                if(keyboardSizeListener != null) {
+                    keyboardSizeListener.onSizeChanged(keyboardHeight);
+                }
             }
 
             if(keyboardListener != null && keyboardHeight > 0) {
@@ -128,6 +160,10 @@ public class KeyboardHelper extends FrameLayout {
 
     public interface Listener {
         void onKeyboardVisible();
+    }
+
+    interface SizeListener {
+        void onSizeChanged(int keyboardHeight);
     }
 
 }

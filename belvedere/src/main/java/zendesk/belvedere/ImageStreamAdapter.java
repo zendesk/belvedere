@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ImageStreamDataSource imageStreamDataSource;
@@ -43,19 +41,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return imageStreamDataSource.getItemCount();
     }
 
-//    void hideCameraOption() {
-//        List<Item> list = new ArrayList<>();
-//        for(Item item : items) {
-//            if (!(item instanceof StaticItem) || ((StaticItem)item).getType() != StaticItem.TYPE_CAMERA) {
-//                list.add(item);
-//            }
-//        }
-//        this.items = list;
-//        notifyDataSetChanged();
-//    }
-
     interface Delegate {
-        void imagesSelected(List<Uri> uris);
         void openCamera();
         void openGallery();
         void updateList();

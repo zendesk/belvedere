@@ -167,6 +167,7 @@ class ImageStreamItems {
 
             Picasso.with(imageView.getContext())
                     .cancelRequest(imageView);
+
             Picasso.with(imageView.getContext())
                     .load(uri)
                     .resize(itemWidth, 0)
@@ -225,6 +226,7 @@ class ImageStreamItems {
         void doSizingStuff(ImageView imageView, View container, int h, int w) {
             final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
             final int paddingSelectedVertical = calculateSelectedPadding(h, w, paddingSelectedHorizontal);
+
             if(isSelected()) {
                 layoutParams.width = w - 2 * (paddingSelectedHorizontal - padding);
                 layoutParams.height = h - 2 * (paddingSelectedVertical - padding);

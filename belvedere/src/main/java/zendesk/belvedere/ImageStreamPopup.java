@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 
 import java.util.ArrayList;
@@ -34,18 +36,21 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     public interface Listener {
         void onDismissed();
+        void onImageSelected(List<MediaResult> mediaResults);
     }
 
-    static ImageStreamPopup show(Context context, ViewGroup parent, int keyboardHeight, Listener listener, BelvedereUi.UiConfig config) {
-        final View v = LayoutInflater.from(context).inflate(R.layout.activity_image_stream, parent, false);
+    static ImageStreamPopup show(Context context, ViewGroup parent, PopupBackend popupBackend, BelvedereUi.UiConfig config) {
 
-        final ImageStreamPopup attachmentPicker = new ImageStreamPopup(v, keyboardHeight, listener, config);
+        final View v = LayoutInflater.from(context).inflate(R.layout.activity_image_stream, parent, false);
+        final ImageStreamPopup attachmentPicker = new ImageStreamPopup(v, popupBackend, config);
         attachmentPicker.showAtLocation(parent, Gravity.TOP, 0, 0);
 
         return attachmentPicker;
     }
 
-    private final int keyboardHeight;
+    private final PopupBackend popupBackend;
+    private final ImageStreamMvp.Presenter presenter;
+    private final ImageStreamDataSource dataSource;
 
     private View bottomSheet, dismissArea;
     private RecyclerView imageList;
@@ -53,13 +58,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private ImageStreamAdapter imageStreamAdapter;
 
-    private ImageStreamMvp.Presenter presenter;
-    private ImageStreamDataSource dataSource;
-//    private ImageStreamMvp.ViewState viewState;
-
-    private Listener listener;
-
-    ImageStreamPopup(View view, int keyboardHeight, Listener listener, BelvedereUi.UiConfig uiConfig) {
+    ImageStreamPopup(View view, PopupBackend popupBackend, BelvedereUi.UiConfig uiConfig) {
         super(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, false);
         setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         setFocusable(true);
@@ -68,11 +67,8 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         setOutsideTouchable(true);
         bindViews(view);
 
-        this.keyboardHeight = keyboardHeight;
-        this.listener = listener;
-
+        this.popupBackend = popupBackend;
         this.dataSource = new ImageStreamDataSource();
-
         final PermissionStorage preferences = new PermissionStorage(view.getContext());
         final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig, preferences);
 
@@ -83,12 +79,12 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     @Override
     public void initUiComponents() {
         initToolbar();
-        initBottomSheet(keyboardHeight, false);
+        initBottomSheet(false);
     }
 
     @Override
     public boolean isPermissionGranted(String permission) {
-        return true;
+        return false;
     }
 
     @Override
@@ -96,8 +92,22 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     }
 
+    private void showKeyboard(final EditText editText) {
+        editText.post(new Runnable() {
+            @Override
+            public void run() {
+                if(editText.requestFocus()) {
+                    InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+                }
+            }
+        });
+    }
+
     @Override
     public void showImageStream(List<Uri> images, List<MediaResult> selectedImages, boolean showCamera) {
+        showKeyboard(popupBackend.getKeyboardHelper().inputTrap);
+
         final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = MATCH_PARENT;
         bottomSheet.setLayoutParams(layoutParams);
@@ -152,7 +162,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     @Override
     public void openMediaIntent(MediaIntent mediaIntent) {
-
+        mediaIntent.open(popupBackend);
     }
 
     @Override
@@ -167,11 +177,6 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     @Override
     public void hideCameraOption() {
-
-    }
-
-    @Override
-    public void imagesSelected(List<Uri> uris) {
 
     }
 
@@ -200,7 +205,6 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
             }
         }
     }
-
 
     private void bindViews(View view) {
         this.bottomSheet = view.findViewById(R.id.bottom_sheet);
@@ -232,7 +236,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         imageList.setLayoutManager(layoutManager);
     }
 
-    private void initBottomSheet(final int keyboardHeight, boolean withAnimation) {
+    private void initBottomSheet(boolean withAnimation) {
         ViewCompat.setElevation(imageList, bottomSheet.getContext().getResources().getDimensionPixelSize(R.dimen.bottom_sheet_elevation));
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -260,8 +264,19 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
         UiUtils.showToolbar(getContentView(), false);
 
-        bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHeight);
+        final KeyboardHelper keyboardHelper = popupBackend.getKeyboardHelper();
+        bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        keyboardHelper.setKeyboardHeightListener(new KeyboardHelper.SizeListener() {
+            @Override
+            public void onSizeChanged(int keyboardHeight) {
+                if(keyboardHeight != bottomSheetBehavior.getPeekHeight()) {
+                    System.out.println("==== update bottomsheet " + keyboardHeight);
+                    bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
+                }
+            }
+        });
 
         dismissArea.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -300,8 +315,10 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     @Override
     public void dismiss() {
         super.dismiss();
-        if(listener != null) {
-            listener.onDismissed();
+        popupBackend.setImageStreamPopup(null);
+
+        if(popupBackend.getImListener() != null) {
+            popupBackend.getImListener().onDismissed();
         }
     }
 }
