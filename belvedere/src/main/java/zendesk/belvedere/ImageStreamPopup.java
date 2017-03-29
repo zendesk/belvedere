@@ -36,7 +36,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     public interface Listener {
         void onDismissed();
-        void onImageSelected(List<MediaResult> mediaResults);
+        void onImageSelected(List<MediaResult> mediaResults, boolean replace);
     }
 
     static ImageStreamPopup show(Context context, ViewGroup parent, PopupBackend popupBackend, BelvedereUi.UiConfig config) {
@@ -80,16 +80,6 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     public void initUiComponents() {
         initToolbar();
         initBottomSheet(false);
-    }
-
-    @Override
-    public boolean isPermissionGranted(String permission) {
-        return false;
-    }
-
-    @Override
-    public void askForPermission(String permission) {
-
     }
 
     private void showKeyboard(final EditText editText) {
@@ -176,11 +166,6 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     }
 
     @Override
-    public void hideCameraOption() {
-
-    }
-
-    @Override
     public void openCamera() {
         presenter.openCamera();
     }
@@ -191,18 +176,19 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     }
 
     @Override
-    public void updateList() {
-        imageStreamAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void setSelected(Uri uri) {
+    public void setSelected(Uri uri, boolean b) {
         for(int i = 0, c = dataSource.getItemCount(); i < c; i++) {
             if(dataSource.getItemForPos(i) instanceof ImageStreamItems.StreamItemImage) {
                 if(((ImageStreamItems.StreamItemImage)dataSource.getItemForPos(i)).getUri().equals(uri)){
                     imageStreamAdapter.notifyItemChanged(i);
                 }
             }
+        }
+
+        presenter.setItemSelected(uri, b);
+        if(popupBackend.getImListener() != null){
+            final List<MediaResult> selectedItems = presenter.getSelectedItems();
+            popupBackend.getImListener().onImageSelected(selectedItems, true);
         }
     }
 

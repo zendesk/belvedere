@@ -2,7 +2,6 @@ package zendesk.belvedere;
 
 
 import android.net.Uri;
-import android.text.TextUtils;
 
 import java.util.List;
 
@@ -22,19 +21,6 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     @Override
     public void init() {
         presentStream();
-//        final boolean isBelowKitkat = Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
-//        final boolean hasReadPermission = view.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE);
-//
-//        if (isBelowKitkat || hasReadPermission) {
-//            presentStream();
-//
-//        } else if (model.canAskForPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-//            view.askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-//
-//        } else {
-//            presentList();
-//
-//        }
     }
 
     @Override
@@ -46,12 +32,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     @Override
     public void openCamera() {
         if (model.hasCameraIntent()) {
-            final MediaIntent cameraIntent = model.getCameraIntent();
-            if (TextUtils.isEmpty(cameraIntent.getPermission())) {
-                view.openMediaIntent(cameraIntent);
-            } else {
-                view.askForPermission(cameraIntent.getPermission());
-            }
+            view.openMediaIntent(model.getCameraIntent());
         }
     }
 
@@ -67,6 +48,20 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         if (model.hasGooglePhotosIntent()) {
             view.openMediaIntent(model.getGooglePhotosIntent());
         }
+    }
+
+    public void setItemSelected(Uri uri, boolean b) {
+        final MediaResult mediaResult = new MediaResult(null, uri, uri);
+        if(b) {
+            model.addToSelectedItems(mediaResult);
+        } else{
+            model.removeFromSelectedItems(mediaResult);
+        }
+    }
+
+    @Override
+    public List<MediaResult> getSelectedItems() {
+        return model.getSelectedImages();
     }
 
     private void presentStream() {

@@ -1,19 +1,18 @@
 package com.example.belvedere;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.ImageStreamPopup;
-import zendesk.belvedere.MediaIntent;
 import zendesk.belvedere.MediaResult;
 import zendesk.belvedere.PopupBackend;
 
@@ -23,6 +22,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private PopupBackend popupBackend;
     private Listener listener;
+
+    static List<MediaResult> mediaResults = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,12 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onImageSelected(List<MediaResult> mediaResults) {
-            System.out.println("========= " + mediaResults);
+        public void onImageSelected(List<MediaResult> r, boolean replace) {
+            if(replace) {
+                mediaResults.clear();
+            }
+            mediaResults.addAll(new ArrayList<>(r));
+            ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
         }
 
     }
@@ -81,12 +86,7 @@ public class ChatActivity extends AppCompatActivity {
                 .imageStream(ChatActivity.this)
                 .withCameraIntent()
                 .withDocumentIntent("*/*", true)
+                .withSelectedItems(new ArrayList<>(mediaResults))
                 .showPopup(ChatActivity.this);
-    }
-
-    private void showKeyboard(EditText editText) {
-        editText.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
     }
 }

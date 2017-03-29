@@ -142,7 +142,7 @@ class ImageStreamItems {
                 @Override
                 public void onClick(View v) {
                     setSelected(!isSelected());
-                    delegate.setSelected(uri);
+                    delegate.setSelected(uri, isSelected());
                 }
             });
 

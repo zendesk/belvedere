@@ -95,7 +95,7 @@ public class PopupBackend extends Fragment {
             @Override
             public void success(List<MediaResult> result) {
                 if(imageStreamListener.get() != null) {
-                    imageStreamListener.get().onImageSelected(result);
+                    imageStreamListener.get().onImageSelected(result, false);
                 }
             }
         });

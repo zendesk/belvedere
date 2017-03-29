@@ -44,7 +44,6 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface Delegate {
         void openCamera();
         void openGallery();
-        void updateList();
-        void setSelected(Uri uri);
+        void setSelected(Uri uri, boolean selected);
     }
 }

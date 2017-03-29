@@ -116,6 +116,16 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         return selectedImages;
     }
 
+    @Override
+    public void addToSelectedItems(MediaResult mediaResult) {
+        selectedImages.add(mediaResult);
+    }
+
+    @Override
+    public void removeFromSelectedItems(MediaResult mediaResult) {
+        selectedImages.remove(mediaResult);
+    }
+
     private List<MediaIntent> filterIntents(List<MediaIntent> mediaIntents) {
         List<MediaIntent> filter = new ArrayList<>();
         for (MediaIntent intent : mediaIntents) {

@@ -105,4 +105,23 @@ public class MediaResult implements Parcelable {
         this.originalUri = in.readParcelable(MediaResult.class.getClassLoader());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MediaResult that = (MediaResult) o;
+
+        if (file != null ? !file.equals(that.file) : that.file != null) return false;
+        if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
+        return originalUri != null ? originalUri.equals(that.originalUri) : that.originalUri == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = file != null ? file.hashCode() : 0;
+        result = 31 * result + (uri != null ? uri.hashCode() : 0);
+        result = 31 * result + (originalUri != null ? originalUri.hashCode() : 0);
+        return result;
+    }
 }

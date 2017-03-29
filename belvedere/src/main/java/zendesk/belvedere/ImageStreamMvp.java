@@ -32,15 +32,16 @@ interface ImageStreamMvp {
         boolean canAskForPermission(String permission);
 
         List<MediaResult> getSelectedImages();
+
+        void addToSelectedItems(MediaResult mediaResult);
+
+        void removeFromSelectedItems(MediaResult mediaResult);
+
     }
 
     interface View {
 
         void initUiComponents();
-
-        boolean isPermissionGranted(String permission);
-
-        void askForPermission(String permission);
 
         void showImageStream(List<Uri> images, List<MediaResult> selectedImages, boolean showCamera);
 
@@ -56,8 +57,6 @@ interface ImageStreamMvp {
 
         void finishIfNothingIsLeft();
 
-        void hideCameraOption();
-
     }
 
     interface Presenter {
@@ -70,7 +69,13 @@ interface ImageStreamMvp {
 
         void openGallery();
 
+<<<<<<< HEAD
         void openGooglePhotos();
+=======
+        void setItemSelected(Uri uri, boolean b);
+
+        List<MediaResult> getSelectedItems();
+>>>>>>> callback images
     }
 
 
