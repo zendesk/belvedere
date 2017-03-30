@@ -29,7 +29,7 @@ class ImageStreamDataSource {
     }
 
     DiffUtil.DiffResult initializeWithImages(List<ImageStreamItems.StreamItemImage> imageStream) {
-        return updateDataset(staticItems, imageStream);
+        return updateDataSet(staticItems, imageStream);
     }
 
     DiffUtil.DiffResult setItemsSelected(List<Uri> uris) {
@@ -43,14 +43,14 @@ class ImageStreamDataSource {
             }
         }
 
-        return updateDataset(staticItems, streamItemImages);
+        return updateDataSet(staticItems, streamItemImages);
     }
 
     DiffUtil.DiffResult addStaticItem(ImageStreamItems.StaticItem staticItem) {
-        return updateDataset(Collections.singletonList(staticItem), imageStream);
+        return updateDataSet(Collections.singletonList(staticItem), imageStream);
     }
 
-    private synchronized DiffUtil.DiffResult updateDataset(List<ImageStreamItems.StaticItem> newStaticItems,
+    private synchronized DiffUtil.DiffResult updateDataSet(List<ImageStreamItems.StaticItem> newStaticItems,
                                                            List<ImageStreamItems.StreamItemImage> newImageStream) {
         List<ImageStreamItems.Item> newList = new ArrayList<>(newStaticItems.size() + newImageStream.size());
         newList.addAll(newStaticItems);

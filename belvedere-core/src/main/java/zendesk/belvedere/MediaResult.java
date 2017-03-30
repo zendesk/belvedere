@@ -30,6 +30,10 @@ public class MediaResult implements Parcelable {
         this.name = name;
     }
 
+    MediaResult(final Uri uri) {
+        this(null, uri, uri, null, null); // FIXME
+    }
+
     /**
      * Get the resolved {@link File}.
      *

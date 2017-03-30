@@ -104,13 +104,17 @@ public class Belvedere implements InstanceBuilder {
         return shareIntent;
     }
 
+
     /**
      * Parse data from {@link Activity#onActivityResult(int, int, Intent)}.
+     * <p>
+     * It's important that the same instance of Belvedere is used, which
+     * was used to start the dialog or create the {@link MediaIntent}.
      *
-     *  @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param resultCode The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param data The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param callback {@link Callback} that will deliver a list of {@link MediaResult}
+     * @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param resultCode  The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data        The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param callback    {@link Callback} that will deliver a list of {@link MediaResult}
      */
     public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data,
                                              @NonNull Callback<List<MediaResult>> callback) {

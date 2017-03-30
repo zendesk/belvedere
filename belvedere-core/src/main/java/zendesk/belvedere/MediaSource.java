@@ -165,10 +165,12 @@ class MediaSource {
                         L.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
 
                         if(resolveFiles) {
+                            L.d(LOG_TAG, "Resolving items");
                             ResolveUriTask.start(context, storage, callback, uris);
                             return;
 
                         } else {
+                            L.d(LOG_TAG, "Resolving items turned off");
                             for(Uri uri : uris) {
                                 final String mimeType = storage.getMimeTypeForUri(context, uri);
                                 final String fileName = storage.getFileNameFromUri(context, uri);

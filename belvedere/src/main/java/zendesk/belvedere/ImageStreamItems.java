@@ -7,6 +7,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,10 +35,10 @@ class ImageStreamItems {
     private final static int TEXT_CAMERA = R.string.belvedere_dialog_camera;
     private final static int TEXT_DOCUMENT = R.string.belvedere_dialog_gallery;
 
-    static List<StreamItemImage> fromUris(List<Uri> uris, ImageStreamAdapter.Delegate delegate, Context context, int itemWidth) {
+    static List<StreamItemImage> fromUris(List<MediaResult> uris, ImageStreamAdapter.Delegate delegate, Context context, int itemWidth) {
         List<StreamItemImage> items = new ArrayList<>(uris.size());
 
-        for(Uri uri : uris) {
+        for(MediaResult uri : uris) {
             items.add(new StreamItemImage(delegate, uri, context, itemWidth));
         }
         return items;
@@ -105,7 +106,7 @@ class ImageStreamItems {
 
         private static final String LOG_TAG = "StreamItemImage";
 
-        private final Uri uri;
+        private final MediaResult uri;
         private final ImageStreamAdapter.Delegate delegate;
 
         private int h = -1, w = -1;
@@ -114,7 +115,7 @@ class ImageStreamItems {
         private final int padding;
         private final int paddingSelectedHorizontal;
 
-        StreamItemImage(ImageStreamAdapter.Delegate delegate, Uri uri, Context context, int itemWidth) {
+        StreamItemImage(ImageStreamAdapter.Delegate delegate, MediaResult uri, Context context, int itemWidth) {
             super(R.layout.stream_list_item);
             this.delegate = delegate;
             this.uri = uri;
@@ -150,7 +151,7 @@ class ImageStreamItems {
                 @Override
                 public boolean onLongClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(uri);
+                    intent.setData(uri.getUri());
                     container.getContext().startActivity(intent);
                     return true;
                 }
@@ -169,7 +170,7 @@ class ImageStreamItems {
                     .cancelRequest(imageView);
 
             Picasso.with(imageView.getContext())
-                    .load(uri)
+                    .load(uri.getUri())
                     .resize(itemWidth, 0)
                     .onlyScaleDown()
                     .into(imageView);
@@ -223,7 +224,7 @@ class ImageStreamItems {
             }
         }
 
-        void doSizingStuff(ImageView imageView, View container, int h, int w) {
+        void doSizingStuff(final ImageView imageView, final View container, int h, int w) {
             final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
             final int paddingSelectedVertical = calculateSelectedPadding(h, w, paddingSelectedHorizontal);
 
@@ -235,6 +236,8 @@ class ImageStreamItems {
                 layoutParams.height = h;
             }
 
+            L.d(LOG_TAG, getUri() + " params " + layoutParams.width + " " + layoutParams.height);
+
             imageView.setAdjustViewBounds(false);
             imageView.setLayoutParams(layoutParams);
 
@@ -242,6 +245,13 @@ class ImageStreamItems {
             layoutParams1.width = padding * 2 + w;
             layoutParams1.height = padding * 2 + h;
             container.setLayoutParams(layoutParams1);
+
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    imageView.requestLayout();
+                }
+            });
         }
 
         void resetThings(ImageView imageView, View container) {
@@ -259,7 +269,7 @@ class ImageStreamItems {
         }
 
         public Uri getUri() {
-            return uri;
+            return uri.getOriginalUri();
         }
 
         private int calculateSelectedPadding(int h, int w, int paddingH) {

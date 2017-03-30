@@ -25,11 +25,10 @@ public class PopupBackend extends Fragment {
     private static final int PERMISSION_REQUEST_CODE = 9842;
 
     private PermissionStorage preferences;
+    private InternalPermissionCallback permissionListener = null;
 
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
     private WeakReference<ImageStreamPopup> imageStreamPopupWeakReference = new WeakReference<ImageStreamPopup>(null);
-    private InternalPermissionCallback permissionListener = null;
-
     private WeakReference<ImageStreamPopup.Listener> imageStreamListener = new WeakReference<>(null);
 
     private boolean wasOpen = false;
@@ -98,7 +97,7 @@ public class PopupBackend extends Fragment {
                     imageStreamListener.get().onImageSelected(result, false);
                 }
             }
-        });
+        }, false);
     }
 
     private boolean isPermissionGranted(String permission) {

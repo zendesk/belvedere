@@ -8,7 +8,6 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -122,7 +121,7 @@ class Storage {
      * @param context A valid application {@link Context}
      * @return The authority as a {@link String}
      */
-    private String getFileProviderAuthority(Context context){
+    String getFileProviderAuthority(Context context){
         final String suffix = context.getString(R.string.belvedere_sdk_fpa_suffix_v2);
         return String.format(Locale.US, "%s%s", context.getPackageName(), suffix);
     }

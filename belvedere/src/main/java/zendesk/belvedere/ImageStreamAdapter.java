@@ -1,6 +1,5 @@
 package zendesk.belvedere;
 
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +43,6 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface Delegate {
         void openCamera();
         void openGallery();
-        void setSelected(Uri uri, boolean selected);
+        void setSelected(MediaResult uri, boolean selected);
     }
 }

@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -30,7 +29,6 @@ import java.util.List;
 import zendesk.belvedere.ui.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
 
@@ -52,7 +50,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     private final ImageStreamMvp.Presenter presenter;
     private final ImageStreamDataSource dataSource;
 
-    private View bottomSheet, dismissArea;
+    private View bottomSheet, dismissArea, menuFab;
     private RecyclerView imageList;
     private Toolbar toolbar;
     private BottomSheetBehavior<View> bottomSheetBehavior;
@@ -69,6 +67,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
         this.popupBackend = popupBackend;
         this.dataSource = new ImageStreamDataSource();
+
         final PermissionStorage preferences = new PermissionStorage(view.getContext());
         final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig, preferences);
 
@@ -95,14 +94,14 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     }
 
     @Override
-    public void showImageStream(List<Uri> images, List<MediaResult> selectedImages, boolean showCamera) {
+    public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera) {
         showKeyboard(popupBackend.getKeyboardHelper().inputTrap);
 
         final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = MATCH_PARENT;
         bottomSheet.setLayoutParams(layoutParams);
 
-        int columns = bottomSheet.getContext().getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
+        final int columns = bottomSheet.getContext().getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
 
         final ImageStreamAdapter adapter = new ImageStreamAdapter(dataSource);
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
@@ -121,33 +120,26 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         for(MediaResult mediaResult : selectedImages) {
             selectedUris.add(mediaResult.getOriginalUri());
         }
-        dataSource.setItemsSelected(selectedUris);
 
         if(showCamera){
             dataSource.addStaticItem(ImageStreamItems.forCameraSquare(this));
         }
 
         initRecycler(adapter, staggeredGridLayoutManager);
+
+        dataSource.setItemsSelected(selectedUris);
     }
 
-    @Override
-    public void showList(MediaIntent cameraIntent, MediaIntent documentIntent) {
-        final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
-        layoutParams.height = WRAP_CONTENT;
-        bottomSheet.setLayoutParams(layoutParams);
-
-        final ImageStreamAdapter adapter = new ImageStreamAdapter(dataSource);
-
-        dataSource.addStaticItem(ImageStreamItems.forCameraList(this));
-        dataSource.addStaticItem(ImageStreamItems.forDocumentList(this));
-
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(bottomSheet.getContext());
-        initRecycler(adapter, linearLayoutManager);
-    }
 
     @Override
     public void showDocumentMenuItem(boolean visible) {
-
+        menuFab.setVisibility(visible ? View.VISIBLE : View.GONE);
+        menuFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGallery();
+            }
+        });
     }
 
     @Override
@@ -156,30 +148,22 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     }
 
     @Override
-    public void finishWithoutResult() {
-        dismiss();
-    }
-
-    @Override
-    public void finishIfNothingIsLeft() {
-        dismiss();
-    }
-
-    @Override
     public void openCamera() {
+        popupBackend.getKeyboardHelper().hideKeyboard();
         presenter.openCamera();
     }
 
     @Override
     public void openGallery() {
+        popupBackend.getKeyboardHelper().hideKeyboard();
         presenter.openGallery();
     }
 
     @Override
-    public void setSelected(Uri uri, boolean b) {
+    public void setSelected(MediaResult uri, boolean b) {
         for(int i = 0, c = dataSource.getItemCount(); i < c; i++) {
             if(dataSource.getItemForPos(i) instanceof ImageStreamItems.StreamItemImage) {
-                if(((ImageStreamItems.StreamItemImage)dataSource.getItemForPos(i)).getUri().equals(uri)){
+                if(((ImageStreamItems.StreamItemImage)dataSource.getItemForPos(i)).getUri().equals(uri.getUri())){
                     imageStreamAdapter.notifyItemChanged(i);
                 }
             }
@@ -197,6 +181,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         this.dismissArea = view.findViewById(R.id.dismiss_area);
         this.imageList = (RecyclerView) view.findViewById(R.id.image_list);
         this.toolbar = (Toolbar) view.findViewById(R.id.image_stream_toolbar);
+        this.menuFab = view.findViewById(R.id.image_list_fab);
     }
 
     private void initToolbar() {

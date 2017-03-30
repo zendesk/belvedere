@@ -26,6 +26,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     ImageStreamModel(Context context,
                      BelvedereUi.UiConfig startConfig,
                      PermissionStorage preferences) {
+
         this.context = context;
         this.preferences = preferences;
         this.startConfig = startConfig;
@@ -34,31 +35,9 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     }
 
     @Override
-    public List<Uri> getLatestImages() {
-        final List<Uri> uris = new ArrayList<>();
-        final String[] projection = new String[]{
-                MediaStore.Images.ImageColumns._ID
-        };
-
-        final Cursor cursor = context.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT " + MAX_IMAGES);
-
-        try {
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    final Uri uri = MediaStore.Files.getContentUri("external",
-                            cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
-                    uris.add(uri);
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return uris;
+    public List<MediaResult> getLatestImages() {
+        final List<MediaResult> mediaResults = queryRecentImages();
+        return mergeSelectedItems(mediaResults, selectedImages);
     }
 
     @Override
@@ -124,6 +103,57 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     @Override
     public void removeFromSelectedItems(MediaResult mediaResult) {
         selectedImages.remove(mediaResult);
+    }
+
+    private List<MediaResult> queryRecentImages() {
+        final List<MediaResult> mediaResults = new ArrayList<>();
+
+        final String[] projection = new String[]{
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA
+        };
+
+        final Cursor cursor = context.getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT " + MAX_IMAGES);
+
+        try {
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    final Uri uri = MediaStore.Files.getContentUri("external",
+                            cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
+
+                    mediaResults.add(new MediaResult(uri));
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return mediaResults;
+    }
+
+    private List<MediaResult> mergeSelectedItems(List<MediaResult> images, List<MediaResult> toMerge) {
+        List<MediaResult> mediaResults = new ArrayList<>(images);
+
+        for(MediaResult mediaResult : toMerge) {
+
+           boolean contains = false;
+            for(MediaResult m : images){
+                if(m.getOriginalUri().equals(mediaResult.getOriginalUri())) {
+                    contains = true;
+                    break;
+                }
+            }
+
+            if(!contains) {
+                mediaResults.add(0, mediaResult);
+            }
+        }
+
+        return mediaResults;
     }
 
     private List<MediaIntent> filterIntents(List<MediaIntent> mediaIntents) {

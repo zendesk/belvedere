@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import zendesk.belvedere.BelvedereUi;
@@ -21,6 +20,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText input;
 
     private PopupBackend popupBackend;
+
     private Listener listener;
 
     static List<MediaResult> mediaResults = new ArrayList<>();
@@ -38,22 +38,30 @@ public class ChatActivity extends AppCompatActivity {
 
         this.input = (EditText) findViewById(R.id.input);
 
+        findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mediaResults.clear();
+                ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
+            }
+        });
+
         init();
     }
 
     private void init() {
-        if(popupBackend.getKeyboardHelper().inputTrap.hasFocus()) {
-            input.requestFocus();
-        }
+            if(popupBackend.getKeyboardHelper().inputTrap.hasFocus()) {
+                input.requestFocus();
+            }
 
-        if(popupBackend.wasOpen()) {
-            input.post(new Runnable() {
-                @Override
-                public void run() {
-                    showImageStream();
-                }
-            });
-        }
+            if(popupBackend.wasOpen()) {
+                input.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showImageStream();
+                    }
+                });
+            }
 
         findViewById(R.id.attachment).setOnClickListener(new View.OnClickListener() {
             @Override

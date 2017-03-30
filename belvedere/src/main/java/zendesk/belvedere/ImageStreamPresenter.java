@@ -21,6 +21,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     @Override
     public void init() {
         presentStream();
+        initMenu();
     }
 
     @Override
@@ -50,8 +51,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         }
     }
 
-    public void setItemSelected(Uri uri, boolean b) {
-        final MediaResult mediaResult = new MediaResult(null, uri, uri);
+    public void setItemSelected(MediaResult mediaResult, boolean b) {
         if(b) {
             model.addToSelectedItems(mediaResult);
         } else{
@@ -65,29 +65,10 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     }
 
     private void presentStream() {
-        final List<Uri> latestImages = model.getLatestImages();
+        final List<MediaResult> latestImages = model.getLatestImages();
         final List<MediaResult> selectedImages = model.getSelectedImages();
-        if(latestImages.size() > 0) {
-            view.initUiComponents();
-            view.showImageStream(latestImages, selectedImages, model.hasCameraIntent());
-        } else {
-            presentList();
-        }
+        view.initUiComponents();
+        view.showImageStream(latestImages, selectedImages, model.hasCameraIntent());
     }
 
-    private void presentList() {
-        if (model.hasCameraIntent() && model.hasDocumentIntent()) {
-            view.initUiComponents();
-            view.showList(model.getCameraIntent(), model.getDocumentIntent());
-
-        } else if (model.hasCameraIntent()) {
-            openCamera();
-
-        } else if (model.hasDocumentIntent()) {
-            openGallery();
-
-        } else {
-            view.finishWithoutResult();
-        }
-    }
 }
