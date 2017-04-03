@@ -28,9 +28,9 @@ public class PopupBackend extends Fragment {
     private InternalPermissionCallback permissionListener = null;
 
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
-    private WeakReference<ImageStreamPopup> imageStreamPopupWeakReference = new WeakReference<ImageStreamPopup>(null);
     private WeakReference<ImageStreamPopup.Listener> imageStreamListener = new WeakReference<>(null);
 
+    private ImageStreamPopup imageStreamPopup = null;
     private boolean wasOpen = false;
 
     @Override
@@ -49,7 +49,6 @@ public class PopupBackend extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        final ImageStreamPopup imageStreamPopup = imageStreamPopupWeakReference.get();
         if(imageStreamPopup != null) {
             imageStreamPopup.dismiss();
             wasOpen = true;
@@ -230,7 +229,7 @@ public class PopupBackend extends Fragment {
     }
 
     public void setImageStreamPopup(ImageStreamPopup imageStreamPopup) {
-        this.imageStreamPopupWeakReference = new WeakReference<>(imageStreamPopup);
+        this.imageStreamPopup = imageStreamPopup;
     }
 
     public void setImageStreamListener(ImageStreamPopup.Listener listener) {
@@ -254,5 +253,8 @@ public class PopupBackend extends Fragment {
         void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain);
     }
 
-}
+    public boolean isAttachmentsPopupVisible2() {
+        return imageStreamPopup != null;
+    }
 
+}

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -200,7 +201,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         this.imageStreamAdapter = adapter;
         imageList.setItemAnimator(null);
         imageList.setHasFixedSize(true);
-        imageList.setItemViewCacheSize(25);
+//        imageList.setItemViewCacheSize(50);
         imageList.setDrawingCacheEnabled(true);
         imageList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         imageList.setAdapter(adapter);
@@ -286,6 +287,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     @Override
     public void dismiss() {
         super.dismiss();
+
         popupBackend.setImageStreamPopup(null);
 
         if(popupBackend.getImListener() != null) {

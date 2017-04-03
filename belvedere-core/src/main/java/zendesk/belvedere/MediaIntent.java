@@ -55,6 +55,10 @@ public class MediaIntent implements Parcelable {
         return target;
     }
 
+    int getRequestCode() {
+        return requestCode;
+    }
+
     public static class DocumentIntentBuilder {
 
         private final MediaSource mediaSource;

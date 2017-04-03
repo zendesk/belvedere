@@ -50,18 +50,18 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void init() {
-            if(popupBackend.getKeyboardHelper().inputTrap.hasFocus()) {
-                input.requestFocus();
-            }
+        if(popupBackend.getKeyboardHelper().inputTrap.hasFocus()) {
+            input.requestFocus();
+        }
 
-            if(popupBackend.wasOpen()) {
-                input.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        showImageStream();
-                    }
-                });
-            }
+        if(popupBackend.wasOpen()) {
+            input.post(new Runnable() {
+                @Override
+                public void run() {
+                    showImageStream();
+                }
+            });
+        }
 
         findViewById(R.id.attachment).setOnClickListener(new View.OnClickListener() {
             @Override

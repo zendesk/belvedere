@@ -6,25 +6,26 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/image_stream_image_padding">
 
-
     <ImageView
         android:id="@+id/list_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:minHeight="200dp"
+        android:focusable="true"
+        android:drawingCacheQuality="high"
+        android:scaleType="centerInside"
         android:layout_gravity="center"
+        android:minHeight="200dp"
+        android:foreground="?android:attr/selectableItemBackground"
         />
 
     <ImageView
         android:id="@+id/list_item_image_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#AAffffff"
         android:scaleType="center"
-        android:src="@android:drawable/checkbox_on_background"
+        android:src="@drawable/belvedere_ic_check_circle"
         android:visibility="gone"
         android:layout_gravity="center"
         />

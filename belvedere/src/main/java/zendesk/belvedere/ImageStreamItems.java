@@ -2,12 +2,12 @@ package zendesk.belvedere;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -115,6 +115,8 @@ class ImageStreamItems {
         private final int padding;
         private final int paddingSelectedHorizontal;
 
+        private final int colorPrimary;
+
         StreamItemImage(ImageStreamAdapter.Delegate delegate, MediaResult uri, Context context, int itemWidth) {
             super(R.layout.stream_list_item);
             this.delegate = delegate;
@@ -123,6 +125,7 @@ class ImageStreamItems {
             this.padding = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding);
             this.paddingSelectedHorizontal = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding_selected);
             this.itemWidth = itemWidth;
+            this.colorPrimary = Color.WHITE; //UiUtils.getThemeColor(context, R.attr.colorAccent); ... idk
         }
 
         @Override
@@ -130,13 +133,17 @@ class ImageStreamItems {
             L.d(LOG_TAG, getUri() + " bind " + h + " " + w);
 
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
+            final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_image_overlay);
             final View container = view.findViewById(R.id.list_item_container);
 
             if(isSelected()) {
-                view.findViewById(R.id.list_item_image_overlay).setVisibility(View.VISIBLE);
+                selectOverlay.setVisibility(View.VISIBLE);
+                imageView.setAlpha(0.4F);
+                UiUtils.internalSetTint(selectOverlay, colorPrimary);
 
             } else {
-                view.findViewById(R.id.list_item_image_overlay).setVisibility(View.GONE);
+                selectOverlay.setVisibility(View.GONE);
+                imageView.setAlpha(1.0F);
             }
 
             imageView.setOnClickListener(new View.OnClickListener() {
@@ -174,7 +181,6 @@ class ImageStreamItems {
                     .resize(itemWidth, 0)
                     .onlyScaleDown()
                     .into(imageView);
-
         }
 
         class Bla implements View.OnLayoutChangeListener{
@@ -237,8 +243,6 @@ class ImageStreamItems {
             }
 
             L.d(LOG_TAG, getUri() + " params " + layoutParams.width + " " + layoutParams.height);
-
-            imageView.setAdjustViewBounds(false);
             imageView.setLayoutParams(layoutParams);
 
             final StaggeredGridLayoutManager.LayoutParams layoutParams1 = (StaggeredGridLayoutManager.LayoutParams) container.getLayoutParams();
@@ -263,7 +267,6 @@ class ImageStreamItems {
             layoutParams1.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
-            imageView.setAdjustViewBounds(true);
             imageView.setLayoutParams(layoutParams);
             container.setLayoutParams(layoutParams1);
         }
@@ -273,7 +276,7 @@ class ImageStreamItems {
         }
 
         private int calculateSelectedPadding(int h, int w, int paddingH) {
-            return (int)(paddingH * ((double)h / w));
+            return (int)(paddingH * ((float)h / w));
         }
     }
 

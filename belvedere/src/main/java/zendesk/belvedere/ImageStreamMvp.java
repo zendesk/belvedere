@@ -63,6 +63,9 @@ interface ImageStreamMvp {
         void setItemSelected(MediaResult uri, boolean b);
 
         List<MediaResult> getSelectedItems();
+
+        List<MediaIntent> getMediaIntents();
+
     }
 
 }

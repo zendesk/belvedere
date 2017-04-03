@@ -4,10 +4,12 @@ import android.util.SparseArray;
 
 class IntentRegistry {
 
+    private static final String LOG_TAG = "IntentRegistry";
+
     final static int PLACE_HOLDER_CODE = 42;
 
     private final static int START_REQUEST_CODE = 1600;
-    private final static int END_REQUEST_CODE = 1700;
+    private final static int END_REQUEST_CODE = 1650;
 
     private SparseArray<MediaResult> pendingIntents;
 
@@ -53,6 +55,8 @@ class IntentRegistry {
             }
         }
 
-        return -1;
+        L.d(LOG_TAG, "No slot free. Clearing registry.");
+        pendingIntents.clear();
+        return getRequestCode();
     }
 }
