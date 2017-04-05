@@ -23,7 +23,7 @@ android {
         // in the AndroidManifest
         manifestPlaceholders = [belvedereFileProviderAuthoritySuffix:project.ext.belvedereFileProviderAuthoritySuffix]
         // Add project.ext.belvedereFileProviderAuthoritySuffix as a string resource to the SDK
-        resValue "string", "belvedere_sdk_fpa_suffix", project.ext.belvedereFileProviderAuthoritySuffix
+        resValue "string", "belvedere_sdk_fpa_suffix_v2", project.ext.belvedereFileProviderAuthoritySuffix
     }
 }
 

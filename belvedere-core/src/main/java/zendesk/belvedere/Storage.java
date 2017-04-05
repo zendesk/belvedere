@@ -27,9 +27,8 @@ class Storage {
 
     private final static String LOG_TAG = "BelvedereStorage";
 
-    private final static String CAMERA_IMAGE_DIR = "camera";
-    private final static String GALLERY_IMAGE_DIR = "gallery";
-    private final static String REQUEST_IMAGE_DIR = "request";
+    private final static String FILE_DIR_MEDIA = "media";
+    private final static String FILE_DIR_USER = "user";
 
     private final static String ATTACHMENT_NAME = "attachment_%s";
     private final static String CAMERA_IMG_NAME = "camera_image_%s";
@@ -100,7 +99,7 @@ class Storage {
                     "If your are not able to use gradle or the manifest merger, please add the following to your AndroidManifest.xml:\n" +
                     "        <provider\n" +
                     "            android:name=\"com.zendesk.belvedere.BelvedereFileProvider\"\n" +
-                    "            android:authorities=\"${applicationId}${belvedereFileProviderAuthoritySuffix}\"\n" +
+                    "            android:authorities=\"${applicationId}%s\"\n" +
                     "            android:exported=\"false\"\n" +
                     "            android:grantUriPermissions=\"true\">\n" +
                     "            <meta-data\n" +
@@ -125,8 +124,8 @@ class Storage {
      * @param context A valid application {@link Context}
      * @return The authority as a {@link String}
      */
-    String getFileProviderAuthority(Context context){
-        final String suffix = context.getString(R.string.belvedere_sdk_fpa_suffix);
+    private String getFileProviderAuthority(Context context){
+        final String suffix = context.getString(R.string.belvedere_sdk_fpa_suffix_v2);
         return String.format(Locale.US, "%s%s", context.getPackageName(), suffix);
     }
 
@@ -137,7 +136,7 @@ class Storage {
      * @return The {@link File}
      */
     File getFileForCamera(Context context){
-        final File cacheDir = getAttachmentDir(context, CAMERA_IMAGE_DIR);
+        final File cacheDir = getAttachmentDir(context, FILE_DIR_MEDIA);
 
         if(cacheDir == null){
             log.w(LOG_TAG, "Error creating cache directory");
@@ -147,7 +146,7 @@ class Storage {
         final SimpleDateFormat sdf = new SimpleDateFormat(CAMERA_DATETIME_STRING_FORMAT, Locale.US);
         final String fileName = String.format(Locale.US, CAMERA_IMG_NAME, sdf.format(new Date(System.currentTimeMillis())));
 
-        return createTempFile(fileName, CAMERA_IMG_SUFFIX, cacheDir);
+        return createTempFile(cacheDir, fileName, CAMERA_IMG_SUFFIX);
     }
 
     /**
@@ -155,10 +154,18 @@ class Storage {
      *
      * @param context A valid application {@link Context}
      * @param uri {@link Uri} to the media from the gallery
+     * @param subDirectory Name of the sub directory where to put the file or {@code null} if not needed
      * @return The {@link File}
      */
-    File getTempFileForGalleryImage(Context context, Uri uri) {
-        final File cacheDir = getAttachmentDir(context, GALLERY_IMAGE_DIR);
+    File getFileForUri(Context context, Uri uri, String subDirectory) {
+        final String path;
+        if(!TextUtils.isEmpty(subDirectory)) {
+            path = FILE_DIR_USER + File.separator + subDirectory;
+        } else {
+            path = FILE_DIR_MEDIA;
+        }
+
+        final File cacheDir = getAttachmentDir(context, path);
 
         if(cacheDir == null){
             log.w(LOG_TAG, "Error creating cache directory");
@@ -171,10 +178,10 @@ class Storage {
         if(TextUtils.isEmpty(fileName)){
             final SimpleDateFormat sdf = new SimpleDateFormat(CAMERA_DATETIME_STRING_FORMAT, Locale.US);
             fileName = String.format(Locale.US, ATTACHMENT_NAME, sdf.format(new Date(System.currentTimeMillis())));
-            suffix = getExtension(context, uri);
+            suffix = getExtension(context, uri, true);
         }
 
-        return createTempFile(fileName, suffix, cacheDir);
+        return createTempFile(cacheDir, fileName, suffix);
     }
 
     /**
@@ -183,40 +190,26 @@ class Storage {
      * exist we try to create it.
      *
      * @param context A valid application {@link Context}.
+     * @param subDirectory Name of the sub directory where to put the file or {@code null} if not needed
      * @param fileName The name of the file.
      * @return The File.
      */
-    File getTempFileForRequestAttachment(Context context, String fileName) {
-        final File cacheDir = getAttachmentDir(context, REQUEST_IMAGE_DIR);
+    File getFile(Context context, String subDirectory, String fileName) {
+        final String path;
+        if(!TextUtils.isEmpty(subDirectory)) {
+            path = FILE_DIR_USER + File.separator + subDirectory;
+        } else {
+            path = FILE_DIR_USER;
+        }
+
+        final File cacheDir = getAttachmentDir(context, path);
 
         if (cacheDir == null) {
             log.w(LOG_TAG, "Error creating cache directory");
             return null;
         }
 
-        return createTempFile(fileName, null, cacheDir);
-    }
-
-    /**
-     * Clear the Belvedere cache.
-     *
-     * @param context A valid application {@link Context}.
-     */
-    void clearStorage(Context context) {
-        final File rootDir = new File(getRootDir(context) + File.separator + directoryName);
-        if(rootDir.isDirectory()){
-            clearDirectory(rootDir);
-        }
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void clearDirectory(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory()){
-            for (File child : fileOrDirectory.listFiles()){
-                clearDirectory(child);
-            }
-        }
-        fileOrDirectory.delete();
+        return createTempFile(cacheDir, fileName, null);
     }
 
     /**
@@ -227,12 +220,12 @@ class Storage {
      *     it has to start with a '.'. E.g. '.gif'
      * </p>
      *
+     * @param dir The directory, where the {@link File} should live.
      * @param fileName The name of the {@link File}.
      * @param suffix The suffix of the {@link File}.
-     * @param dir The directory, where the {@link File} should live.
      * @return The {@link File}
      */
-    private File createTempFile(String fileName, String suffix, File dir){
+    private File createTempFile(File dir, String fileName, String suffix){
         return new File(dir, fileName + (!TextUtils.isEmpty(suffix) ? suffix : ""));
     }
 
@@ -265,20 +258,30 @@ class Storage {
         return dir.isDirectory() ? dir : null;
     }
 
-
-    /**
-     * Get the root directory of the Belvedere cache.
-     * <p>
-     *     Belvedere is using the internal cache directory
-     *     to store stuff. ({@link Context#getCacheDir()})
-     * </p>
-     *
-     * @param context A valid application {@link Context}
-     * @return A {@link File} pointing to the directory, where
-     *      the Belvedere cache should live,
-     */
     private String getRootDir(Context context) {
         return context.getCacheDir().getAbsolutePath();
+    }
+
+    /**
+     * Clear the Belvedere cache.
+     *
+     * @param context A valid application {@link Context}.
+     */
+    void clearStorage(Context context) {
+        final File rootDir = new File(getRootDir(context) + File.separator + directoryName);
+        if(rootDir.isDirectory()){
+            clearDirectory(rootDir);
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void clearDirectory(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()){
+            for (File child : fileOrDirectory.listFiles()){
+                clearDirectory(child);
+            }
+        }
+        fileOrDirectory.delete();
     }
 
     /**
@@ -293,9 +296,10 @@ class Storage {
      *
      * @param context A valid application {@link Context}
      * @param uri An {@link Uri}
+     * @param withLeadingDot {@code true} if the method should add a '.' to the extension
      * @return The mime type as a {@link String}.
      */
-    private String getExtension(Context context, Uri uri){
+    private String getExtension(Context context, Uri uri, boolean withLeadingDot){
         final MimeTypeMap mime = MimeTypeMap.getSingleton();
         final String schema = uri.getScheme();
         String ext = "tmp";
@@ -309,11 +313,16 @@ class Storage {
             final int i = fullFileName.lastIndexOf(".");
 
             if(i != -1) {
-                ext = fullFileName.substring(i, fullFileName.length());
+                ext = fullFileName.substring(i + 1, fullFileName.length());
             }
         }
 
-        return String.format(Locale.US, ".%s", ext);
+        if(withLeadingDot) {
+            return String.format(Locale.US, ".%s", ext);
+
+        } else {
+            return ext;
+        }
     }
 
     /**
@@ -326,7 +335,7 @@ class Storage {
      * @param uri Link to the {@link Uri}
      * @return The name of the {@link File}, or an empty {@link String}
      */
-    private String getFileNameFromUri(Context context, Uri uri){
+    String getFileNameFromUri(Context context, Uri uri){
         final String schema = uri.getScheme();
         String path = "";
 
@@ -334,7 +343,6 @@ class Storage {
             final String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
             final ContentResolver contentResolver = context.getContentResolver();
             final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
-
 
             if (cursor != null) {
                 try {
@@ -352,5 +360,18 @@ class Storage {
         }
 
         return path;
+    }
+
+    /**
+     * Try to detect the mime type of an {@link Uri}
+     *
+     * @param context A valid application {@link Context}
+     * @param uri An {@link Uri}
+     * @return the mime type of the uri without a leading '.'
+     */
+    String getMimeTypeForUri(Context context, Uri uri) {
+        return MimeTypeMap
+                .getSingleton()
+                .getMimeTypeFromExtension(getExtension(context, uri, false));
     }
 }

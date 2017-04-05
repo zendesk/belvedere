@@ -131,17 +131,18 @@ class MediaSource {
     }
 
     /**
-     * Extract data from an {@link Intent}, that was previously requested by an {@link BelvedereIntent}.
-     * It will try its best to extract and resolve the results from {@link #getBelvedereIntents(Context)} (Fragment)}
+     * Extract data from an {@link Intent}, that was previously requested by an {@link MediaIntent}.
      *
      * @param context A valid application {@link Context}.
      * @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
      * @param resultCode The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
      * @param data The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
      * @param callback Callback that will deliver a list of {@link MediaResult}
+     * @param resolveFiles {@code true} if the selected files should be copied into the internal cache,
+     *        {@code false} if not
      */
     void getFilesFromActivityOnResult(Context context, int requestCode, int resultCode,
-                                      Intent data, Callback<List<MediaResult>> callback){
+                                      Intent data, Callback<List<MediaResult>> callback, boolean resolveFiles){
         final List<MediaResult> result = new ArrayList<>();
         final MediaResult belvedereResult = intentRegistry.getForRequestCode(requestCode);
 
@@ -151,14 +152,31 @@ class MediaSource {
                 log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Gallery - Ok: %s", (resultCode == Activity.RESULT_OK)));
 
                 if(resultCode == Activity.RESULT_OK) {
-                    if(data.hasExtra(INTERNAL_RESULT_KEY)) {
-                        result.addAll(data.<MediaResult>getParcelableArrayListExtra(INTERNAL_RESULT_KEY));
+                    if(data.hasExtra(INTERNAL_RESULT_KEY)) { // FIXME: this will go away later
+
+                        final List<MediaResult> mediaResults = data.<MediaResult>getParcelableArrayListExtra(INTERNAL_RESULT_KEY);
+                        for(MediaResult m : mediaResults) {
+                            final String mimeType = storage.getMimeTypeForUri(context, m.getUri());
+                            final String fileName = storage.getFileNameFromUri(context, m.getUri());
+                            result.add(new MediaResult(m.getFile(), m.getUri(), fileName, mimeType));
+                        }
 
                     } else {
+
                         final List<Uri> uris = extractUrisFromIntent(data);
                         log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
-                        ResolveUriTask.start(context, log, storage, callback, uris);
-                        return;
+
+                        if(resolveFiles) {
+                            ResolveUriTask.start(context, log, storage, callback, uris);
+                            return;
+
+                        } else {
+                            for(Uri uri : uris) {
+                                final String mimeType = storage.getMimeTypeForUri(context, uri);
+                                final String fileName = storage.getFileNameFromUri(context, uri);
+                                result.add(new MediaResult(null, uri, fileName, mimeType));
+                            }
+                        }
                     }
                 }
 
@@ -236,11 +254,11 @@ class MediaSource {
     }
 
     /**
-     * Internal helper method to create an {@link BelvedereIntent} for opening
+     * Internal helper method to create an {@link MediaIntent} for opening
      * an installed camera app.
      *
      * @param context A valid application {@link Context}
-     * @return An {@link BelvedereIntent} or null if this action isn't supported by
+     * @return An {@link MediaIntent} or null if this action isn't supported by
      *      the system.
      */
     private Pair<MediaIntent, MediaResult> pickImageFromCameraInternal(Context context, int requestCode){
@@ -273,7 +291,8 @@ class MediaSource {
                 PermissionUtil.hasPermissionInManifest(context, Manifest.permission.CAMERA) &&
                 !PermissionUtil.isPermissionGranted(context, Manifest.permission.CAMERA);
 
-        final MediaResult belvedereResult = new MediaResult(imagePath, uriForFile);
+
+        final MediaResult belvedereResult = new MediaResult(imagePath, uriForFile, imagePath.getName(), storage.getMimeTypeForUri(context, uriForFile));
         final MediaIntent mediaIntent = new MediaIntent(
                 requestCode,
                 intent,
@@ -287,10 +306,10 @@ class MediaSource {
 
 
     /**
-     * Internal helper method to create an {@link BelvedereIntent} for opening
+     * Internal helper method to create an {@link MediaIntent} for opening
      * an installed gallery app or the android image picker.
      *
-     * @return An {@link BelvedereIntent}
+     * @return An {@link MediaIntent}
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private Intent getDocumentAndroidIntent(String contentType, boolean allowMultiple){

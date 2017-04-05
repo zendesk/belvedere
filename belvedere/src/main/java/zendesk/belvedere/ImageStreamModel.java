@@ -30,8 +30,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     public List<Uri> getLatestImages() {
         final List<Uri> uris = new ArrayList<>();
         final String[] projection = new String[]{
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA
+                MediaStore.Images.ImageColumns._ID
         };
 
         final Cursor cursor = context.getContentResolver()
@@ -41,8 +40,9 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         try {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    String imageLocation = cursor.getString(1);
-                    uris.add(Uri.fromFile(new File(imageLocation)));
+                    final Uri uri = MediaStore.Files.getContentUri("external",
+                            cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
+                    uris.add(uri);
                 }
             }
         } finally {
