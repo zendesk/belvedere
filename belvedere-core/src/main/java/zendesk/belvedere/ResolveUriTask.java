@@ -30,7 +30,13 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
     static void start(Context context, Logger logger, Storage storage,
                       Callback<List<MediaResult>> callback, List<Uri> uriList){
-        final ResolveUriTask resolveUriTask = new ResolveUriTask(context, logger, storage, callback);
+        start(context, logger, storage, callback, uriList, null);
+    }
+
+    static void start(Context context, Logger logger, Storage storage,
+                      Callback<List<MediaResult>> callback, List<Uri> uriList, String subDirectory){
+
+        final ResolveUriTask resolveUriTask = new ResolveUriTask(context, logger, storage, callback, subDirectory);
         final Uri[] uris = uriList.toArray(new Uri[uriList.size()]);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -44,13 +50,15 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
     private final Context context;
     private final Logger log;
     private final Storage storage;
+    private final String subDirectory;
 
     private ResolveUriTask(Context context, Logger logger, Storage storage,
-                   Callback<List<MediaResult>> callback) {
+                           Callback<List<MediaResult>> callback, String subDirectory) {
         this.context = context;
         this.log = logger;
         this.storage = storage;
         this.callback = callback;
+        this.subDirectory = subDirectory;
     }
 
     @Override
@@ -64,7 +72,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
         for (Uri uri : uris) {
             try {
                 inputStream = context.getContentResolver().openInputStream(uri);
-                final File file = storage.getTempFileForGalleryImage(context, uri);
+                final File file = storage.getFileForUri(context, uri, subDirectory);
 
                 if (inputStream != null && file != null) {
                     log.d(LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
@@ -75,7 +83,8 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                         fileOutputStream.write(buf, 0, len);
                     }
 
-                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file)));
+                    final String mimeType = storage.getMimeTypeForUri(context, uri);
+                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), file.getName(), mimeType));
 
                 } else {
                     log.w(

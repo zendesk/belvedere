@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -105,18 +106,30 @@ public class Belvedere implements InstanceBuilder {
 
     /**
      * Parse data from {@link Activity#onActivityResult(int, int, Intent)}.
-     * <p>
-     * It's important that the same instance of Belvedere is used, which
-     * was used to start the dialog or create the {@link BelvedereIntent}.
      *
-     * @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param resultCode  The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param data        The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param callback    {@link Callback} that will deliver a list of {@link MediaResult}
+     *  @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param resultCode The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param callback {@link Callback} that will deliver a list of {@link MediaResult}
      */
     public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data,
                                              @NonNull Callback<List<MediaResult>> callback) {
-        mediaSource.getFilesFromActivityOnResult(context, requestCode, resultCode, data, callback);
+        getFilesFromActivityOnResult(requestCode, resultCode, data, callback, true);
+    }
+
+    /**
+     * Parse data from {@link Activity#onActivityResult(int, int, Intent)}.
+     *
+     * @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param resultCode The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param callback {@link Callback} that will deliver a list of {@link MediaResult}
+     * @param resolveFiles Set to {@code true} if belvedere should resolve selected files
+     */
+    public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data,
+                                             @NonNull Callback<List<MediaResult>> callback,
+                                             boolean resolveFiles) {
+        mediaSource.getFilesFromActivityOnResult(context, requestCode, resultCode, data, callback, resolveFiles);
     }
 
     /**
@@ -126,26 +139,37 @@ public class Belvedere implements InstanceBuilder {
      * <p>
      * Belvedere doesn't keep track of your files, you have to manage them.
      *
+     * @param dir Directory name of the file or {@code null} if not needed.
      * @param fileName The file name
      * @return A {@link MediaResult}
      */
     @Nullable
-    public MediaResult getFile(@NonNull String fileName) {
-        final File file = storage.getTempFileForRequestAttachment(context, fileName);
+    public MediaResult getFile(@NonNull String dir, @NonNull String fileName) {
+        final File file = storage.getFile(context, dir, fileName);
         log.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
 
         final Uri uri;
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
-            return new MediaResult(file, uri);
+            final String mimeType = storage.getMimeTypeForUri(context, uri);
+            return new MediaResult(file, uri, fileName, mimeType);
         }
 
         return null;
     }
 
-    public void resolveUris(@NonNull List<Uri> uris, @NonNull Callback<List<MediaResult>> callback) {
+    /**
+     * Copy the list of provided {@link Uri} into the internal cache.
+     *
+     * @param uris The list of {@link Uri} to resolve
+     * @param directory Name of directory for storing them
+     * @param callback {@link Callback} that will deliver a list of {@link MediaResult}
+     */
+    public void resolveUris(@NonNull List<Uri> uris, @NonNull String directory, @NonNull Callback<List<MediaResult>> callback) {
         if(uris != null && uris.size() > 0) {
-            ResolveUriTask.start(context, log, storage, callback, uris);
+            ResolveUriTask.start(context, log, storage, callback, uris, directory);
+        } else {
+            callback.internalSuccess(new ArrayList<MediaResult>(0));
         }
     }
 

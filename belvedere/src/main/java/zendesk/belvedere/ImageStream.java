@@ -3,7 +3,6 @@ package zendesk.belvedere;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -102,7 +101,7 @@ public class ImageStream extends AppCompatActivity
             public void success(List<MediaResult> result) {
                 finishWithResult(result);
             }
-        });
+        }, false);
     }
 
     @Override
@@ -237,12 +236,11 @@ public class ImageStream extends AppCompatActivity
 
     @Override
     public void imagesSelected(List<Uri> uris) {
-        Belvedere.from(this).resolveUris(uris, new Callback<List<MediaResult>>() {
-            @Override
-            public void success(List<MediaResult> result) {
-                finishWithResult(result);
-            }
-        });
+        final List<MediaResult> mediaResults = new ArrayList<>(uris.size());
+        for(Uri uri : uris) {
+            mediaResults.add(new MediaResult(null, uri, null, null)); // FIXME: temp workaround, this will go away
+        }
+        finishWithResult(mediaResults);
     }
 
     @Override
