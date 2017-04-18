@@ -10,9 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -37,13 +34,7 @@ public class PopupBackend extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = new PermissionStorage(getContext());
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setRetainInstance(true);
-        return null;
     }
 
     @Override
@@ -112,7 +103,7 @@ public class PopupBackend extends Fragment {
         this.permissionListener = listener;
     }
 
-    public void handlePermissionStuffForStream(final List<MediaIntent> mediaIntents, final PermissionCallback permissionCallback) {
+    public void handlePermissions(final List<MediaIntent> mediaIntents, final PermissionCallback permissionCallback) {
 
         final List<String> permissions = new ArrayList<>();
         permissions.addAll(getPermissionsForImageStream());
@@ -200,7 +191,6 @@ public class PopupBackend extends Fragment {
     }
 
     private void handlePermissionStuff(final List<String> permissions, final InternalPermissionCallback permissionCallback) {
-
         setListener(new InternalPermissionCallback() {
             @Override
             public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
@@ -217,7 +207,6 @@ public class PopupBackend extends Fragment {
         }
 
         askForPermission(permissions);
-
     }
 
     public KeyboardHelper getKeyboardHelper() {

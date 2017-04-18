@@ -56,7 +56,7 @@ class ImageStreamDataSource {
         newList.addAll(newStaticItems);
         newList.addAll(newImageStream);
 
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new Bla(list, newList));
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffHelper(list, newList));
 
         staticItems = newStaticItems;
         imageStream = newImageStream;
@@ -65,12 +65,12 @@ class ImageStreamDataSource {
         return diffResult;
     }
 
-    private static class Bla extends DiffUtil.Callback {
+    private static class DiffHelper extends DiffUtil.Callback {
 
         private final List<ImageStreamItems.Item> oldItems;
         private final List<ImageStreamItems.Item> newItems;
 
-        private Bla(List<ImageStreamItems.Item> oldItems, List<ImageStreamItems.Item> newItems) {
+        private DiffHelper(List<ImageStreamItems.Item> oldItems, List<ImageStreamItems.Item> newItems) {
             this.oldItems = oldItems;
             this.newItems = newItems;
         }

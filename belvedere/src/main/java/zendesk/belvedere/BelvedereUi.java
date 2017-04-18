@@ -1,8 +1,7 @@
 package zendesk.belvedere;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,8 +20,7 @@ public class BelvedereUi {
 
     private final static String FRAGMENT_TAG = "BelvedereDialog";
     private final static String EXTRA_MEDIA_INTENT = "extra_intent";
-
-    private final static String FRAGMENT_TAG_POPUP = "bla";
+    private final static String FRAGMENT_TAG_POPUP = "belvedere_image_stream";
 
     public static ImageStreamBuilder imageStream(Context context) {
         return new ImageStreamBuilder(context);
@@ -53,6 +51,7 @@ public class BelvedereUi {
         private boolean resolveMedia = true;
         private List<MediaIntent> mediaIntents = new ArrayList<>();
         private List<MediaResult> selectedItems = new ArrayList<>();
+        private List<MediaResult> extraItems = new ArrayList<>();
 
         private ImageStreamBuilder(Context context){
             this.context = context;
@@ -83,19 +82,23 @@ public class BelvedereUi {
             return this;
         }
 
-        public ImageStreamBuilder resolveMedia(boolean enabled) {
-            this.resolveMedia = enabled;
+        public ImageStreamBuilder withExtraItems(List<MediaResult> mediaResults) {
+            this.extraItems = extraItems;
             return this;
         }
 
-        public void show(Activity activity) {
-//            final Intent imageStreamIntent = getImageStreamIntent(activity, mediaIntents, selectedItems, resolveMedia);
-//            activity.startActivityForResult(imageStreamIntent, IntentRegistry.PLACE_HOLDER_CODE);
+        public ImageStreamBuilder withSelectedItemsUri(List<Uri> selectedItems) {
+            final List<MediaResult> mediaResults = new ArrayList<>(selectedItems.size());
+            for(Uri uri : selectedItems) {
+                mediaResults.add(new MediaResult(null, uri, uri, null, null, -1L));
+            }
+            this.selectedItems = mediaResults;
+            return this;
         }
 
-        public void show(Fragment fragment) {
-//            final Intent imageStreamIntent = getImageStreamIntent(fragment.getContext(), mediaIntents, selectedItems, resolveMedia);
-//            fragment.startActivityForResult(imageStreamIntent, IntentRegistry.PLACE_HOLDER_CODE);
+        public ImageStreamBuilder resolveMedia(boolean enabled) {
+            this.resolveMedia = enabled;
+            return this;
         }
 
         public void showPopup(AppCompatActivity activity) {
@@ -103,7 +106,7 @@ public class BelvedereUi {
 
             final WeakReference<AppCompatActivity> activityReference = new WeakReference<>(activity);
 
-            popupBackend.handlePermissionStuffForStream(mediaIntents, new PopupBackend.PermissionCallback() {
+            popupBackend.handlePermissions(mediaIntents, new PopupBackend.PermissionCallback() {
                 @Override
                 public void ok(final List<MediaIntent> mediaIntents) {
                     final AppCompatActivity appCompatActivity = activityReference.get();
@@ -114,9 +117,10 @@ public class BelvedereUi {
                             @Override
                             public void run() {
                                 final ImageStreamPopup show = ImageStreamPopup.show(
-                                        appCompatActivity, decorView,
+                                        appCompatActivity,
+                                        decorView,
                                         popupBackend,
-                                        new UiConfig(mediaIntents, selectedItems, resolveMedia));
+                                        new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia));
                                 popupBackend.setImageStreamPopup(show);
                             }
                         });
@@ -141,7 +145,7 @@ public class BelvedereUi {
         }
 
         final BelvedereDialog dialog = new BelvedereDialog();
-        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(), true));
+        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(0), new ArrayList<MediaResult>(0), true));
         dialog.show(fm.beginTransaction(), FRAGMENT_TAG);
     }
 
@@ -154,18 +158,11 @@ public class BelvedereUi {
         showDialog(fm, Arrays.asList(mediaIntent));
     }
 
-
-    private static Intent getImageStreamIntent(Context context, List<MediaIntent> mediaIntents, List<MediaResult> selectedItems, boolean resolveMedia) {
-        //final Intent intent = new Intent(context, ImageStream.class);
-        //intent.putExtras(getBundle(mediaIntents, selectedItems, resolveMedia));
-//        return intent;
-        return null;
-    }
-
-    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems, boolean resolveMedia) {
+    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems, List<MediaResult> extraItems, boolean resolveMedia) {
 
         final List<MediaIntent> intents = new ArrayList<>();
         final List<MediaResult> selected = new ArrayList<>();
+        final List<MediaResult> extra = new ArrayList<>();
 
         if(mediaIntent != null) {
             intents.addAll(mediaIntent);
@@ -175,7 +172,11 @@ public class BelvedereUi {
             selected.addAll(selectedItems);
         }
 
-        final UiConfig uiConfig = new UiConfig(intents, selected, resolveMedia);
+        if(extraItems != null) {
+            extra.addAll(extraItems);
+        }
+
+        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_MEDIA_INTENT, uiConfig);
 
@@ -196,24 +197,29 @@ public class BelvedereUi {
 
         private final List<MediaIntent> intents;
         private final List<MediaResult> selectedItems;
+        private final List<MediaResult> extraItems;
         private final boolean resolveMedia;
 
         public UiConfig() {
             this.intents = new ArrayList<>();
             this.selectedItems = new ArrayList<>();
+            this.extraItems = new ArrayList<>();
             this.resolveMedia = true;
         }
 
-        public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems, boolean resolveMedia) {
+        public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
+                        List<MediaResult> extraItems, boolean resolveMedia) {
             this.intents = intents;
             this.selectedItems = selectedItems;
+            this.extraItems = extraItems;
             this.resolveMedia = resolveMedia;
         }
 
         protected UiConfig(Parcel in) {
-            intents = in.createTypedArrayList(MediaIntent.CREATOR);
-            selectedItems = in.createTypedArrayList(MediaResult.CREATOR);
-            resolveMedia = in.readInt() == 1;
+            this.intents = in.createTypedArrayList(MediaIntent.CREATOR);
+            this.selectedItems = in.createTypedArrayList(MediaResult.CREATOR);
+            this.extraItems = in.createTypedArrayList(MediaResult.CREATOR);
+            this.resolveMedia = in.readInt() == 1;
         }
 
         public List<MediaIntent> getIntents() {
@@ -249,6 +255,7 @@ public class BelvedereUi {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeTypedList(intents);
             dest.writeTypedList(selectedItems);
+            dest.writeTypedList(extraItems);
             dest.writeInt(resolveMedia ? 1 : 0);
         }
     }

@@ -83,8 +83,8 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                         fileOutputStream.write(buf, 0, len);
                     }
 
-                    final String mimeType = storage.getMimeTypeForUri(context, uri);
-                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), uri, file.getName(), mimeType));
+                    final MediaResult r = Storage.getMediaResultForUri(context, uri);
+                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), uri, file.getName(), r.getMimeType(), r.getSize()));
 
                 } else {
                     L.w(

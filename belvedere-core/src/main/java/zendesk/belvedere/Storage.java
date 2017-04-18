@@ -88,7 +88,7 @@ class Storage {
 
         } catch(NullPointerException e){
 
-            final String msg = String.format(Locale.US, //FIXME
+            final String msg = String.format(Locale.US,
                     "=====================\n" +
                     "FileProvider failed to retrieve file uri. There might be an issue with the FileProvider \n" +
                     "Please make sure that manifest-merger is working, and that you have defined the applicationId (package name) in the build.gradle\n" +
@@ -296,7 +296,7 @@ class Storage {
      * @param withLeadingDot {@code true} if the method should add a '.' to the extension
      * @return The mime type as a {@link String}.
      */
-    private String getExtension(Context context, Uri uri, boolean withLeadingDot){
+    private static String getExtension(Context context, Uri uri, boolean withLeadingDot){
         final MimeTypeMap mime = MimeTypeMap.getSingleton();
         final String schema = uri.getScheme();
         String ext = "tmp";
@@ -332,12 +332,12 @@ class Storage {
      * @param uri Link to the {@link Uri}
      * @return The name of the {@link File}, or an empty {@link String}
      */
-    String getFileNameFromUri(Context context, Uri uri){
+    private static String getFileNameFromUri(Context context, Uri uri){
         final String schema = uri.getScheme();
         String path = "";
 
         if(ContentResolver.SCHEME_CONTENT.equals(schema)) {
-            final String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+            final String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
             final ContentResolver contentResolver = context.getContentResolver();
             final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
 
@@ -359,16 +359,31 @@ class Storage {
         return path;
     }
 
-    /**
-     * Try to detect the mime type of an {@link Uri}
-     *
-     * @param context A valid application {@link Context}
-     * @param uri An {@link Uri}
-     * @return the mime type of the uri without a leading '.'
-     */
-    String getMimeTypeForUri(Context context, Uri uri) {
-        return MimeTypeMap
-                .getSingleton()
-                .getMimeTypeFromExtension(getExtension(context, uri, false));
+    static MediaResult getMediaResultForUri(Context context, Uri uri) {
+        final String schema = uri.getScheme();
+        long size = -1L;
+        String name = "";
+        String mimeType = "";
+
+        if(ContentResolver.SCHEME_CONTENT.equals(schema)) {
+            final String[] projection = { MediaStore.MediaColumns.SIZE, MediaStore.MediaColumns.DISPLAY_NAME };
+            final ContentResolver contentResolver = context.getContentResolver();
+            final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(contentResolver.getType(uri));
+
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
+                        name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+                    }
+                } finally {
+                    cursor.close();
+                }
+            }
+        }
+
+        return new MediaResult(null, uri, uri, name, mimeType, size);
     }
 }

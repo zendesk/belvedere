@@ -24,16 +24,8 @@ import zendesk.belvedere.ui.R;
 class ImageStreamItems {
 
     private final static int TYPE_CAMERA = 1;
-    private final static int TYPE_GALLERY = 2;
-
     private final static int PIC_CAMERA = R.drawable.belvedere_ic_camera_black;
-    private final static int PIC_DOCUMENT = R.drawable.belvedere_ic_image_black;
-
     private final static int LAYOUT_GRID = R.layout.stream_list_item_square_static;
-    private final static int LAYOUT_LIST = R.layout.stream_list_item_static;
-
-    private final static int TEXT_CAMERA = R.string.belvedere_dialog_camera;
-    private final static int TEXT_DOCUMENT = R.string.belvedere_dialog_gallery;
 
     static List<StreamItemImage> fromUris(List<MediaResult> uris, ImageStreamAdapter.Delegate delegate, Context context, int itemWidth) {
         List<StreamItemImage> items = new ArrayList<>(uris.size());
@@ -49,24 +41,6 @@ class ImageStreamItems {
             @Override
             public void onClick(View v) {
                 delegate.openCamera();
-            }
-        });
-    }
-
-    static StaticItem forCameraList(final ImageStreamAdapter.Delegate delegate) {
-        return new StaticItem(LAYOUT_LIST, PIC_CAMERA, TEXT_CAMERA, TYPE_CAMERA, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                delegate.openCamera();
-            }
-        });
-    }
-
-    static StaticItem forDocumentList(final ImageStreamAdapter.Delegate delegate) {
-        return new StaticItem(LAYOUT_LIST, PIC_DOCUMENT, TEXT_DOCUMENT, TYPE_GALLERY, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                delegate.openGallery();
             }
         });
     }
@@ -170,7 +144,7 @@ class ImageStreamItems {
                 resetThings(imageView, container);
                 imageView.addOnLayoutChangeListener(new Bla(imageView, container));
             } else {
-                doSizingStuff(imageView, container, h, w);
+                adjustSize(imageView, container, h, w);
             }
 
             Picasso.with(imageView.getContext())
@@ -183,7 +157,7 @@ class ImageStreamItems {
                     .into(imageView);
         }
 
-        class Bla implements View.OnLayoutChangeListener{
+        class Bla implements View.OnLayoutChangeListener {
 
             WeakReference<ImageView> imageView;
             WeakReference<View> container;
@@ -211,7 +185,7 @@ class ImageStreamItems {
                         h = imageView.getHeight();
                         w = imageView.getWidth();
                         L.d(LOG_TAG, getUri()  + " " + this +" " + h + " " + w);
-                        doSizingStuff(imageView, container.get(), h, w);
+                        adjustSize(imageView, container.get(), h, w);
                     } else {
                         L.d(LOG_TAG, getUri() + " " + this + " wrong view " + imageView.getTag());
                     }
@@ -230,7 +204,7 @@ class ImageStreamItems {
             }
         }
 
-        void doSizingStuff(final ImageView imageView, final View container, int h, int w) {
+        void adjustSize(final ImageView imageView, final View container, int h, int w) {
             final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
             final int paddingSelectedVertical = calculateSelectedPadding(h, w, paddingSelectedHorizontal);
 

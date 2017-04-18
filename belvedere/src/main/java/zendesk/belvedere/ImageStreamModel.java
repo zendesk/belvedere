@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
 class ImageStreamModel implements ImageStreamMvp.Model {
 
     private static final String GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos";
+    private static final String LOG_TAG = "ImageStreamModel";
+
     private static final int MAX_IMAGES = 500;
 
     private final Context context;
@@ -110,7 +113,8 @@ class ImageStreamModel implements ImageStreamMvp.Model {
 
         final String[] projection = new String[]{
                 MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.SIZE
         };
 
         final Cursor cursor = context.getContentResolver()
@@ -123,7 +127,18 @@ class ImageStreamModel implements ImageStreamMvp.Model {
                     final Uri uri = MediaStore.Files.getContentUri("external",
                             cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
 
-                    mediaResults.add(new MediaResult(uri));
+                    final long size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
+                    final String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+
+                    final int index = name.lastIndexOf(".");
+                    String mimeType = "image/";
+                    if(index != -1) {
+                        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(index + 1));
+                    }
+
+                    mediaResults.add(new MediaResult(null, uri, uri, name, mimeType, size));
+
+                    L.d(LOG_TAG, "mimeType: " + mimeType + " name: " + name + " size: " + size);
                 }
             }
         } finally {

@@ -13,7 +13,7 @@ import java.io.File;
 public class MediaResult implements Parcelable {
 
     static MediaResult empty() {
-        return new MediaResult(null, null, null, null, null);
+        return new MediaResult(null, null, null, null, null, -1L);
     }
 
     private final File file;
@@ -21,17 +21,16 @@ public class MediaResult implements Parcelable {
     private final Uri originalUri;
     private final String name;
     private final String mimeType;
+    private final long size;
 
-    MediaResult(final File file, final Uri uri, final Uri originalUri, final String name, final String mimeType) {
+    MediaResult(final File file, final Uri uri, final Uri originalUri,
+                final String name, final String mimeType, final long size) {
         this.file = file;
         this.uri = uri;
         this.originalUri = originalUri;
         this.mimeType = mimeType;
         this.name = name;
-    }
-
-    MediaResult(final Uri uri) {
-        this(null, uri, uri, null, null); // FIXME
+        this.size = size;
     }
 
     /**
@@ -80,6 +79,13 @@ public class MediaResult implements Parcelable {
         return mimeType;
     }
 
+    /**
+     * Gets the file size.
+     */
+    public long getSize() {
+        return size;
+    }
+
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeSerializable(file);
@@ -87,6 +93,7 @@ public class MediaResult implements Parcelable {
         dest.writeString(name);
         dest.writeString(mimeType);
         dest.writeParcelable(originalUri, flags);
+        dest.writeLong(size);
     }
 
     public static final Parcelable.Creator<MediaResult> CREATOR
@@ -107,6 +114,7 @@ public class MediaResult implements Parcelable {
         this.name = in.readString();
         this.mimeType = in.readString();
         this.originalUri = in.readParcelable(MediaResult.class.getClassLoader());
+        this.size = in.readLong();
     }
 
     @Override
@@ -116,9 +124,13 @@ public class MediaResult implements Parcelable {
 
         MediaResult that = (MediaResult) o;
 
+        if (size != that.size) return false;
         if (file != null ? !file.equals(that.file) : that.file != null) return false;
         if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
-        return originalUri != null ? originalUri.equals(that.originalUri) : that.originalUri == null;
+        if (originalUri != null ? !originalUri.equals(that.originalUri) : that.originalUri != null)
+            return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return mimeType != null ? mimeType.equals(that.mimeType) : that.mimeType == null;
     }
 
     @Override
@@ -126,6 +138,9 @@ public class MediaResult implements Parcelable {
         int result = file != null ? file.hashCode() : 0;
         result = 31 * result + (uri != null ? uri.hashCode() : 0);
         result = 31 * result + (originalUri != null ? originalUri.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+        result = 31 * result + (int) (size ^ (size >>> 32));
         return result;
     }
 }
