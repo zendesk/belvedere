@@ -80,15 +80,15 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onImageSelected(List<MediaResult> r, boolean replace) {
-            if(!popupBackend.isAttachmentsPopupVisible2()) {
-                showImageStream();
-            }
-
             if(replace) {
                 mediaResults.clear();
             }
             mediaResults.addAll(new ArrayList<>(r));
             ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
+
+            if(!popupBackend.isAttachmentsPopupVisible2()) {
+                showImageStream();
+            }
         }
 
     }

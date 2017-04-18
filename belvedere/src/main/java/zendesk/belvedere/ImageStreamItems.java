@@ -274,15 +274,6 @@ class ImageStreamItems {
         public void bind(View view) {
             ((ImageView)view.findViewById(R.id.list_item_static_image)).setImageResource(iconId);
             view.findViewById(R.id.list_item_static_click_area).setOnClickListener(onClickListener);
-
-            final View textView = view.findViewById(R.id.list_item_static_text);
-            if(textView != null) {
-                ((TextView)textView).setText(textId);
-            }
-        }
-
-        int getType() {
-            return type;
         }
     }
 }

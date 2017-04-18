@@ -12,6 +12,7 @@
         android:layout_height="125dp"
         android:background="@drawable/belvedere_round_corner_background"
         android:clickable="true"
+        android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground">
 
         <ImageView
@@ -22,6 +23,5 @@
             android:src="@drawable/belvedere_ic_camera_black"/>
 
     </FrameLayout>
-
 
 </LinearLayout>
