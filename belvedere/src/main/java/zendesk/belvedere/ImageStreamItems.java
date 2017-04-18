@@ -2,7 +2,6 @@ package zendesk.belvedere;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -22,6 +21,8 @@ import java.util.UUID;
 import zendesk.belvedere.ui.R;
 
 class ImageStreamItems {
+
+    private final static float SELECTED_OPACITY = .8F;
 
     private final static int TYPE_CAMERA = 1;
     private final static int PIC_CAMERA = R.drawable.belvedere_ic_camera_black;
@@ -80,6 +81,7 @@ class ImageStreamItems {
 
         private static final String LOG_TAG = "StreamItemImage";
 
+
         private final MediaResult uri;
         private final ImageStreamAdapter.Delegate delegate;
 
@@ -99,20 +101,20 @@ class ImageStreamItems {
             this.padding = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding);
             this.paddingSelectedHorizontal = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding_selected);
             this.itemWidth = itemWidth;
-            this.colorPrimary = Color.WHITE; //UiUtils.getThemeColor(context, R.attr.colorAccent); ... idk
+            this.colorPrimary = UiUtils.getThemeColor(context, R.attr.colorPrimary);
         }
 
         @Override
         public void bind(View view) {
             L.d(LOG_TAG, getUri() + " bind " + h + " " + w);
-
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
             final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_image_overlay);
             final View container = view.findViewById(R.id.list_item_container);
+            final Context context = container.getContext();
 
             if(isSelected()) {
                 selectOverlay.setVisibility(View.VISIBLE);
-                imageView.setAlpha(0.4F);
+                imageView.setAlpha(SELECTED_OPACITY);
                 UiUtils.internalSetTint(selectOverlay, colorPrimary);
 
             } else {
@@ -131,9 +133,9 @@ class ImageStreamItems {
             imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    final Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(uri.getUri());
-                    container.getContext().startActivity(intent);
+                    context.startActivity(intent);
                     return true;
                 }
             });
@@ -141,7 +143,7 @@ class ImageStreamItems {
             imageView.setTag(getUri().toString());
 
             if(h == -1 || w == -1) {
-                resetThings(imageView, container);
+                resetItemSizing(imageView, container);
                 imageView.addOnLayoutChangeListener(new Bla(imageView, container));
             } else {
                 adjustSize(imageView, container, h, w);
@@ -153,6 +155,7 @@ class ImageStreamItems {
             Picasso.with(imageView.getContext())
                     .load(uri.getUri())
                     .resize(itemWidth, 0)
+                    .transform(UiUtils.roundTransformation(context, R.dimen.image_stream_item_radius))
                     .onlyScaleDown()
                     .into(imageView);
         }
@@ -232,7 +235,7 @@ class ImageStreamItems {
             });
         }
 
-        void resetThings(ImageView imageView, View container) {
+        void resetItemSizing(ImageView imageView, View container) {
             final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;

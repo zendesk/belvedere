@@ -4,7 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +20,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Transformation;
+
+import java.util.Locale;
 
 import zendesk.belvedere.ui.R;
 
@@ -63,7 +73,6 @@ class Utils {
                     : ContextCompat.getColor(context, outValue.resourceId);
         } else {
             return Color.BLACK;
-
         }
     }
 
@@ -110,6 +119,44 @@ class Utils {
             return context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA).enabled;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
+        }
+    }
+
+    static Transformation roundTransformation(Context context, int radiusResId) {
+        final int radius = context.getResources().getDimensionPixelOffset(radiusResId);
+        return new RoundedTransformation(radius, 0);
+    }
+
+    private static class RoundedTransformation implements Transformation {
+
+        private final int radius, margin;
+
+        RoundedTransformation(final int radius, final int margin) {
+            this.radius = radius;
+            this.margin = margin;
+        }
+
+        @Override
+        public Bitmap transform(final Bitmap source) {
+            final Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+
+            Bitmap output = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(output);
+            canvas.drawRoundRect(new RectF(margin, margin, source.getWidth() - margin, source.getHeight() - margin), radius, radius, paint);
+
+            if (source != output) {
+                source.recycle();
+            }
+
+            return output;
+        }
+
+        @Override
+        public String key() {
+            final String keyFormat = "rounded-%s-%s";
+            return String.format(Locale.US, keyFormat, radius, margin);
         }
     }
 }

@@ -14,4 +14,6 @@
 
     <dimen name="image_stream_image_padding">4dp</dimen>
     <dimen name="image_stream_image_padding_selected">16dp</dimen>
+
+    <dimen name="image_stream_item_radius">2dp</dimen>
 </resources>
