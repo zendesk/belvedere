@@ -201,7 +201,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
     }
