@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/add_file_btn"
+        style="@style/FloatingActionMenuItem"
+        android:src="@drawable/ic_file"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/add_photo_btn"
+        style="@style/FloatingActionMenuItem"
+        android:src="@drawable/ic_collections"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:ignore="ContentDescription" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fam_margin"
+        android:src="@drawable/fam_icon_add"/>
+
+</LinearLayout>
