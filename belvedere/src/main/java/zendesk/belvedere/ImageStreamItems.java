@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -66,7 +65,7 @@ class ImageStreamItems {
             return id;
         }
 
-        abstract void bind(View view);
+        abstract void bind(View view, int position);
 
         void setSelected(boolean selected) {
             this.isSelected = selected;
@@ -105,7 +104,7 @@ class ImageStreamItems {
         }
 
         @Override
-        public void bind(View view) {
+        public void bind(View view, final int position) {
             L.d(LOG_TAG, getUri() + " bind " + h + " " + w);
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
             final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_image_overlay);
@@ -126,7 +125,7 @@ class ImageStreamItems {
                 @Override
                 public void onClick(View v) {
                     setSelected(!isSelected());
-                    delegate.setSelected(uri, isSelected());
+                    delegate.setSelected(uri, isSelected(), position);
                 }
             });
 
@@ -271,7 +270,7 @@ class ImageStreamItems {
         }
 
         @Override
-        public void bind(View view) {
+        public void bind(View view, int position) {
             ((ImageView)view.findViewById(R.id.list_item_static_image)).setImageResource(iconId);
             view.findViewById(R.id.list_item_static_click_area).setOnClickListener(onClickListener);
         }

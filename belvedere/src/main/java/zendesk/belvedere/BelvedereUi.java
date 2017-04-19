@@ -83,7 +83,7 @@ public class BelvedereUi {
         }
 
         public ImageStreamBuilder withExtraItems(List<MediaResult> mediaResults) {
-            this.extraItems = extraItems;
+            this.extraItems = mediaResults;
             return this;
         }
 
@@ -232,6 +232,10 @@ public class BelvedereUi {
 
         public boolean shouldResolveMedia() {
             return resolveMedia;
+        }
+
+        public List<MediaResult> getExtraItems() {
+            return extraItems;
         }
 
         public static final Creator<UiConfig> CREATOR = new Creator<UiConfig>() {

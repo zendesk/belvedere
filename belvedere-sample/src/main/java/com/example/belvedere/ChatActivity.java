@@ -9,6 +9,8 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.ImageStreamPopup;
@@ -24,6 +26,7 @@ public class ChatActivity extends AppCompatActivity {
     private Listener listener;
 
     static List<MediaResult> mediaResults = new ArrayList<>();
+    static Set<MediaResult> extraResults = new TreeSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mediaResults.clear();
+                extraResults.clear();
+                ((EditText)findViewById(R.id.input)).setText("");
                 ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
             }
         });
@@ -71,7 +76,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    class Listener implements ImageStreamPopup.Listener {
+    private class Listener implements ImageStreamPopup.Listener {
 
         @Override
         public void onDismissed() {
@@ -83,22 +88,26 @@ public class ChatActivity extends AppCompatActivity {
             if(replace) {
                 mediaResults.clear();
             }
+
             mediaResults.addAll(new ArrayList<>(r));
+            extraResults.addAll(new ArrayList<>(r));
+
             ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
 
-            if(!popupBackend.isAttachmentsPopupVisible2()) {
+            if(!popupBackend.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
         }
-
     }
 
     private void showImageStream() {
         BelvedereUi
                 .imageStream(ChatActivity.this)
+                .resolveMedia(false)
                 .withCameraIntent()
                 .withDocumentIntent("*/*", true)
                 .withSelectedItems(new ArrayList<>(mediaResults))
+                .withExtraItems(new ArrayList<>(extraResults))
                 .showPopup(ChatActivity.this);
     }
 }

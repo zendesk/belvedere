@@ -28,15 +28,17 @@ interface ImageStreamMvp {
 
         List<MediaResult> getSelectedImages();
 
-        void addToSelectedItems(MediaResult mediaResult);
+        List<MediaResult> addToSelectedItems(MediaResult mediaResult);
 
-        void removeFromSelectedItems(MediaResult mediaResult);
+        List<MediaResult> removeFromSelectedItems(MediaResult mediaResult);
 
     }
 
     interface View {
 
         void initUiComponents();
+
+        void updateToolbarTitle(int selectedImages);
 
         void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera);
 
@@ -60,7 +62,7 @@ interface ImageStreamMvp {
 
         void openGooglePhotos();
 
-        void setItemSelected(MediaResult uri, boolean b);
+        List<MediaResult> setItemSelected(MediaResult uri, boolean b);
 
         List<MediaResult> getSelectedItems();
 

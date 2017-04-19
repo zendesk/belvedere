@@ -119,7 +119,6 @@ public class PopupBackend extends Fragment {
             handlePermissionStuff(permissions, new InternalPermissionCallback() {
                 @Override
                 public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
-
                     final List<MediaIntent> filteredMediaIntents = filterMediaIntents(mediaIntents);
 
                     if(canShowImageStream()) {
@@ -242,7 +241,7 @@ public class PopupBackend extends Fragment {
         void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain);
     }
 
-    public boolean isAttachmentsPopupVisible2() {
+    public boolean isAttachmentsPopupVisible() {
         return imageStreamPopup != null;
     }
 

@@ -35,12 +35,9 @@ class ImageStreamDataSource {
     DiffUtil.DiffResult setItemsSelected(List<Uri> uris) {
         final ArrayList<ImageStreamItems.StreamItemImage> streamItemImages = new ArrayList<>(imageStream);
 
-        for(ImageStreamItems.StreamItemImage item : streamItemImages) { // FIXME thats broken
-            if(uris.contains(item.getUri())){
-                item.setSelected(true);
-            } else {
-                item.setSelected(false);
-            }
+        for(ImageStreamItems.StreamItemImage item : streamItemImages) {
+            final boolean selected = uris.contains(item.getUri());
+            item.setSelected(selected);
         }
 
         return updateDataSet(staticItems, streamItemImages);

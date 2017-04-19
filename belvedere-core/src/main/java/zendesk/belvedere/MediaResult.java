@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * Model object, used to return results.
  */
-public class MediaResult implements Parcelable {
+public class MediaResult implements Parcelable, Comparable<MediaResult> {
 
     static MediaResult empty() {
         return new MediaResult(null, null, null, null, null, -1L);
@@ -142,5 +142,10 @@ public class MediaResult implements Parcelable {
         result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
         result = 31 * result + (int) (size ^ (size >>> 32));
         return result;
+    }
+
+    @Override
+    public int compareTo(@NonNull MediaResult o) {
+        return originalUri.compareTo(o.getOriginalUri());
     }
 }

@@ -29,7 +29,6 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     ImageStreamModel(Context context,
                      BelvedereUi.UiConfig startConfig,
                      PermissionStorage preferences) {
-
         this.context = context;
         this.preferences = preferences;
         this.startConfig = startConfig;
@@ -40,7 +39,8 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     @Override
     public List<MediaResult> getLatestImages() {
         final List<MediaResult> mediaResults = queryRecentImages();
-        return mergeSelectedItems(mediaResults, selectedImages);
+        final List<MediaResult> userProvidedResults = mergeMediaResultLists(startConfig.getExtraItems(), startConfig.getSelectedItems());
+        return mergeMediaResultLists(mediaResults, userProvidedResults);
     }
 
     @Override
@@ -99,13 +99,15 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     }
 
     @Override
-    public void addToSelectedItems(MediaResult mediaResult) {
+    public List<MediaResult> addToSelectedItems(MediaResult mediaResult) {
         selectedImages.add(mediaResult);
+        return selectedImages;
     }
 
     @Override
-    public void removeFromSelectedItems(MediaResult mediaResult) {
+    public List<MediaResult> removeFromSelectedItems(MediaResult mediaResult) {
         selectedImages.remove(mediaResult);
+        return selectedImages;
     }
 
     private List<MediaResult> queryRecentImages() {
@@ -150,8 +152,9 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         return mediaResults;
     }
 
-    private List<MediaResult> mergeSelectedItems(List<MediaResult> images, List<MediaResult> toMerge) {
-        List<MediaResult> mediaResults = new ArrayList<>(images);
+    private List<MediaResult> mergeMediaResultLists(List<MediaResult> images, List<MediaResult> toMerge) {
+        final List<MediaResult> mediaResults = new ArrayList<>(images.size() + toMerge.size());
+        mediaResults.addAll(images);
 
         for(MediaResult mediaResult : toMerge) {
 

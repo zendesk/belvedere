@@ -22,7 +22,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        imageStreamDataSource.getItemForPos(position).bind(holder.itemView);
+        imageStreamDataSource.getItemForPos(position).bind(holder.itemView, position);
     }
 
     @Override
@@ -43,6 +43,6 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface Delegate {
         void openCamera();
         void openGallery();
-        void setSelected(MediaResult uri, boolean selected);
+        void setSelected(MediaResult uri, boolean selected, int position);
     }
 }

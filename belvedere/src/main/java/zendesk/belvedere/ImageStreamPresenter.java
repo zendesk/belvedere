@@ -1,8 +1,6 @@
 package zendesk.belvedere;
 
 
-import android.net.Uri;
-
 import java.util.List;
 
 class ImageStreamPresenter implements ImageStreamMvp.Presenter {
@@ -22,6 +20,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     public void init() {
         presentStream();
         initMenu();
+        view.updateToolbarTitle(model.getSelectedImages().size());
     }
 
     @Override
@@ -51,12 +50,17 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         }
     }
 
-    public void setItemSelected(MediaResult mediaResult, boolean b) {
-        if(b) {
-            model.addToSelectedItems(mediaResult);
+    public List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected) {
+        final List<MediaResult> mediaResults;
+
+        if(isSelected) {
+            mediaResults = model.addToSelectedItems(mediaResult);
         } else{
-            model.removeFromSelectedItems(mediaResult);
+            mediaResults = model.removeFromSelectedItems(mediaResult);
         }
+
+        view.updateToolbarTitle(mediaResults.size());
+        return mediaResults;
     }
 
     @Override

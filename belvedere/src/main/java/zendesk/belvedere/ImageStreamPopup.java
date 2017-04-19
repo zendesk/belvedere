@@ -27,6 +27,7 @@ import android.widget.PopupWindow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import zendesk.belvedere.ui.R;
 
@@ -170,19 +171,21 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     }
 
     @Override
-    public void setSelected(MediaResult uri, boolean b) {
-        for(int i = 0, c = dataSource.getItemCount(); i < c; i++) {
-            if(dataSource.getItemForPos(i) instanceof ImageStreamItems.StreamItemImage) {
-                if(((ImageStreamItems.StreamItemImage)dataSource.getItemForPos(i)).getUri().equals(uri.getUri())){
-                    imageStreamAdapter.notifyItemChanged(i);
-                }
-            }
-        }
-
-        presenter.setItemSelected(uri, b);
+    public void setSelected(MediaResult uri, boolean isSelected, int position) {
+        imageStreamAdapter.notifyItemChanged(position);
+        final List<MediaResult> selectedItems = presenter.setItemSelected(uri, isSelected);
         if(popupBackend.getImListener() != null){
-            final List<MediaResult> selectedItems = presenter.getSelectedItems();
             popupBackend.getImListener().onImageSelected(selectedItems, true);
+        }
+    }
+
+    @Override
+    public void updateToolbarTitle(int selectedImages) {
+        if(selectedImages > 0) {
+            final String title = activity.getString(R.string.belvedere_image_stream_title);
+            toolbar.setTitle(String.format(Locale.US, "%s (%s)", title, selectedImages));
+        } else {
+            toolbar.setTitle(R.string.belvedere_image_stream_title);
         }
     }
 
@@ -196,7 +199,6 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
     private void initToolbar() {
         toolbar.setNavigationIcon(R.drawable.belvedere_ic_close);
-        toolbar.setTitle("Photo library");
         toolbar.setBackgroundColor(Color.WHITE);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
