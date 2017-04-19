@@ -23,7 +23,7 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
     private final String mimeType;
     private final long size;
 
-    MediaResult(final File file, final Uri uri, final Uri originalUri,
+    public MediaResult(final File file, final Uri uri, final Uri originalUri,
                 final String name, final String mimeType, final long size) {
         this.file = file;
         this.uri = uri;

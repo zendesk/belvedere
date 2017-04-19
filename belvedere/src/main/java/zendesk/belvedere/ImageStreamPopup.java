@@ -268,9 +268,11 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
                 new GestureDetectorCompat(activity, new PassThroughGestureListener());
         dismissArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public boolean onTouch(View v, final MotionEvent event) {
                 activity.dispatchTouchEvent(event);
-                gestureDetectorCompat.onTouchEvent(event);
+                if(gestureDetectorCompat.onTouchEvent(event)){
+                    dismiss();
+                }
                 return true;
             }
         });
@@ -291,23 +293,20 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
         @Override
         public boolean onDown(MotionEvent e) {
-            return true;
+            return false;
         }
 
         @Override
         public void onShowPress(MotionEvent e) {
-            dismiss();
         }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            dismiss();
             return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            dismiss();
             return true;
         }
 
@@ -318,7 +317,6 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            dismiss();
             return true;
         }
     }

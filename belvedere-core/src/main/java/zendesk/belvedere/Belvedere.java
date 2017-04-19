@@ -171,7 +171,7 @@ public class Belvedere implements InstanceBuilder {
      */
     public void resolveUris(@NonNull List<Uri> uris, @NonNull String directory, @NonNull Callback<List<MediaResult>> callback) {
         if(uris != null && uris.size() > 0) {
-            ResolveUriTask.start(context, storage, callback, uris);
+            ResolveUriTask.start(context, storage,  callback, uris, directory);
         } else {
             callback.internalSuccess(new ArrayList<MediaResult>(0));
         }
