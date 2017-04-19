@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

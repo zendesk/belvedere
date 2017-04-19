@@ -1,6 +1,8 @@
 package zendesk.belvedere;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
@@ -16,12 +18,11 @@ import zendesk.belvedere.ui.R;
 
 public class FloatingActionMenu extends LinearLayout implements View.OnClickListener {
 
-    interface MenuItemClickListener {
-        void onAddFileClicked();
-        void onAddPhotoClicked();
-    }
+    private static final String GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos";
 
-    private MenuItemClickListener menuItemClickListener;
+    private boolean googlePhotosAvailable;
+    private Activity activity;
+
     private View btnAddFile;
     private View btnAddPhoto;
 
@@ -46,32 +47,36 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         initView(context);
     }
 
-    @SuppressWarnings("unused")
-    public void setMenuItemClickListener(@Nullable MenuItemClickListener menuItemClickListener) {
-        this.menuItemClickListener = menuItemClickListener;
-    }
-
     private void initView(@NonNull Context context) {
         inflate(context, R.layout.floating_action_menu, this);
 
         if (!isInEditMode()) {
-            findViewById(R.id.fam).setOnClickListener(this);
             btnAddFile = findViewById(R.id.add_file_btn);
             btnAddPhoto = findViewById(R.id.add_photo_btn);
-
-            btnAddFile.setOnClickListener(this);
-            btnAddPhoto.setOnClickListener(this);
         }
+    }
+
+    void init(Activity activity) {
+        this.activity = activity;
+        googlePhotosAvailable = Utils.isAppAvailable(GOOGLE_PHOTOS_PACKAGE_NAME, activity);
+
+        findViewById(R.id.fam).setOnClickListener(this);
+        btnAddFile.setOnClickListener(this);
+        btnAddPhoto.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getVisibility() == VISIBLE && menuItemClickListener != null) {
+        if (v.getVisibility() == VISIBLE) {
             if (v.getId() == R.id.add_file_btn) {
-                menuItemClickListener.onAddFileClicked();
+                openFilePicker();
             } else if (v.getId() == R.id.add_photo_btn) {
-                menuItemClickListener.onAddPhotoClicked();
+                openGooglePhotos();
             }
+        }
+
+        if (v.getId() == R.id.fam && !googlePhotosAvailable) {
+            openFilePicker();
         }
 
         toggle();
@@ -81,6 +86,18 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         boolean isVisible = btnAddFile.getVisibility() == VISIBLE;
 
         btnAddFile.setVisibility(isVisible ? GONE : VISIBLE);
-        btnAddPhoto.setVisibility(isVisible ? GONE : VISIBLE);
+        if (googlePhotosAvailable) {
+            btnAddPhoto.setVisibility(isVisible ? GONE : VISIBLE);
+        }
+    }
+
+    private void openFilePicker() {
+        Belvedere.from(activity).document().build().open(activity);
+    }
+
+    private void openGooglePhotos() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        activity.startActivityForResult(intent, 0);
     }
 }

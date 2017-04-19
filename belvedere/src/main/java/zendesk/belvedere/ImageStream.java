@@ -28,7 +28,7 @@ import zendesk.belvedere.ui.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static zendesk.belvedere.UiUtils.shouldOverrideActivityAnimation;
+import static zendesk.belvedere.Utils.shouldOverrideActivityAnimation;
 
 public class ImageStream extends AppCompatActivity
         implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
@@ -59,8 +59,8 @@ public class ImageStream extends AppCompatActivity
         setContentView(R.layout.activity_image_stream);
         bindViews();
 
-        UiUtils.dimStatusBar(this);
-        UiUtils.hideToolbar(this);
+        Utils.dimStatusBar(this);
+        Utils.hideToolbar(this);
 
         viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
         if (savedInstanceState != null && savedInstanceState.getParcelable(VIEW_STATE) != null) {
@@ -283,6 +283,8 @@ public class ImageStream extends AppCompatActivity
         this.dismissArea = findViewById(R.id.dismiss_area);
         this.imageList = (RecyclerView) findViewById(R.id.image_list);
         this.toolbar = (Toolbar) findViewById(R.id.image_stream_toolbar);
+
+        ((FloatingActionMenu) findViewById(R.id.fam)).init(this);
     }
 
     private void initBottomSheet() {
@@ -306,17 +308,17 @@ public class ImageStream extends AppCompatActivity
                 float offset = 0.6f;
                 if (slideOffset >= offset) {
                     ViewCompat.setAlpha(toolbar, 1f - (1f - slideOffset) / (1f - offset));
-                    UiUtils.showToolbar(ImageStream.this);
+                    Utils.showToolbar(ImageStream.this);
                 } else {
-                    UiUtils.hideToolbar(ImageStream.this);
+                    Utils.hideToolbar(ImageStream.this);
                 }
             }
         });
 
         if (viewState.getBottomSheetState() == BottomSheetBehavior.STATE_EXPANDED) {
-            UiUtils.showToolbar(ImageStream.this);
+            Utils.showToolbar(ImageStream.this);
         } else {
-            UiUtils.hideToolbar(ImageStream.this);
+            Utils.hideToolbar(ImageStream.this);
         }
 
         bottomSheetBehavior.setState(viewState.getBottomSheetState());
