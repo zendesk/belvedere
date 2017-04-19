@@ -9,8 +9,8 @@ import java.util.List;
 
 class ImageStreamDataSource {
 
-    private List<ImageStreamItems.StaticItem> staticItems;
-    private List<ImageStreamItems.StreamItemImage> imageStream;
+    private List<ImageStreamItems.Item> staticItems;
+    private List<ImageStreamItems.Item> imageStream;
 
     private List<ImageStreamItems.Item> list;
 
@@ -28,27 +28,27 @@ class ImageStreamDataSource {
         return list.size();
     }
 
-    DiffUtil.DiffResult initializeWithImages(List<ImageStreamItems.StreamItemImage> imageStream) {
+    DiffUtil.DiffResult initializeWithImages(List<ImageStreamItems.Item> imageStream) {
         return updateDataSet(staticItems, imageStream);
     }
 
     DiffUtil.DiffResult setItemsSelected(List<Uri> uris) {
-        final ArrayList<ImageStreamItems.StreamItemImage> streamItemImages = new ArrayList<>(imageStream);
+        final ArrayList<ImageStreamItems.Item> streamItemImages = new ArrayList<>(imageStream);
 
-        for(ImageStreamItems.StreamItemImage item : streamItemImages) {
-            final boolean selected = uris.contains(item.getUri());
+        for(ImageStreamItems.Item item : streamItemImages) {
+            final boolean selected = uris.contains(item.getMediaResult().getOriginalUri());
             item.setSelected(selected);
         }
 
         return updateDataSet(staticItems, streamItemImages);
     }
 
-    DiffUtil.DiffResult addStaticItem(ImageStreamItems.StaticItem staticItem) {
+    DiffUtil.DiffResult addStaticItem(ImageStreamItems.Item staticItem) {
         return updateDataSet(Collections.singletonList(staticItem), imageStream);
     }
 
-    private synchronized DiffUtil.DiffResult updateDataSet(List<ImageStreamItems.StaticItem> newStaticItems,
-                                                           List<ImageStreamItems.StreamItemImage> newImageStream) {
+    private synchronized DiffUtil.DiffResult updateDataSet(List<ImageStreamItems.Item> newStaticItems,
+                                                           List<ImageStreamItems.Item> newImageStream) {
         List<ImageStreamItems.Item> newList = new ArrayList<>(newStaticItems.size() + newImageStream.size());
         newList.addAll(newStaticItems);
         newList.addAll(newImageStream);

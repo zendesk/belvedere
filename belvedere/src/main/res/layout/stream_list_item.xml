@@ -24,11 +24,10 @@
         android:id="@+id/list_item_image_overlay"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:background="@drawable/belvedere_stream_check_background"
         android:scaleType="center"
         android:src="@drawable/belvedere_ic_check_circle"
-        android:background="@drawable/belvedere_stream_check_background"
-        android:visibility="gone"
-        android:layout_gravity="center"
-        />
+        android:visibility="gone" />
 
 </FrameLayout>

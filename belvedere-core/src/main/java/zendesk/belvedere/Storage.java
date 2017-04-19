@@ -370,13 +370,14 @@ class Storage {
             final ContentResolver contentResolver = context.getContentResolver();
             final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
 
-            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(contentResolver.getType(uri));
+            mimeType = contentResolver.getType(uri);
 
             if (cursor != null) {
                 try {
                     if (cursor.moveToFirst()) {
                         size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
                         name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+
                     }
                 } finally {
                     cursor.close();
