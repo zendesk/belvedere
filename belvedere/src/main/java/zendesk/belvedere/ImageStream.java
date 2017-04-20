@@ -284,7 +284,10 @@ public class ImageStream extends AppCompatActivity
         this.imageList = (RecyclerView) findViewById(R.id.image_list);
         this.toolbar = (Toolbar) findViewById(R.id.image_stream_toolbar);
 
-        ((FloatingActionMenu) findViewById(R.id.fam)).init(this);
+        // TODO: 20/04/2017 fix me
+        FloatingActionMenu floatingActionMenu = (FloatingActionMenu) findViewById(R.id.floating_action_menu);
+        floatingActionMenu.addMenuItem(R.drawable.ic_file, null);
+        floatingActionMenu.addMenuItem(R.drawable.ic_collections, null);
     }
 
     private void initBottomSheet() {
