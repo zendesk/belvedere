@@ -14,10 +14,12 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import zendesk.belvedere.ui.R;
@@ -33,6 +35,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     private boolean isExpanded;
     private int animationDuration;
     private int animationRotationAngle;
+    private int animationDelaySubsequentItem;
 
 
     public FloatingActionMenu(@NonNull Context context) {
@@ -64,11 +67,12 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             setOnClickListener(this);
             fab = findViewById(R.id.floating_action_menu_fab);
             layoutInflater = LayoutInflater.from(context);
-            menuItems = new LinkedList<>();
+            menuItems = new ArrayList<>();
 
             final Resources resource = getResources();
             animationDuration = resource.getInteger(R.integer.floating_action_menu_animation_duration);
             animationRotationAngle = resource.getInteger(R.integer.floating_action_menu_animation_rotation_angle);
+            animationDelaySubsequentItem = getResources().getInteger(R.integer.floating_action_menu_animation_delay_subsequent_item);
         }
     }
 
@@ -85,13 +89,48 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     }
 
     private void showMenuItems(boolean isExpanded) {
-        for (Pair<ImageView, OnClickListener> menuItem : menuItems) {
-            menuItem.first.setVisibility(isExpanded ? VISIBLE : GONE);
+        long startOffset = 0;
+
+        if (isExpanded) {
+            for (Pair<ImageView, View.OnClickListener> menuItem : menuItems) {
+                Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.show_menu_item);
+                a.setRepeatMode(Animation.REVERSE);
+                a.setStartOffset(startOffset);
+                menuItem.first.setVisibility(VISIBLE);
+                menuItem.first.startAnimation(a);
+
+                startOffset += animationDelaySubsequentItem;
+            }
+        } else {
+            Animation lastAnimation = null;
+
+            for (int i = menuItems.size() - 1; i >= 0; i--) {
+                final Pair<ImageView, View.OnClickListener> menuItem = menuItems.get(i);
+
+                Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.hide_menu_item);
+                a.setRepeatMode(Animation.REVERSE);
+                a.setStartOffset(startOffset);
+                a.setAnimationListener(new AnimationListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        menuItem.first.setVisibility(INVISIBLE);
+                    }
+                });
+                menuItem.first.startAnimation(a);
+
+                startOffset += animationDelaySubsequentItem;
+
+                lastAnimation = a;
+            }
+
+            if (lastAnimation != null) {
+                lastAnimation.setAnimationListener(setGone);
+            }
         }
     }
 
     private void rotate(boolean isExpanded) {
-        final float angle = isExpanded ? animationRotationAngle : ANIMATION_ROTATION_INITIAL_ANGLE;
+        float angle = isExpanded ? animationRotationAngle : ANIMATION_ROTATION_INITIAL_ANGLE;
         ViewCompat.animate(fab).rotation(angle).setDuration(animationDuration).start();
     }
 
@@ -103,5 +142,32 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         addView(imageView, 0);
         menuItems.add(Pair.create(imageView, clickListener));
         setVisibility(VISIBLE);
+    }
+
+    private AnimationListenerAdapter setGone = new AnimationListenerAdapter() {
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            for (Pair<ImageView, OnClickListener> menuItem : menuItems) {
+                menuItem.first.setVisibility(GONE);
+            }
+        }
+    };
+
+    private abstract class AnimationListenerAdapter implements Animation.AnimationListener {
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+            // Intentionally empty
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            // Intentionally empty
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+            // Intentionally empty
+        }
     }
 }
