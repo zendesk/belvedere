@@ -35,6 +35,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     @Override
     public void initMenu() {
         view.showDocumentMenuItem(model.hasDocumentIntent());
+        view.showGooglePhotosMenuItem(model.hasGooglePhotosIntent());
     }
 
     @Override
@@ -86,6 +87,13 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     public void openGallery() {
         if (model.hasDocumentIntent()) {
             view.openMediaIntent(model.getDocumentIntent());
+        }
+    }
+
+    @Override
+    public void openGooglePhotos() {
+        if (model.hasGooglePhotosIntent()) {
+            view.openMediaIntent(model.getGooglePhotosIntent());
         }
     }
 

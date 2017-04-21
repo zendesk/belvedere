@@ -1,6 +1,7 @@
 package zendesk.belvedere;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -11,6 +12,7 @@ import java.util.List;
 
 class ImageStreamModel implements ImageStreamMvp.Model {
 
+    private static final String GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos";
     private static final int MAX_IMAGES = 500;
 
     private final Context context;
@@ -69,6 +71,11 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     }
 
     @Override
+    public boolean hasGooglePhotosIntent() {
+        return getDocumentIntent() != null && Utils.isAppAvailable(GOOGLE_PHOTOS_PACKAGE_NAME, context);
+    }
+
+    @Override
     public MediaIntent getCameraIntent() {
         return getIntentForTarget(MediaIntent.TARGET_CAMERA);
     }
@@ -76,6 +83,15 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     @Override
     public MediaIntent getDocumentIntent() {
         return getIntentForTarget(MediaIntent.TARGET_DOCUMENT);
+    }
+
+    @Override
+    public MediaIntent getGooglePhotosIntent() {
+        MediaIntent mediaIntent = getDocumentIntent();
+        Intent intent = mediaIntent.getIntent();
+        intent.setPackage(GOOGLE_PHOTOS_PACKAGE_NAME);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        return mediaIntent;
     }
 
     @Override

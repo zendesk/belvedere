@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (switchGallery.isChecked()) {
-            mediaIntents.add(from.document().contentType("image/*").allowMultiple(switchMultiple.isChecked()).build());
+            mediaIntents.add(from.document().contentType("*/*").allowMultiple(switchMultiple.isChecked()).build());
         }
 
         return mediaIntents;

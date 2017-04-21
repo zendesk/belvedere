@@ -40,6 +40,7 @@ public class ImageStream extends AppCompatActivity
     private ImageStreamMvp.Presenter presenter;
 
     private View bottomSheet, dismissArea;
+    private FloatingActionMenu floatingActionMenu;
     private RecyclerView imageList;
     private Toolbar toolbar;
     private MenuItem galleryMenuItem;
@@ -204,6 +205,27 @@ public class ImageStream extends AppCompatActivity
     public void showDocumentMenuItem(boolean visible) {
         if (galleryMenuItem != null) {
             galleryMenuItem.setVisible(visible);
+
+        }
+        if (floatingActionMenu != null) {
+            floatingActionMenu.addMenuItem(R.drawable.ic_file, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    presenter.openGallery();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void showGooglePhotosMenuItem(boolean visible) {
+        if (floatingActionMenu != null) {
+            floatingActionMenu.addMenuItem(R.drawable.ic_collections, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    presenter.openGooglePhotos();
+                }
+            });
         }
     }
 
@@ -283,11 +305,7 @@ public class ImageStream extends AppCompatActivity
         this.dismissArea = findViewById(R.id.dismiss_area);
         this.imageList = (RecyclerView) findViewById(R.id.image_list);
         this.toolbar = (Toolbar) findViewById(R.id.image_stream_toolbar);
-
-        // TODO: 20/04/2017 fix me
-        FloatingActionMenu floatingActionMenu = (FloatingActionMenu) findViewById(R.id.floating_action_menu);
-        floatingActionMenu.addMenuItem(R.drawable.ic_file, null);
-        floatingActionMenu.addMenuItem(R.drawable.ic_collections, null);
+        this.floatingActionMenu = (FloatingActionMenu) findViewById(R.id.floating_action_menu);
     }
 
     private void initBottomSheet() {
