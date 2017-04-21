@@ -26,15 +26,15 @@ public class BelvedereUi {
         return new ImageStreamBuilder(context);
     }
 
-    public static PopupBackend install(AppCompatActivity activity) {
+    public static ImageStream install(AppCompatActivity activity) {
         final FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
         Fragment fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_POPUP);
 
-        PopupBackend popupBackend;
-        if(fragment instanceof PopupBackend) {
-            popupBackend = (PopupBackend) fragment;
+        ImageStream popupBackend;
+        if(fragment instanceof ImageStream) {
+            popupBackend = (ImageStream) fragment;
         } else {
-            popupBackend = new PopupBackend();
+            popupBackend = new ImageStream();
             supportFragmentManager
                     .beginTransaction()
                     .add(popupBackend, FRAGMENT_TAG_POPUP)
@@ -102,11 +102,11 @@ public class BelvedereUi {
         }
 
         public void showPopup(AppCompatActivity activity) {
-            final PopupBackend popupBackend = BelvedereUi.install(activity);
+            final ImageStream popupBackend = BelvedereUi.install(activity);
 
             final WeakReference<AppCompatActivity> activityReference = new WeakReference<>(activity);
 
-            popupBackend.handlePermissions(mediaIntents, new PopupBackend.PermissionCallback() {
+            popupBackend.handlePermissions(mediaIntents, new ImageStream.PermissionCallback() {
                 @Override
                 public void ok(final List<MediaIntent> mediaIntents) {
                     final AppCompatActivity appCompatActivity = activityReference.get();
@@ -116,12 +116,12 @@ public class BelvedereUi {
                         decorView.post(new Runnable() {
                             @Override
                             public void run() {
-                                final ImageStreamPopup show = ImageStreamPopup.show(
+                                final ImageStreamUi show = ImageStreamUi.show(
                                         appCompatActivity,
                                         decorView,
                                         popupBackend,
                                         new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia));
-                                popupBackend.setImageStreamPopup(show);
+                                popupBackend.setImageStreamUi(show);
                             }
                         });
                     }

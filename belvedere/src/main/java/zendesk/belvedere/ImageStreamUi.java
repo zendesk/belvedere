@@ -1,13 +1,18 @@
 package zendesk.belvedere;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
@@ -21,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -33,27 +39,20 @@ import zendesk.belvedere.ui.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
+public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
 
-    public interface Listener {
-        void onDismissed();
-        void onImageSelected(List<MediaResult> mediaResults, boolean replace);
-    }
-
-    static ImageStreamPopup show(Activity activity, ViewGroup parent, PopupBackend popupBackend, BelvedereUi.UiConfig config) {
-
+    static ImageStreamUi show(Activity activity, ViewGroup parent, ImageStream popupBackend, BelvedereUi.UiConfig config) {
         final View v = LayoutInflater.from(activity).inflate(R.layout.activity_image_stream, parent, false);
-        final ImageStreamPopup attachmentPicker = new ImageStreamPopup(activity, v, popupBackend, config);
+        final ImageStreamUi attachmentPicker = new ImageStreamUi(activity, v, popupBackend, config);
         attachmentPicker.showAtLocation(parent, Gravity.TOP, 0, 0);
-
         return attachmentPicker;
     }
 
-    private final PopupBackend popupBackend;
+    private final ImageStream popupBackend;
     private final ImageStreamMvp.Presenter presenter;
     private final ImageStreamDataSource dataSource;
 
-    private View bottomSheet, dismissArea;
+    private View bottomSheet, dismissArea, toolbarContainer;
     private FloatingActionButton menuFab;
     private RecyclerView imageList;
     private Toolbar toolbar;
@@ -61,7 +60,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     private ImageStreamAdapter imageStreamAdapter;
     private Activity activity;
 
-    ImageStreamPopup(Activity activity, View view, PopupBackend popupBackend, BelvedereUi.UiConfig uiConfig) {
+    ImageStreamUi(Activity activity, View view, ImageStream popupBackend, BelvedereUi.UiConfig uiConfig) {
         super(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, false);
         setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         setFocusable(true);
@@ -174,9 +173,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     public void setSelected(MediaResult uri, boolean isSelected, int position) {
         imageStreamAdapter.notifyItemChanged(position);
         final List<MediaResult> selectedItems = presenter.setItemSelected(uri, isSelected);
-        if(popupBackend.getImListener() != null){
-            popupBackend.getImListener().onImageSelected(selectedItems, true);
-        }
+        popupBackend.notifyImageSelected(selectedItems, true);
     }
 
     @Override
@@ -194,6 +191,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         this.dismissArea = view.findViewById(R.id.dismiss_area);
         this.imageList = (RecyclerView) view.findViewById(R.id.image_list);
         this.toolbar = (Toolbar) view.findViewById(R.id.image_stream_toolbar);
+        this.toolbarContainer = view.findViewById(R.id.image_stream_toolbar_container);
         this.menuFab = (FloatingActionButton) view.findViewById(R.id.image_list_fab);
     }
 
@@ -206,6 +204,18 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+
+
+        CoordinatorLayout.LayoutParams layoutParams = null;
+        if(toolbar.getLayoutParams() instanceof  CoordinatorLayout.LayoutParams) {
+            layoutParams = (CoordinatorLayout.LayoutParams) toolbar.getLayoutParams();
+        } else if(toolbarContainer.getLayoutParams() instanceof CoordinatorLayout.LayoutParams){
+            layoutParams = (CoordinatorLayout.LayoutParams) toolbarContainer.getLayoutParams();
+        }
+
+        if(layoutParams != null) {
+            layoutParams.setBehavior(new ToolbarBehavior());
+        }
     }
 
     private void initRecycler(ImageStreamAdapter adapter, RecyclerView.LayoutManager layoutManager) {
@@ -234,13 +244,7 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                float offset = 0.6f;
-                if (slideOffset >= offset) {
-                    ViewCompat.setAlpha(toolbar, 1f - (1f - slideOffset) / (1f - offset));
-                    UiUtils.showToolbar(getContentView(), true);
-                } else {
-                    UiUtils.showToolbar(getContentView(), false);
-                }
+                // intentionally empty
             }
         });
 
@@ -281,12 +285,12 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
     @Override
     public void dismiss() {
         super.dismiss();
+        popupBackend.setImageStreamUi(null);
 
-        popupBackend.setImageStreamPopup(null);
+        tintStatusBar(0);
+        popupBackend.notifyScrollListener(0,0,0);
 
-        if(popupBackend.getImListener() != null) {
-            popupBackend.getImListener().onDismissed();
-        }
+        popupBackend.notifyDismissed();
     }
 
     private class PassThroughGestureListener implements GestureDetector.OnGestureListener {
@@ -318,6 +322,95 @@ public class ImageStreamPopup extends PopupWindow implements ImageStreamMvp.View
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             return true;
+        }
+    }
+
+    private void tintStatusBar(float scrollOffset) {
+
+        int statusBarColor = toolbar.getResources().getColor(R.color.image_stream_status_bar_color);
+        int colorPrimaryDark = UiUtils.getThemeColor(toolbar.getContext(), android.R.attr.colorPrimaryDark);
+        boolean fullyExpanded = scrollOffset == 1.f;
+        final Window window = activity.getWindow();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(fullyExpanded) {
+                if (window.getStatusBarColor() == colorPrimaryDark) {
+                    final ValueAnimator animation = ValueAnimator.ofObject(new ArgbEvaluator(), colorPrimaryDark, statusBarColor);
+                    animation.setDuration(100);
+                    animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animator) {
+                            window.setStatusBarColor((Integer) animation.getAnimatedValue());
+                        }
+
+                    });
+                    animation.start();
+                }
+            } else {
+                window.setStatusBarColor(colorPrimaryDark);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decor = window.getDecorView();
+            if(fullyExpanded) {
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            } else {
+                decor.setSystemUiVisibility(0);
+            }
+        }
+    }
+
+    private class ToolbarBehavior extends CoordinatorLayout.Behavior<View> {
+
+        @Override
+        public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+            return dependency.getId() == R.id.bottom_sheet;
+        }
+
+        @Override
+        public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
+            int scrollArea = parent.getHeight() - bottomSheetBehavior.getPeekHeight();
+            float scrollPosition = (parent.getHeight() - dependency.getY() - bottomSheetBehavior.getPeekHeight()) / scrollArea;
+
+            notifyListener(parent.getHeight(), scrollArea, scrollPosition);
+            animateToolbarShiftIn(scrollArea, scrollPosition, ViewCompat.getMinimumHeight(toolbar), child);
+            //animateToolbarFadeIn(scrollPosition); // TODO add config option
+
+            return true;
+        }
+
+        private void animateToolbarShiftIn(int scrollArea, float scrollPosition, int toolbarHeight, View toolbar) {
+            float posInScrollArea = (scrollPosition * scrollArea);
+
+            if(scrollArea - posInScrollArea <= toolbarHeight) {
+                UiUtils.showToolbar(getContentView(), true);
+                ViewCompat.setY(toolbar, scrollArea - posInScrollArea);
+
+            } else {
+                UiUtils.showToolbar(getContentView(), false);
+            }
+
+            tintStatusBar(scrollPosition);
+        }
+
+        private void animateToolbarFadeIn(float scrollPosition) {
+            float offset = 0.6f;
+            if (scrollPosition >= offset) {
+                ViewCompat.setAlpha(toolbar, 1f - (1f - scrollPosition) / (1f - offset));
+                UiUtils.showToolbar(getContentView(), true);
+            } else {
+                UiUtils.showToolbar(getContentView(), false);
+            }
+
+            tintStatusBar(scrollPosition);
+        }
+
+        private void notifyListener(int height, int scrollArea, float scrollPosition) {
+            if(scrollPosition >= 0) {
+                popupBackend.notifyScrollListener(height, scrollArea, scrollPosition);
+            }
         }
     }
 }

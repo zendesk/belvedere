@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PopupBackend extends Fragment {
+public class ImageStream extends Fragment {
 
     private static final int PERMISSION_REQUEST_CODE = 9842;
 
@@ -25,9 +25,11 @@ public class PopupBackend extends Fragment {
     private InternalPermissionCallback permissionListener = null;
 
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
-    private WeakReference<ImageStreamPopup.Listener> imageStreamListener = new WeakReference<>(null);
 
-    private ImageStreamPopup imageStreamPopup = null;
+    private List<WeakReference<Listener>> imageStreamListener = new ArrayList<>();
+    private List<WeakReference<ScrollListener>> imageStreamScrollListener = new ArrayList<>();
+
+    private ImageStreamUi imageStreamPopup = null;
     private boolean wasOpen = false;
 
     @Override
@@ -83,9 +85,7 @@ public class PopupBackend extends Fragment {
         Belvedere.from(this.getContext()).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
             @Override
             public void success(List<MediaResult> result) {
-                if(imageStreamListener.get() != null) {
-                    imageStreamListener.get().onImageSelected(result, false);
-                }
+                notifyImageSelected(result, false);
             }
         }, false);
     }
@@ -212,24 +212,55 @@ public class PopupBackend extends Fragment {
         return keyboardHelper.get();
     }
 
-    public void setKeyboardHelper(KeyboardHelper keyboardHelper) {
+    void setKeyboardHelper(KeyboardHelper keyboardHelper) {
         this.keyboardHelper = new WeakReference<>(keyboardHelper);
     }
 
-    public void setImageStreamPopup(ImageStreamPopup imageStreamPopup) {
+    void setImageStreamUi(ImageStreamUi imageStreamPopup) {
         this.imageStreamPopup = imageStreamPopup;
     }
 
-    public void setImageStreamListener(ImageStreamPopup.Listener listener) {
-        this.imageStreamListener = new WeakReference<>(listener);
+    public void addListener(Listener listener) {
+        imageStreamListener.add(new WeakReference<>(listener));
     }
 
-    ImageStreamPopup.Listener getImListener() {
-        return imageStreamListener.get();
+    public void addScrollListener(ScrollListener listener) {
+        imageStreamScrollListener.add(new WeakReference<>(listener));
+    }
+
+    void notifyScrollListener(int height, int scrollArea, float scrollPosition) {
+        for(WeakReference<ScrollListener> ref : imageStreamScrollListener) {
+            final ScrollListener scrollListener = ref.get();
+            if(scrollListener != null) {
+                scrollListener.onScroll(height, scrollArea, scrollPosition);
+            }
+        }
+    }
+
+    void notifyImageSelected(List<MediaResult> mediaResults, boolean replace) {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onImageSelected(mediaResults, replace);
+            }
+        }
+    }
+
+    void notifyDismissed() {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onDismissed();
+            }
+        }
     }
 
     public boolean wasOpen() {
         return wasOpen;
+    }
+
+    public boolean isAttachmentsPopupVisible() {
+        return imageStreamPopup != null;
     }
 
     interface PermissionCallback {
@@ -241,8 +272,12 @@ public class PopupBackend extends Fragment {
         void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain);
     }
 
-    public boolean isAttachmentsPopupVisible() {
-        return imageStreamPopup != null;
+    public interface Listener {
+        void onDismissed();
+        void onImageSelected(List<MediaResult> mediaResults, boolean replace);
     }
 
+    public interface ScrollListener {
+        void onScroll(int height, int scrollArea, float scrollPosition);
+    }
 }

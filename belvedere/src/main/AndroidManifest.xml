@@ -1,9 +1,1 @@
-<manifest
-    package="zendesk.belvedere.ui"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <application>
-        <activity android:name="zendesk.belvedere.ImageStream" android:theme="@style/MediaChooserTheme" />
-    </application>
-
-</manifest>
+<manifest package="zendesk.belvedere.ui" />

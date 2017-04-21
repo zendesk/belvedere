@@ -251,7 +251,6 @@ class ImageStreamItems {
 
         @Override
         public void bind(View view, final int position) {
-            L.d(LOG_TAG, getUri() + " bind " + h + " " + w);
             final Context context = view.getContext();
             final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
             final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_image_overlay);
@@ -318,7 +317,6 @@ class ImageStreamItems {
             private Bla(ImageView imageView, View container) {
                 this.imageView = new WeakReference<>(imageView);
                 this.container = new WeakReference<>(container);
-                L.d(LOG_TAG, getUri() + " " + this);
             }
 
             void onGlobalLayout() {
@@ -326,7 +324,6 @@ class ImageStreamItems {
 
                 if(imageView != null && imageView.getTag().equals(getUri().toString())) {
                     if (h > 0 && w > 0) {
-                        L.d(LOG_TAG, getUri() + " " + this + " h + w already set");
                         imageView.removeOnLayoutChangeListener(this);
                         return;
                     }
@@ -337,7 +334,6 @@ class ImageStreamItems {
                     if(imageView.getTag().equals(getUri().toString())) {
                         h = imageView.getHeight();
                         w = imageView.getWidth();
-                        L.d(LOG_TAG, getUri()  + " " + this +" " + h + " " + w);
                         adjustSize(imageView, container.get(), h, w);
                     } else {
                         L.d(LOG_TAG, getUri() + " " + this + " wrong view " + imageView.getTag());
@@ -370,7 +366,6 @@ class ImageStreamItems {
                 layoutParams.height = h;
             }
 
-            L.d(LOG_TAG, getUri() + " params " + layoutParams.width + " " + layoutParams.height);
             imageView.setLayoutParams(layoutParams);
 
             final StaggeredGridLayoutManager.LayoutParams layoutParams1 = (StaggeredGridLayoutManager.LayoutParams) container.getLayoutParams();

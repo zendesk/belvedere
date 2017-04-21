@@ -45,16 +45,7 @@
 
     <style name="BelvedereListRowText" parent="_BelvedereListRowText" />
 
-
-    <style name="MediaChooserTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-
-        <item name="colorPrimary">@android:color/white</item>
-        <item name="android:textColorPrimary">#DD000000</item>
-    </style>
+    <color name="image_stream_status_bar_color">#f5f5f5</color>
 
     <style name="FloatingActionMenuItem">
         <item name="android:layout_width">@dimen/fam_item_size</item>

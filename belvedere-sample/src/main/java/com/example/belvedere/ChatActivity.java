@@ -1,9 +1,12 @@
 package com.example.belvedere;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -13,17 +16,17 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import zendesk.belvedere.BelvedereUi;
-import zendesk.belvedere.ImageStreamPopup;
+import zendesk.belvedere.ImageStream;
 import zendesk.belvedere.MediaResult;
-import zendesk.belvedere.PopupBackend;
 
 public class ChatActivity extends AppCompatActivity {
 
     private EditText input;
 
-    private PopupBackend popupBackend;
+    private ImageStream popupBackend;
 
     private Listener listener;
+    private ImageStream.ScrollListener scrollListener;
 
     static List<MediaResult> mediaResults = new ArrayList<>();
     static Set<MediaResult> extraResults = new TreeSet<>();
@@ -33,11 +36,13 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
         setSupportActionBar((Toolbar) findViewById(R.id.activity_request_toolbar));
-
         popupBackend = BelvedereUi.install(this);
 
         this.listener = new Listener();
-        popupBackend.setImageStreamListener(listener);
+        this.scrollListener = new ScrollListener();
+
+        popupBackend.addListener(listener);
+        popupBackend.addScrollListener(scrollListener);
 
         this.input = (EditText) findViewById(R.id.input);
 
@@ -76,7 +81,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private class Listener implements ImageStreamPopup.Listener {
+    private class Listener implements ImageStream.Listener {
 
         @Override
         public void onDismissed() {
@@ -97,6 +102,18 @@ public class ChatActivity extends AppCompatActivity {
             if(!popupBackend.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
+        }
+    }
+
+    private class ScrollListener implements ImageStream.ScrollListener {
+
+        @Override
+        public void onScroll(int height, int scrollArea, float scrollPosition) {
+            final Interpolator interpolator = PathInterpolatorCompat.create(.19f,0f,.2f,1f);
+            final float interpolation = interpolator.getInterpolation((scrollPosition * .30f));
+            final int bottomPadding = (int) (-1f * interpolation * scrollArea);
+            ViewCompat.setTranslationY(findViewById(R.id.activity_input), bottomPadding);
+            ViewCompat.setTranslationY(findViewById(R.id.activity_recyclerview), bottomPadding);
         }
     }
 
