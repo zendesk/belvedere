@@ -1,6 +1,8 @@
 package zendesk.belvedere;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +12,9 @@ import android.view.View;
 import zendesk.belvedere.ui.R;
 
 /**
- * Set of util methods for dealing the with UI
+ * Set of util methods for dealing with the UI and framework.
  */
-class UiUtils {
+class Utils {
 
     /**
      * Hide the {@link Toolbar} of the specified {@link Activity}
@@ -50,6 +52,21 @@ class UiUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final int transparent = ContextCompat.getColor(activity, android.R.color.transparent);
             activity.getWindow().setStatusBarColor(transparent);
+        }
+    }
+
+    /**
+     * Checks whether an app is installed and enabled.
+     *
+     * @param packageName The package name of an app.
+     * @param context The context.
+     * @return true if app is installed and enabled, false otherwise.
+     */
+    static boolean isAppAvailable(String packageName, Context context) {
+        try {
+            return context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA).enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
         }
     }
 }

@@ -18,9 +18,13 @@ interface ImageStreamMvp {
 
         boolean hasDocumentIntent();
 
+        boolean hasGooglePhotosIntent();
+
         MediaIntent getCameraIntent();
 
         MediaIntent getDocumentIntent();
+
+        MediaIntent getGooglePhotosIntent();
 
         void neverAskForPermissionAgain(String permission);
 
@@ -40,6 +44,8 @@ interface ImageStreamMvp {
         void showList(MediaIntent cameraIntent, MediaIntent documentIntent);
 
         void showDocumentMenuItem(boolean visible);
+
+        void showGooglePhotosMenuItem(boolean visible);
 
         void openMediaIntent(MediaIntent mediaIntent);
 
@@ -65,6 +71,7 @@ interface ImageStreamMvp {
 
         void openGallery();
 
+        void openGooglePhotos();
     }
 
     class ViewState implements Parcelable {

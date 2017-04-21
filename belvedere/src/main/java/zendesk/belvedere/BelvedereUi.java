@@ -38,14 +38,15 @@ public class BelvedereUi {
     public static void startImageStream(Activity activity) {
         final Belvedere from = Belvedere.from(activity);
         final MediaIntent camera = from.camera().build();
-        final MediaIntent document = from.document().allowMultiple(true).contentType("image/*").build();
+        final MediaIntent document = from.document().allowMultiple(true).contentType("*/*").build();
+
         startImageStream(activity, camera, document);
     }
 
     public static void startImageStream(Fragment fragment) {
         final Belvedere from = Belvedere.from(fragment.getContext());
         final MediaIntent camera = from.camera().build();
-        final MediaIntent document = from.document().allowMultiple(true).contentType("image/*").build();
+        final MediaIntent document = from.document().allowMultiple(true).contentType("*/*").build();
         startImageStream(fragment, camera, document);
     }
 

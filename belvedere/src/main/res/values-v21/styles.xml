@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FloatingActionMenuItem">
+        <item name="android:layout_width">@dimen/fam_item_size</item>
+        <item name="android:layout_height">@dimen/fam_item_size</item>
+        <item name="android:layout_margin">@dimen/fam_item_margin</item>
+        <item name="android:padding">@dimen/fam_item_padding</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@drawable/fam_item_rounded_background</item>
+        <item name="android:elevation">6dp</item>
+    </style>
+</resources>

@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.support.v4.app.Fragment;
 
 /**
- * Simple Callback used to deliver results results asynchronously.
+ * Simple Callback used to deliver results asynchronously.
  *
  * <p>
  *     As always, keep a strong reference to the callback

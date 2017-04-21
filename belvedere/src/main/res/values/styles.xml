@@ -56,4 +56,17 @@
         <item name="android:textColorPrimary">#DD000000</item>
     </style>
 
+    <style name="FloatingActionMenuItem">
+        <item name="android:layout_width">@dimen/fam_item_size</item>
+        <item name="android:layout_height">@dimen/fam_item_size</item>
+        <item name="android:layout_margin">@dimen/fam_item_margin</item>
+        <item name="android:padding">@dimen/fam_item_padding</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@drawable/fam_item_rounded_background</item>
+    </style>
+
+    <color name="floating_action_menu_item_background">@android:color/white</color>
+    <color name="floating_action_menu_sign_color">@android:color/white</color>
+    <color name="floating_action_menu_item_icon_color">#89000000</color>
+
 </resources>
