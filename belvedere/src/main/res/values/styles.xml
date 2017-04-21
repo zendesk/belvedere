@@ -66,5 +66,7 @@
     </style>
 
     <color name="floating_action_menu_item_background">@android:color/white</color>
+    <color name="floating_action_menu_sign_color">@android:color/white</color>
+    <color name="floating_action_menu_item_icon_color">#89000000</color>
 
 </resources>
