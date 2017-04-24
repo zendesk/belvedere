@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +52,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     private final ImageStreamDataSource dataSource;
 
     private View bottomSheet, dismissArea, toolbarContainer;
-    private FloatingActionButton menuFab;
+    private FloatingActionMenu floatingActionMenu;
     private RecyclerView imageList;
     private Toolbar toolbar;
     private BottomSheetBehavior<View> bottomSheetBehavior;
@@ -139,17 +138,26 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
     @Override
     public void showDocumentMenuItem(boolean visible) {
-        if(visible) {
-            menuFab.show();
-        } else {
-            menuFab.hide();
+        if (floatingActionMenu != null) {
+            floatingActionMenu.addMenuItem(R.drawable.ic_file, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    presenter.openGallery();
+                }
+            });
         }
-        menuFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
+    }
+
+    @Override
+    public void showGooglePhotosMenuItem(boolean visible) {
+        if (floatingActionMenu != null) {
+            floatingActionMenu.addMenuItem(R.drawable.ic_collections, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    presenter.openGooglePhotos();
+                }
+            });
+        }
     }
 
     @Override
@@ -192,7 +200,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         this.imageList = (RecyclerView) view.findViewById(R.id.image_list);
         this.toolbar = (Toolbar) view.findViewById(R.id.image_stream_toolbar);
         this.toolbarContainer = view.findViewById(R.id.image_stream_toolbar_container);
-        this.menuFab = (FloatingActionButton) view.findViewById(R.id.image_list_fab);
+        this.floatingActionMenu = (FloatingActionMenu) view.findViewById(R.id.floating_action_menu);
     }
 
     private void initToolbar() {
@@ -248,7 +256,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
             }
         });
 
-        UiUtils.showToolbar(getContentView(), false);
+        Utils.showToolbar(getContentView(), false);
 
         final KeyboardHelper keyboardHelper = popupBackend.getKeyboardHelper();
         bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
@@ -328,7 +336,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     private void tintStatusBar(float scrollOffset) {
 
         int statusBarColor = toolbar.getResources().getColor(R.color.image_stream_status_bar_color);
-        int colorPrimaryDark = UiUtils.getThemeColor(toolbar.getContext(), android.R.attr.colorPrimaryDark);
+        int colorPrimaryDark = Utils.getThemeColor(toolbar.getContext(), android.R.attr.colorPrimaryDark);
         boolean fullyExpanded = scrollOffset == 1.f;
         final Window window = activity.getWindow();
 
@@ -385,11 +393,11 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
             float posInScrollArea = (scrollPosition * scrollArea);
 
             if(scrollArea - posInScrollArea <= toolbarHeight) {
-                UiUtils.showToolbar(getContentView(), true);
+                Utils.showToolbar(getContentView(), true);
                 ViewCompat.setY(toolbar, scrollArea - posInScrollArea);
 
             } else {
-                UiUtils.showToolbar(getContentView(), false);
+                Utils.showToolbar(getContentView(), false);
             }
 
             tintStatusBar(scrollPosition);
@@ -399,9 +407,9 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
             float offset = 0.6f;
             if (scrollPosition >= offset) {
                 ViewCompat.setAlpha(toolbar, 1f - (1f - scrollPosition) / (1f - offset));
-                UiUtils.showToolbar(getContentView(), true);
+                Utils.showToolbar(getContentView(), true);
             } else {
-                UiUtils.showToolbar(getContentView(), false);
+                Utils.showToolbar(getContentView(), false);
             }
 
             tintStatusBar(scrollPosition);

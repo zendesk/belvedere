@@ -103,7 +103,7 @@ class ImageStreamItems {
             this.mediaResult = mediaResult;
             this.resolveInfo = getAppInfoForFile(mediaResult.getName(), context);
             this.delegate = delegate;
-            this.colorPrimary = UiUtils.getThemeColor(context, R.attr.colorPrimary);
+            this.colorPrimary = Utils.getThemeColor(context, R.attr.colorPrimary);
             this.padding = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding);
             this.paddingSelectedHorizontal = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding_selected);
         }
@@ -152,7 +152,7 @@ class ImageStreamItems {
 
 
             if(isSelected()) {
-                UiUtils.internalSetTint(selectOverlay, colorPrimary);
+                Utils.internalSetTint(selectOverlay, colorPrimary);
                 container.setAlpha(SELECTED_OPACITY);
                 selectOverlay.setVisibility(View.VISIBLE);
 
@@ -246,7 +246,7 @@ class ImageStreamItems {
             this.padding = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding);
             this.paddingSelectedHorizontal = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding_selected);
             this.itemWidth = itemWidth;
-            this.colorPrimary = UiUtils.getThemeColor(context, R.attr.colorPrimary);
+            this.colorPrimary = Utils.getThemeColor(context, R.attr.colorPrimary);
         }
 
         @Override
@@ -259,7 +259,7 @@ class ImageStreamItems {
             if(isSelected()) {
                 selectOverlay.setVisibility(View.VISIBLE);
                 imageView.setAlpha(SELECTED_OPACITY);
-                UiUtils.internalSetTint(selectOverlay, colorPrimary);
+                Utils.internalSetTint(selectOverlay, colorPrimary);
 
             } else {
                 selectOverlay.setVisibility(View.GONE);
@@ -299,7 +299,7 @@ class ImageStreamItems {
             Picasso.with(imageView.getContext())
                     .load(uri.getUri())
                     .resize(itemWidth, 0)
-                    .transform(UiUtils.roundTransformation(context, R.dimen.image_stream_item_radius))
+                    .transform(Utils.roundTransformation(context, R.dimen.image_stream_item_radius))
                     .onlyScaleDown()
                     .into(imageView);
         }

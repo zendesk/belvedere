@@ -25,8 +25,8 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
     @Override
     public void initMenu() {
-        view.showDocumentMenuItem(model.hasDocumentIntent());
         view.showGooglePhotosMenuItem(model.hasGooglePhotosIntent());
+        view.showDocumentMenuItem(model.hasDocumentIntent());
     }
 
     @Override
