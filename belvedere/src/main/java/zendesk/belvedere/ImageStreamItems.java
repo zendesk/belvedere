@@ -288,7 +288,7 @@ class ImageStreamItems {
 
             if(h == -1 || w == -1) {
                 resetItemSizing(imageView, container);
-                imageView.addOnLayoutChangeListener(new Bla(imageView, container));
+                imageView.addOnLayoutChangeListener(new ItemLayoutListener(imageView, container));
             } else {
                 adjustSize(imageView, container, h, w);
             }
@@ -309,12 +309,12 @@ class ImageStreamItems {
             return uri;
         }
 
-        private class Bla implements View.OnLayoutChangeListener {
+        private class ItemLayoutListener implements View.OnLayoutChangeListener {
 
             private final WeakReference<ImageView> imageView;
             private final WeakReference<View> container;
 
-            private Bla(ImageView imageView, View container) {
+            private ItemLayoutListener(ImageView imageView, View container) {
                 this.imageView = new WeakReference<>(imageView);
                 this.container = new WeakReference<>(container);
             }

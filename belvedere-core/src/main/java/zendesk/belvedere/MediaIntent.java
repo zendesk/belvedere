@@ -106,8 +106,7 @@ public class MediaIntent implements Parcelable {
 
         boolean video;
 
-        CameraIntentBuilder(int requestCode, MediaSource mediaSource,
-                            IntentRegistry intentRegistry) {
+        CameraIntentBuilder(int requestCode, MediaSource mediaSource, IntentRegistry intentRegistry) {
             this.requestCode = requestCode;
             this.mediaSource = mediaSource;
             this.intentRegistry = intentRegistry;
@@ -141,8 +140,7 @@ public class MediaIntent implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull
-                              final Parcel dest, final int flags) {
+    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
         dest.writeInt(requestCode);
         dest.writeParcelable(intent, flags);
         dest.writeString(permission);

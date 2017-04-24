@@ -43,7 +43,7 @@ public class KeyboardHelper extends FrameLayout {
     private Listener keyboardListener;
     private SizeListener keyboardSizeListener;
 
-    public EditText inputTrap;
+    private EditText inputTrap;
 
     private KeyboardHelper(@NonNull Activity activity) {
         super(activity);
@@ -100,11 +100,15 @@ public class KeyboardHelper extends FrameLayout {
                     return insets.bottom;
                 }
             } catch (Exception e) {
-                // well ....
+                // well .... at least we tried
             }
         }
 
         return 0;
+    }
+
+    public EditText getInputTrap() {
+        return inputTrap;
     }
 
     public void hideKeyboard() {

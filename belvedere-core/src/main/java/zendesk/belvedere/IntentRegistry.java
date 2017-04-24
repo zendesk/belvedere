@@ -4,10 +4,6 @@ import android.util.SparseArray;
 
 class IntentRegistry {
 
-    private static final String LOG_TAG = "IntentRegistry";
-
-    final static int PLACE_HOLDER_CODE = 42;
-
     private final static int START_REQUEST_CODE = 1600;
     private final static int END_REQUEST_CODE = 1650;
 
@@ -39,10 +35,6 @@ class IntentRegistry {
     }
 
     MediaResult getForRequestCode(int requestCode) {
-        if(requestCode == PLACE_HOLDER_CODE) {
-            return MediaResult.empty();
-        }
-
         synchronized (this) {
             return pendingIntents.get(requestCode);
         }
@@ -55,7 +47,7 @@ class IntentRegistry {
             }
         }
 
-        L.d(LOG_TAG, "No slot free. Clearing registry.");
+        L.d(Belvedere.LOG_TAG, "No slot free. Clearing registry.");
         pendingIntents.clear();
         return getRequestCode();
     }

@@ -42,7 +42,6 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     interface Delegate {
         void openCamera();
-        void openGallery();
         void setSelected(MediaResult uri, boolean selected, int position);
     }
 }

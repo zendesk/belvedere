@@ -8,8 +8,6 @@ interface ImageStreamMvp {
 
         List<MediaResult> getLatestImages();
 
-        List<MediaIntent> getMediaIntent();
-
         boolean hasCameraIntent();
 
         boolean hasDocumentIntent();
@@ -21,10 +19,6 @@ interface ImageStreamMvp {
         MediaIntent getDocumentIntent();
 
         MediaIntent getGooglePhotosIntent();
-
-        void neverAskForPermissionAgain(String permission);
-
-        boolean canAskForPermission(String permission);
 
         List<MediaResult> getSelectedImages();
 
@@ -63,10 +57,6 @@ interface ImageStreamMvp {
         void openGooglePhotos();
 
         List<MediaResult> setItemSelected(MediaResult uri, boolean b);
-
-        List<MediaResult> getSelectedItems();
-
-        List<MediaIntent> getMediaIntents();
 
     }
 

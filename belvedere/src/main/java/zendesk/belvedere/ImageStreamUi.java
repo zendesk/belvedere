@@ -100,7 +100,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
     @Override
     public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera) {
-        showKeyboard(popupBackend.getKeyboardHelper().inputTrap);
+        showKeyboard(popupBackend.getKeyboardHelper().getInputTrap());
 
         final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = MATCH_PARENT;
@@ -169,12 +169,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     public void openCamera() {
         popupBackend.getKeyboardHelper().hideKeyboard();
         presenter.openCamera();
-    }
-
-    @Override
-    public void openGallery() {
-        popupBackend.getKeyboardHelper().hideKeyboard();
-        presenter.openGallery();
     }
 
     @Override

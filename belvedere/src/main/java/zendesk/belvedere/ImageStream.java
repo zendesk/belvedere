@@ -94,11 +94,6 @@ public class ImageStream extends Fragment {
         return PermissionUtil.isPermissionGranted(getContext(), permission);
     }
 
-    private void askForPermission(List<String> permission) {
-        final String[] strings = permission.toArray(new String[permission.size()]);
-        requestPermissions(strings, PERMISSION_REQUEST_CODE);
-    }
-
     private void setListener(InternalPermissionCallback listener) {
         this.permissionListener = listener;
     }
@@ -116,7 +111,7 @@ public class ImageStream extends Fragment {
             permissionCallback.nope();
 
         } else {
-            handlePermissionStuff(permissions, new InternalPermissionCallback() {
+            askForPermissions(permissions, new InternalPermissionCallback() {
                 @Override
                 public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
                     final List<MediaIntent> filteredMediaIntents = filterMediaIntents(mediaIntents);
@@ -189,7 +184,7 @@ public class ImageStream extends Fragment {
         return filteredMediaIntents;
     }
 
-    private void handlePermissionStuff(final List<String> permissions, final InternalPermissionCallback permissionCallback) {
+    private void askForPermissions(final List<String> permissions, final InternalPermissionCallback permissionCallback) {
         setListener(new InternalPermissionCallback() {
             @Override
             public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
@@ -205,7 +200,8 @@ public class ImageStream extends Fragment {
             keyboardHelper.get().hideKeyboard();
         }
 
-        askForPermission(permissions);
+        final String[] strings = permissions.toArray(new String[permissions.size()]);
+        requestPermissions(strings, PERMISSION_REQUEST_CODE);
     }
 
     public KeyboardHelper getKeyboardHelper() {

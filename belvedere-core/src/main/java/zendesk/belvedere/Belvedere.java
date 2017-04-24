@@ -19,14 +19,13 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class Belvedere implements InstanceBuilder {
 
-    private final static String LOG_TAG = "Belvedere";
+    final static String LOG_TAG = "Belvedere";
 
     @SuppressLint("StaticFieldLeak")
     private static Belvedere instance;
 
     private final Context context;
     private final boolean debug;
-    private final String directoryName;
 
     private Storage storage;
     private IntentRegistry intentRegistry;
@@ -34,15 +33,15 @@ public class Belvedere implements InstanceBuilder {
 
     Belvedere(Builder builder) {
         this.context = builder.context;
+
         builder.logger.setLoggable(true);
         L.setLogger(builder.logger);
         this.debug = builder.debug;
-        this.directoryName = builder.directoryName;
+
         this.intentRegistry = new IntentRegistry();
-        this.storage = new Storage(directoryName);
+        this.storage = new Storage();
         this.mediaSource = new MediaSource(context, storage, intentRegistry);
 
-        L.d(LOG_TAG, "Belvedere initialized");
         L.d(LOG_TAG, "Belvedere initialized");
     }
 

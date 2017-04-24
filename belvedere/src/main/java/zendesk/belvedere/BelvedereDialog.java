@@ -38,7 +38,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
     private static final int REQUEST_ID = 1212;
 
-    private final static String LOG_TAG = "BelvedereDialog";
     private final static String STATE_WAITING_FOR_PERMISSION = "waiting_for_permission";
 
     private ListView listView;
@@ -149,7 +148,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             }, intents);
 
         } else {
-            Log.w(LOG_TAG, "Not able to find a valid context for starting an BelvedereIntent");
             if (getFragmentManager() != null) {
                 dismiss();
             }

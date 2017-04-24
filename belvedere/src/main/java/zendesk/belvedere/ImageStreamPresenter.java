@@ -63,16 +63,6 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         return mediaResults;
     }
 
-    @Override
-    public List<MediaResult> getSelectedItems() {
-        return model.getSelectedImages();
-    }
-
-    @Override
-    public List<MediaIntent> getMediaIntents() {
-        return model.getMediaIntent();
-    }
-
     private void presentStream() {
         final List<MediaResult> latestImages = model.getLatestImages();
         final List<MediaResult> selectedImages = model.getSelectedImages();

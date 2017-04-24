@@ -27,8 +27,6 @@ import java.util.Locale;
  */
 class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
-    private static final String LOG_TAG = "ResolveUriTask";
-
     static void start(Context context, Storage storage,
                       Callback<List<MediaResult>> callback, List<Uri> uriList){
         start(context, storage, callback, uriList, null);
@@ -75,7 +73,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                 final File file = storage.getFileForUri(context, uri, subDirectory);
 
                 if (inputStream != null && file != null) {
-                    L.d(LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
+                    L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
                     fileOutputStream = new FileOutputStream(file);
 
                     int len;
@@ -88,7 +86,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
                 } else {
                     L.w(
-                            LOG_TAG,
+                            Belvedere.LOG_TAG,
                             String.format(
                                     Locale.US,
                                     "Unable to resolve uri. InputStream null = %s, File null = %s",
@@ -99,10 +97,10 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
 
             } catch (FileNotFoundException e) {
-                L.e(LOG_TAG, String.format(Locale.US, "File not found error copying file, uri: %s", uri), e);
+                L.e(Belvedere.LOG_TAG, String.format(Locale.US, "File not found error copying file, uri: %s", uri), e);
 
             } catch (IOException e) {
-                L.e(LOG_TAG, String.format(Locale.US, "IO Error copying file, uri: %s", uri), e);
+                L.e(Belvedere.LOG_TAG, String.format(Locale.US, "IO Error copying file, uri: %s", uri), e);
 
             } finally {
                 try {
@@ -110,14 +108,14 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                         inputStream.close();
                     }
                 } catch (IOException e) {
-                    L.e(LOG_TAG, "Error closing InputStream", e);
+                    L.e(Belvedere.LOG_TAG, "Error closing InputStream", e);
                 }
                 try {
                     if (fileOutputStream != null) {
                         fileOutputStream.close();
                     }
                 } catch (IOException e) {
-                    L.e(LOG_TAG, "Error closing FileOutputStream", e);
+                    L.e(Belvedere.LOG_TAG, "Error closing FileOutputStream", e);
                 }
             }
         }
@@ -128,10 +126,11 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
     @Override
     protected void onPostExecute(List<MediaResult> resolvedUris) {
         super.onPostExecute(resolvedUris);
-        if (callback.get() != null) {
-            callback.get().internalSuccess(resolvedUris);
+        final Callback<List<MediaResult>> callback = this.callback.get();
+        if (callback != null) {
+            callback.internalSuccess(resolvedUris);
         } else {
-            L.w(LOG_TAG, "Callback null");
+            L.w(Belvedere.LOG_TAG, "Callback null");
         }
     }
 }

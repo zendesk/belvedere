@@ -23,7 +23,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText input;
 
-    private ImageStream popupBackend;
+    private ImageStream imageStream;
 
     private Listener listener;
     private ImageStream.ScrollListener scrollListener;
@@ -36,13 +36,13 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
         setSupportActionBar((Toolbar) findViewById(R.id.activity_request_toolbar));
-        popupBackend = BelvedereUi.install(this);
+        imageStream = BelvedereUi.install(this);
 
         this.listener = new Listener();
         this.scrollListener = new ScrollListener();
 
-        popupBackend.addListener(listener);
-        popupBackend.addScrollListener(scrollListener);
+        imageStream.addListener(listener);
+        imageStream.addScrollListener(scrollListener);
 
         this.input = (EditText) findViewById(R.id.input);
 
@@ -60,11 +60,11 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void init() {
-        if(popupBackend.getKeyboardHelper().inputTrap.hasFocus()) {
+        if(imageStream.getKeyboardHelper().getInputTrap().hasFocus()) {
             input.requestFocus();
         }
 
-        if(popupBackend.wasOpen()) {
+        if(imageStream.wasOpen()) {
             input.post(new Runnable() {
                 @Override
                 public void run() {
@@ -99,7 +99,7 @@ public class ChatActivity extends AppCompatActivity {
 
             ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
 
-            if(!popupBackend.isAttachmentsPopupVisible()) {
+            if(!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
         }

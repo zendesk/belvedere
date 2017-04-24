@@ -11,7 +11,7 @@ ext {
     targetSdkVersion = 25
 
     supportLibVersion = "25.3.1"
-    versionName = "2.0.0.33-SNAPSHOT"
+    versionName = "2.0.0.1-SNAPSHOT"
 
     buildSettings = [
             localBuild : true,

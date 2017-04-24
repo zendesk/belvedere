@@ -14,7 +14,6 @@ import java.util.List;
 class ImageStreamModel implements ImageStreamMvp.Model {
 
     private static final String GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos";
-    private static final String LOG_TAG = "ImageStreamModel";
 
     private static final int MAX_IMAGES = 500;
 
@@ -41,11 +40,6 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         final List<MediaResult> mediaResults = queryRecentImages();
         final List<MediaResult> userProvidedResults = mergeMediaResultLists(startConfig.getExtraItems(), startConfig.getSelectedItems());
         return mergeMediaResultLists(mediaResults, userProvidedResults);
-    }
-
-    @Override
-    public List<MediaIntent> getMediaIntent() {
-        return mediaIntents;
     }
 
     @Override
@@ -80,17 +74,6 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         intent.setPackage(GOOGLE_PHOTOS_PACKAGE_NAME);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         return mediaIntent;
-    }
-
-    @Override
-    public void neverAskForPermissionAgain(String permission) {
-        preferences.neverEverAskForThatPermissionAgain(permission);
-        mediaIntents = filterIntents(mediaIntents);
-    }
-
-    @Override
-    public boolean canAskForPermission(String permission) {
-        return !preferences.shouldINeverEverAskForThatPermissionAgain(permission);
     }
 
     @Override
@@ -133,14 +116,12 @@ class ImageStreamModel implements ImageStreamMvp.Model {
                     final String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
 
                     final int index = name.lastIndexOf(".");
-                    String mimeType = "image/";
+                    String mimeType = "image/jpeg";
                     if(index != -1) {
                         mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(index + 1));
                     }
 
                     mediaResults.add(new MediaResult(null, uri, uri, name, mimeType, size));
-
-                    L.d(LOG_TAG, "mimeType: " + mimeType + " name: " + name + " size: " + size);
                 }
             }
         } finally {
