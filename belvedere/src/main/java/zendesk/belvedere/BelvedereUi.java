@@ -58,32 +58,38 @@ public class BelvedereUi {
         }
 
         public ImageStreamBuilder withMediaIntents(List<MediaIntent> mediaIntents) {
-            this.mediaIntents = mediaIntents;
+            this.mediaIntents.addAll(mediaIntents);
             return this;
         }
 
         public ImageStreamBuilder withMediaIntents(MediaIntent... mediaIntents) {
-            this.mediaIntents = Arrays.asList(mediaIntents);
+            this.mediaIntents.addAll(Arrays.asList(mediaIntents));
             return this;
         }
 
         public ImageStreamBuilder withCameraIntent() {
-            this.mediaIntents.add(Belvedere.from(context).camera().build());
+            final MediaIntent cameraIntent = Belvedere.from(context).camera().build();
+            this.mediaIntents.add(cameraIntent);
             return this;
         }
 
         public ImageStreamBuilder withDocumentIntent(String contentType, boolean allowMultiple) {
-            this.mediaIntents.add(Belvedere.from(context).document().allowMultiple(allowMultiple).contentType(contentType).build());
+            final MediaIntent mediaIntent = Belvedere.from(context)
+                    .document()
+                    .allowMultiple(allowMultiple)
+                    .contentType(contentType)
+                    .build();
+            this.mediaIntents.add(mediaIntent);
             return this;
         }
 
         public ImageStreamBuilder withSelectedItems(List<MediaResult> mediaResults) {
-            this.selectedItems = mediaResults;
+            this.selectedItems = new ArrayList<>(mediaResults);
             return this;
         }
 
         public ImageStreamBuilder withExtraItems(List<MediaResult> mediaResults) {
-            this.extraItems = mediaResults;
+            this.extraItems = new ArrayList<>(mediaResults);
             return this;
         }
 

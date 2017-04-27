@@ -75,7 +75,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         final PermissionStorage preferences = new PermissionStorage(view.getContext());
         final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig, preferences);
 
-        this.presenter = new ImageStreamPresenter(model, this, dataSource);
+        this.presenter = new ImageStreamPresenter(model, this);
         presenter.init();
     }
 
@@ -330,7 +330,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     private void tintStatusBar(float scrollOffset) {
 
         int statusBarColor = toolbar.getResources().getColor(R.color.image_stream_status_bar_color);
-        int colorPrimaryDark = Utils.getThemeColor(toolbar.getContext(), android.R.attr.colorPrimaryDark);
+        int colorPrimaryDark = Utils.getThemeColor(toolbar.getContext(), R.attr.colorPrimaryDark);
         boolean fullyExpanded = scrollOffset == 1.f;
         final Window window = activity.getWindow();
 

@@ -25,7 +25,6 @@ public class Belvedere implements InstanceBuilder {
     private static Belvedere instance;
 
     private final Context context;
-    private final boolean debug;
 
     private Storage storage;
     private IntentRegistry intentRegistry;
@@ -34,9 +33,8 @@ public class Belvedere implements InstanceBuilder {
     Belvedere(Builder builder) {
         this.context = builder.context;
 
-        builder.logger.setLoggable(true);
+        builder.logger.setLoggable(builder.debug);
         L.setLogger(builder.logger);
-        this.debug = builder.debug;
 
         this.intentRegistry = new IntentRegistry();
         this.storage = new Storage();

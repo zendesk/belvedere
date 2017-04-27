@@ -8,12 +8,9 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     private final ImageStreamMvp.Model model;
     private final ImageStreamMvp.View view;
 
-    private final ImageStreamDataSource imageStreamDataSource;
-
-    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamMvp.View view, ImageStreamDataSource imageStreamDataSource) {
+    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamMvp.View view) {
         this.model = model;
         this.view = view;
-        this.imageStreamDataSource = imageStreamDataSource;
     }
 
     @Override
