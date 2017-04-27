@@ -1,18 +1,12 @@
 package zendesk.belvedere;
 
-import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.List;
 
 interface ImageStreamMvp {
 
     interface Model {
 
-        List<Uri> getLatestImages();
-
-        List<MediaIntent> getMediaIntent();
+        List<MediaResult> getLatestImages();
 
         boolean hasCameraIntent();
 
@@ -26,34 +20,27 @@ interface ImageStreamMvp {
 
         MediaIntent getGooglePhotosIntent();
 
-        void neverAskForPermissionAgain(String permission);
+        List<MediaResult> getSelectedImages();
 
-        boolean canAskForPermission(String permission);
+        List<MediaResult> addToSelectedItems(MediaResult mediaResult);
+
+        List<MediaResult> removeFromSelectedItems(MediaResult mediaResult);
+
     }
 
     interface View {
 
         void initUiComponents();
 
-        boolean isPermissionGranted(String permission);
+        void updateToolbarTitle(int selectedImages);
 
-        void askForPermission(String permission);
-
-        void showImageStream(List<Uri> images, boolean showCamera);
-
-        void showList(MediaIntent cameraIntent, MediaIntent documentIntent);
+        void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera);
 
         void showDocumentMenuItem(boolean visible);
 
         void showGooglePhotosMenuItem(boolean visible);
 
         void openMediaIntent(MediaIntent mediaIntent);
-
-        void finishWithoutResult();
-
-        void finishIfNothingIsLeft();
-
-        void hideCameraOption();
 
     }
 
@@ -63,54 +50,14 @@ interface ImageStreamMvp {
 
         void initMenu();
 
-        void permissionGranted(boolean granted, String permission);
-
-        void dontAskForPermissionAgain(String permission);
-
         void openCamera();
 
         void openGallery();
 
         void openGooglePhotos();
-    }
 
-    class ViewState implements Parcelable {
+        List<MediaResult> setItemSelected(MediaResult uri, boolean b);
 
-        final int bottomSheetState;
-
-        ViewState(int bottomSheetState) {
-            this.bottomSheetState = bottomSheetState;
-        }
-
-        int getBottomSheetState() {
-            return bottomSheetState;
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(bottomSheetState);
-        }
-
-        ViewState(Parcel in) {
-            bottomSheetState = in.readInt();
-        }
-
-        public static final Creator<ViewState> CREATOR = new Creator<ViewState>() {
-            @Override
-            public ViewState createFromParcel(Parcel in) {
-                return new ViewState(in);
-            }
-
-            @Override
-            public ViewState[] newArray(int size) {
-                return new ViewState[size];
-            }
-        };
     }
 
 }

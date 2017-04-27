@@ -19,31 +19,26 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Internal Helper class. Responsible for creating {@link BelvedereIntent} and
+ * Internal Helper class. Responsible for creating {@link MediaIntent} and
  * parsing returned data.
  */
 class MediaSource {
 
-    private final static String LOG_TAG = "BelvedereImagePicker";
-    final static String INTERNAL_RESULT_KEY = "belvedere_internal_result";
-
     private final Storage storage;
     private final IntentRegistry intentRegistry;
     private final Context context;
-    private final Logger log;
 
-    MediaSource(Context context, Logger log, Storage storage, IntentRegistry intentRegistry) {
-        this.log = log;
+    MediaSource(Context context, Storage storage, IntentRegistry intentRegistry) {
         this.context = context;
         this.storage = storage;
         this.intentRegistry = intentRegistry;
     }
 
     /**
-     * Create a {@link BelvedereIntent} that invokes the android document picker or
-     * an installed gallery, respecting the provided {@link BelvedereConfig}.
+     * Create a {@link MediaIntent} that invokes the android document picker or
+     * an installed gallery..
      *
-     * @return An {@link BelvedereIntent} or null if this action isn't supported by
+     * @return An {@link MediaIntent} or null if this action isn't supported by
      *      the system.
      */
     MediaIntent getGalleryIntent(int requestCode, String contentType, boolean allowMultiple){
@@ -54,10 +49,9 @@ class MediaSource {
     }
 
     /**
-     * Create a {@link BelvedereIntent} that invokes an installed camera app,
-     * respecting the provided {@link BelvedereConfig}.
+     * Create a {@link MediaIntent} that invokes an installed camera app.
      *
-     * @return An {@link BelvedereIntent} or null if this action isn't supported by
+     * @return An {@link MediaIntent} or null if this action isn't supported by
      *      the system.
      */
     Pair<MediaIntent, MediaResult> getCameraIntent(int requestCode){
@@ -109,7 +103,7 @@ class MediaSource {
 
         final boolean hasCameraApp = isIntentResolvable(mockIntent, context);
 
-        log.d(LOG_TAG, String.format(Locale.US, "Camera present: %b, Camera App present: %b", hasCamera, hasCameraApp));
+        L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Camera present: %b, Camera App present: %b", hasCamera, hasCameraApp));
 
         return (hasCamera && hasCameraApp);
     }
@@ -149,47 +143,37 @@ class MediaSource {
         if(belvedereResult != null) {
             if(belvedereResult.getFile() == null || belvedereResult.getUri() == null) {
                 // data in intent
-                log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Gallery - Ok: %s", (resultCode == Activity.RESULT_OK)));
+                L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Parsing activity result - Gallery - Ok: %s", (resultCode == Activity.RESULT_OK)));
 
                 if(resultCode == Activity.RESULT_OK) {
-                    if(data.hasExtra(INTERNAL_RESULT_KEY)) { // FIXME: this will go away later
+                    final List<Uri> uris = extractUrisFromIntent(data);
+                    L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
 
-                        final List<MediaResult> mediaResults = data.<MediaResult>getParcelableArrayListExtra(INTERNAL_RESULT_KEY);
-                        for(MediaResult m : mediaResults) {
-                            final String mimeType = storage.getMimeTypeForUri(context, m.getUri());
-                            final String fileName = storage.getFileNameFromUri(context, m.getUri());
-                            result.add(new MediaResult(m.getFile(), m.getUri(), fileName, mimeType));
-                        }
+                    if(resolveFiles) {
+                        L.d(Belvedere.LOG_TAG, "Resolving items");
+                        ResolveUriTask.start(context, storage, callback, uris);
+                        return;
 
                     } else {
-
-                        final List<Uri> uris = extractUrisFromIntent(data);
-                        log.d(LOG_TAG, String.format(Locale.US, "Number of items received from gallery: %s", uris.size()));
-
-                        if(resolveFiles) {
-                            ResolveUriTask.start(context, log, storage, callback, uris);
-                            return;
-
-                        } else {
-                            for(Uri uri : uris) {
-                                final String mimeType = storage.getMimeTypeForUri(context, uri);
-                                final String fileName = storage.getFileNameFromUri(context, uri);
-                                result.add(new MediaResult(null, uri, fileName, mimeType));
-                            }
+                        L.d(Belvedere.LOG_TAG, "Resolving items turned off");
+                        for(Uri uri : uris) {
+                            final MediaResult mediaResult = Storage.getMediaResultForUri(context, uri);
+                            result.add(mediaResult);
                         }
                     }
                 }
 
             } else {
                 // path in registry
-                log.d(LOG_TAG, String.format(Locale.US, "Parsing activity result - Camera - Ok: %s", (resultCode == Activity.RESULT_OK)));
+                L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Parsing activity result - Camera - Ok: %s", (resultCode == Activity.RESULT_OK)));
 
                 storage.revokePermissionsFromUri(context, belvedereResult.getUri(),
                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                 if(resultCode == Activity.RESULT_OK){
-                    result.add(belvedereResult);
-                    log.d(LOG_TAG, (String.format(Locale.US, "Image from camera: %s", belvedereResult.getFile())));
+                    final MediaResult r = Storage.getMediaResultForUri(context, belvedereResult.getUri());
+                    result.add(new MediaResult(belvedereResult.getFile(), belvedereResult.getUri(), belvedereResult.getOriginalUri(), belvedereResult.getName(), r.getMimeType(), r.getSize()));
+                    L.d(Belvedere.LOG_TAG, (String.format(Locale.US, "Image from camera: %s", belvedereResult.getFile())));
                 }
 
                 intentRegistry.freeSlot(requestCode);
@@ -266,18 +250,18 @@ class MediaSource {
         final File imagePath = storage.getFileForCamera(context);
 
         if(imagePath == null){
-            log.w(LOG_TAG, "Camera Intent: Image path is null. There's something wrong with the storage.");
+            L.w(Belvedere.LOG_TAG, "Camera Intent: Image path is null. There's something wrong with the storage.");
             return null;
         }
 
         final Uri uriForFile = storage.getFileProviderUri(context, imagePath);
 
         if(uriForFile == null) {
-            log.w(LOG_TAG, "Camera Intent: Uri to file is null. There's something wrong with the storage or FileProvider configuration.");
+            L.w(Belvedere.LOG_TAG, "Camera Intent: Uri to file is null. There's something wrong with the storage or FileProvider configuration.");
             return null;
         }
 
-        log.d(LOG_TAG, String.format(Locale.US, "Camera Intent: Request Id: %s - File: %s - Uri: %s", requestCode, imagePath, uriForFile));
+        L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Camera Intent: Request Id: %s - File: %s - Uri: %s", requestCode, imagePath, uriForFile));
 
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
@@ -291,8 +275,8 @@ class MediaSource {
                 PermissionUtil.hasPermissionInManifest(context, Manifest.permission.CAMERA) &&
                 !PermissionUtil.isPermissionGranted(context, Manifest.permission.CAMERA);
 
-
-        final MediaResult belvedereResult = new MediaResult(imagePath, uriForFile, imagePath.getName(), storage.getMimeTypeForUri(context, uriForFile));
+        final MediaResult r = Storage.getMediaResultForUri(context, uriForFile);
+        final MediaResult belvedereResult = new MediaResult(imagePath, uriForFile, uriForFile, imagePath.getName(), r.getMimeType(), r.getSize());
         final MediaIntent mediaIntent = new MediaIntent(
                 requestCode,
                 intent,
@@ -316,10 +300,10 @@ class MediaSource {
         final Intent intent;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            log.d(LOG_TAG, "Gallery Intent, using 'ACTION_OPEN_DOCUMENT'");
+            L.d(Belvedere.LOG_TAG, "Gallery Intent, using 'ACTION_OPEN_DOCUMENT'");
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         } else {
-            log.d(LOG_TAG, "Gallery Intent, using 'ACTION_GET_CONTENT'");
+            L.d(Belvedere.LOG_TAG, "Gallery Intent, using 'ACTION_GET_CONTENT'");
             intent = new Intent(Intent.ACTION_GET_CONTENT);
         }
 

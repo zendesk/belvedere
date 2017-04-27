@@ -34,7 +34,6 @@
             android:paddingTop="8dp"
             />
 
-
     </FrameLayout>
 
     <zendesk.belvedere.FloatingActionMenu
@@ -42,10 +41,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fam_margin"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:src="@drawable/fam_icon_add"/>
+        tools:visibility="visible" />
 
     <include layout="@layout/image_stream_toolbar"/>
 

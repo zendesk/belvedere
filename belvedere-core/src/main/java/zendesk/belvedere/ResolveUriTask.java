@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,17 +27,16 @@ import java.util.Locale;
  */
 class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
-    private final static String LOG_TAG = "BelvedereResolveUriTask";
-
-    static void start(Context context, Logger logger, Storage storage,
+    static void start(Context context, Storage storage,
                       Callback<List<MediaResult>> callback, List<Uri> uriList){
-        start(context, logger, storage, callback, uriList, null);
+        start(context, storage, callback, uriList, null);
     }
 
-    static void start(Context context, Logger logger, Storage storage,
+    static void start(Context context, Storage storage,
                       Callback<List<MediaResult>> callback, List<Uri> uriList, String subDirectory){
 
-        final ResolveUriTask resolveUriTask = new ResolveUriTask(context, logger, storage, callback, subDirectory);
+        final ResolveUriTask resolveUriTask = new ResolveUriTask(context, storage, callback, subDirectory);
+
         final Uri[] uris = uriList.toArray(new Uri[uriList.size()]);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -46,26 +46,24 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
         }
     }
 
-    private final Callback<List<MediaResult>> callback;
+    private final WeakReference<Callback<List<MediaResult>>> callback;
     private final Context context;
-    private final Logger log;
     private final Storage storage;
     private final String subDirectory;
 
-    private ResolveUriTask(Context context, Logger logger, Storage storage,
+    private ResolveUriTask(Context context, Storage storage,
                            Callback<List<MediaResult>> callback, String subDirectory) {
         this.context = context;
-        this.log = logger;
         this.storage = storage;
-        this.callback = callback;
         this.subDirectory = subDirectory;
+        this.callback = new WeakReference<>(callback);
     }
 
     @Override
     protected List<MediaResult> doInBackground(Uri... uris) {
         final List<MediaResult> success = new ArrayList<>();
 
-        final byte[] buf = new byte[1024];
+        final byte[] buf = new byte[1_048_576];
         InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
 
@@ -75,7 +73,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                 final File file = storage.getFileForUri(context, uri, subDirectory);
 
                 if (inputStream != null && file != null) {
-                    log.d(LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
+                    L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Copying media file into private cache - Uri: %s - Dest: %s", uri, file));
                     fileOutputStream = new FileOutputStream(file);
 
                     int len;
@@ -83,12 +81,12 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                         fileOutputStream.write(buf, 0, len);
                     }
 
-                    final String mimeType = storage.getMimeTypeForUri(context, uri);
-                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), file.getName(), mimeType));
+                    final MediaResult r = Storage.getMediaResultForUri(context, uri);
+                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), uri, file.getName(), r.getMimeType(), r.getSize()));
 
                 } else {
-                    log.w(
-                            LOG_TAG,
+                    L.w(
+                            Belvedere.LOG_TAG,
                             String.format(
                                     Locale.US,
                                     "Unable to resolve uri. InputStream null = %s, File null = %s",
@@ -99,10 +97,10 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
 
             } catch (FileNotFoundException e) {
-                log.e(LOG_TAG, String.format(Locale.US, "File not found error copying file, uri: %s", uri), e);
+                L.e(Belvedere.LOG_TAG, String.format(Locale.US, "File not found error copying file, uri: %s", uri), e);
 
             } catch (IOException e) {
-                log.e(LOG_TAG, String.format(Locale.US, "IO Error copying file, uri: %s", uri), e);
+                L.e(Belvedere.LOG_TAG, String.format(Locale.US, "IO Error copying file, uri: %s", uri), e);
 
             } finally {
                 try {
@@ -110,14 +108,14 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                         inputStream.close();
                     }
                 } catch (IOException e) {
-                    log.e(LOG_TAG, "Error closing InputStream", e);
+                    L.e(Belvedere.LOG_TAG, "Error closing InputStream", e);
                 }
                 try {
                     if (fileOutputStream != null) {
                         fileOutputStream.close();
                     }
                 } catch (IOException e) {
-                    log.e(LOG_TAG, "Error closing FileOutputStream", e);
+                    L.e(Belvedere.LOG_TAG, "Error closing FileOutputStream", e);
                 }
             }
         }
@@ -128,8 +126,11 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
     @Override
     protected void onPostExecute(List<MediaResult> resolvedUris) {
         super.onPostExecute(resolvedUris);
+        final Callback<List<MediaResult>> callback = this.callback.get();
         if (callback != null) {
             callback.internalSuccess(resolvedUris);
+        } else {
+            L.w(Belvedere.LOG_TAG, "Callback null");
         }
     }
 }

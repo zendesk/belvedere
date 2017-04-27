@@ -52,20 +52,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        BelvedereUi.install(this);
 
         setSupportActionBar(toolbar);
 
         documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                BelvedereUi.showDialog(getSupportFragmentManager(), getMediaIntents());
+                BelvedereUi
+                        .showDialog(getSupportFragmentManager(), getMediaIntents());
             }
         });
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                BelvedereUi.startImageStream(MainActivity.this, getMediaIntents());
+                BelvedereUi
+                        .imageStream(MainActivity.this)
+                        .withCameraIntent()
+                        .withDocumentIntent("*/*", true)
+                        .showPopup(MainActivity.this);
             }
         });
     }

@@ -19,15 +19,12 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class Belvedere implements InstanceBuilder {
 
-    private final static String LOG_TAG = "Belvedere";
+    final static String LOG_TAG = "Belvedere";
 
     @SuppressLint("StaticFieldLeak")
     private static Belvedere instance;
 
     private final Context context;
-    private final Logger log;
-    private final boolean debug;
-    private final String directoryName;
 
     private Storage storage;
     private IntentRegistry intentRegistry;
@@ -35,15 +32,15 @@ public class Belvedere implements InstanceBuilder {
 
     Belvedere(Builder builder) {
         this.context = builder.context;
-        this.log = builder.logger;
-        this.debug = builder.debug;
-        this.directoryName = builder.directoryName;
+
+        builder.logger.setLoggable(builder.debug);
+        L.setLogger(builder.logger);
 
         this.intentRegistry = new IntentRegistry();
-        this.storage = new Storage(directoryName, log);
-        this.mediaSource = new MediaSource(context, log, storage, intentRegistry);
+        this.storage = new Storage();
+        this.mediaSource = new MediaSource(context, storage, intentRegistry);
 
-        log.d(LOG_TAG, "Belvedere initialized");
+        L.d(LOG_TAG, "Belvedere initialized");
     }
 
     @NonNull
@@ -104,13 +101,17 @@ public class Belvedere implements InstanceBuilder {
         return shareIntent;
     }
 
+
     /**
      * Parse data from {@link Activity#onActivityResult(int, int, Intent)}.
+     * <p>
+     * It's important that the same instance of Belvedere is used, which
+     * was used to start the dialog or create the {@link MediaIntent}.
      *
-     *  @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param resultCode The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param data The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
-     * @param callback {@link Callback} that will deliver a list of {@link MediaResult}
+     * @param requestCode The requestCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param resultCode  The resultCode provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data        The {@link Intent} provided by {@link Activity#onActivityResult(int, int, Intent)}
+     * @param callback    {@link Callback} that will deliver a list of {@link MediaResult}
      */
     public void getFilesFromActivityOnResult(int requestCode, int resultCode, Intent data,
                                              @NonNull Callback<List<MediaResult>> callback) {
@@ -146,13 +147,13 @@ public class Belvedere implements InstanceBuilder {
     @Nullable
     public MediaResult getFile(@NonNull String dir, @NonNull String fileName) {
         final File file = storage.getFile(context, dir, fileName);
-        log.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
+        L.d(LOG_TAG, String.format(Locale.US, "Get internal File: %s", file));
 
         final Uri uri;
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
-            final String mimeType = storage.getMimeTypeForUri(context, uri);
-            return new MediaResult(file, uri, fileName, mimeType);
+            final MediaResult r = Storage.getMediaResultForUri(context, uri);
+            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize());
         }
 
         return null;
@@ -167,7 +168,7 @@ public class Belvedere implements InstanceBuilder {
      */
     public void resolveUris(@NonNull List<Uri> uris, @NonNull String directory, @NonNull Callback<List<MediaResult>> callback) {
         if(uris != null && uris.size() > 0) {
-            ResolveUriTask.start(context, log, storage, callback, uris, directory);
+            ResolveUriTask.start(context, storage,  callback, uris, directory);
         } else {
             callback.internalSuccess(new ArrayList<MediaResult>(0));
         }
@@ -181,7 +182,7 @@ public class Belvedere implements InstanceBuilder {
      * @param uri    An {@link Uri}
      */
     public void grantPermissionsForUri(@NonNull Intent intent, @NonNull Uri uri) {
-        log.d(LOG_TAG, String.format(Locale.US, "Grant Permission - Intent: %s - Uri: %s", intent, uri));
+        L.d(LOG_TAG, String.format(Locale.US, "Grant Permission - Intent: %s - Uri: %s", intent, uri));
         int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
         storage.grantPermissionsForUri(context, intent, uri, permissions);
     }
@@ -193,7 +194,7 @@ public class Belvedere implements InstanceBuilder {
      * @param uri An {@link Uri}
      */
     public void revokePermissionsForUri(@NonNull Uri uri) {
-        log.d(LOG_TAG, String.format(Locale.US, "Revoke Permission - Uri: %s", uri));
+        L.d(LOG_TAG, String.format(Locale.US, "Revoke Permission - Uri: %s", uri));
         int permissions = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
         storage.revokePermissionsFromUri(context, uri, permissions);
     }
@@ -202,7 +203,7 @@ public class Belvedere implements InstanceBuilder {
      * Clear the internal Belvedere cache.
      */
     public void clearStorage() {
-        log.d(LOG_TAG, "Clear Belvedere cache");
+        L.d(LOG_TAG, "Clear Belvedere cache");
         storage.clearStorage(context);
     }
 }

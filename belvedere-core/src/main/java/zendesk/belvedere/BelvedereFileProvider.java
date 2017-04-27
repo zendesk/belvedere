@@ -19,8 +19,6 @@ import java.util.Arrays;
  */
 public class BelvedereFileProvider extends FileProvider {
 
-    private final static String LOG_TAG = "BelvedereFileProvider";
-
     @Override
     public Cursor query(final Uri uri, final String[] projection, final String selection,
                         final String[] selectionArgs, final String sortOrder) {
@@ -40,7 +38,7 @@ public class BelvedereFileProvider extends FileProvider {
         */
 
         if(source == null) {
-            Log.w(LOG_TAG, "Not able to apply workaround, super.query(...) returned null");
+            Log.w(Belvedere.LOG_TAG, "Not able to apply workaround, super.query(...) returned null");
             return null;
         }
 

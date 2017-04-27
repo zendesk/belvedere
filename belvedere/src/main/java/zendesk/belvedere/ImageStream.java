@@ -1,354 +1,279 @@
 package zendesk.belvedere;
 
+
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import zendesk.belvedere.ui.R;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static zendesk.belvedere.Utils.shouldOverrideActivityAnimation;
-
-public class ImageStream extends AppCompatActivity
-        implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
+public class ImageStream extends Fragment {
 
     private static final int PERMISSION_REQUEST_CODE = 9842;
 
-    private static final String VIEW_STATE = "view_state";
+    private PermissionStorage preferences;
+    private InternalPermissionCallback permissionListener = null;
 
-    private ImageStreamMvp.Presenter presenter;
+    private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
 
-    private View bottomSheet, dismissArea;
-    private FloatingActionMenu floatingActionMenu;
-    private RecyclerView imageList;
-    private Toolbar toolbar;
-    private MenuItem galleryMenuItem;
-    private BottomSheetBehavior<View> bottomSheetBehavior;
-    private ImageStreamAdapter imageStreamAdapter;
+    private List<WeakReference<Listener>> imageStreamListener = new ArrayList<>();
+    private List<WeakReference<ScrollListener>> imageStreamScrollListener = new ArrayList<>();
 
-    private ImageStreamMvp.ViewState viewState;
+    private ImageStreamUi imageStreamPopup = null;
+    private boolean wasOpen = false;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = new PermissionStorage(getContext());
+        setRetainInstance(true);
+    }
 
-        if(shouldOverrideActivityAnimation()) {
-            overridePendingTransition(R.anim.slide_in, R.anim.no_change);
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(imageStreamPopup != null) {
+            imageStreamPopup.dismiss();
+            wasOpen = true;
+        } else {
+            wasOpen = false;
         }
-
-        setContentView(R.layout.activity_image_stream);
-        bindViews();
-
-        Utils.dimStatusBar(this);
-        Utils.hideToolbar(this);
-
-        viewState = new ImageStreamMvp.ViewState(BottomSheetBehavior.STATE_COLLAPSED);
-        if (savedInstanceState != null && savedInstanceState.getParcelable(VIEW_STATE) != null) {
-            viewState = savedInstanceState.getParcelable(VIEW_STATE);
-        }
-
-        PermissionStorage preferences = new PermissionStorage(this);
-        final List<MediaIntent> mediaIntents = BelvedereUi.getMediaIntents(getIntent().getExtras());
-        final ImageStreamMvp.Model model = new ImageStreamModel(this, mediaIntents, preferences);
-
-        presenter = new ImageStreamPresenter(model, this);
-        presenter.init();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                presenter.permissionGranted(true, permissions[0]);
-            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                boolean showRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]);
-                if (!showRationale) {
-                    presenter.dontAskForPermissionAgain(permissions[0]);
-                } else {
-                    presenter.permissionGranted(false, permissions[0]);
+            final Map<String, Boolean> permissionResult = new HashMap<>();
+            final List<String> dontAskAgain = new ArrayList<>();
+
+            for(int i = 0, c = permissions.length; i < c; i++) {
+                if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                    permissionResult.put(permissions[i], true);
+
+                } else if(grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                    permissionResult.put(permissions[i], false);
+
+                    boolean showRationale = shouldShowRequestPermissionRationale(permissions[i]);
+                    if (!showRationale) {
+                        dontAskAgain.add(permissions[i]);
+                    }
                 }
             }
+
+            if(permissionListener != null) {
+                permissionListener.result(permissionResult, dontAskAgain);
+            }
+
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
+        Belvedere.from(this.getContext()).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
             @Override
             public void success(List<MediaResult> result) {
-                finishWithResult(result);
+                notifyImageSelected(result, false);
             }
         }, false);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.imagestream_menu, menu);
-        galleryMenuItem = menu.findItem(R.id.image_stream_system_gallery);
-        presenter.initMenu();
-        return true;
+    private boolean isPermissionGranted(String permission) {
+        return PermissionUtil.isPermissionGranted(getContext(), permission);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
+    private void setListener(InternalPermissionCallback listener) {
+        this.permissionListener = listener;
+    }
 
-        } else if (item.getItemId() == R.id.image_stream_system_gallery) {
-            openGallery();
-            return true;
+    public void handlePermissions(final List<MediaIntent> mediaIntents, final PermissionCallback permissionCallback) {
+
+        final List<String> permissions = new ArrayList<>();
+        permissions.addAll(getPermissionsForImageStream());
+        permissions.addAll(getPermissionsFromIntents(mediaIntents));
+
+        if(canShowImageStream() && permissions.isEmpty()) {
+            permissionCallback.ok(filterMediaIntents(mediaIntents));
+
+        } else if(!canShowImageStream() && permissions.isEmpty()){
+            permissionCallback.nope();
 
         } else {
-            return super.onOptionsItemSelected(item);
-
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (bottomSheetBehavior != null) {
-            outState.putParcelable(VIEW_STATE, new ImageStreamMvp.ViewState(bottomSheetBehavior.getState()));
-        }
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
-                || shouldOverrideActivityAnimation()) {
-            overridePendingTransition(R.anim.no_change, R.anim.slide_out);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED
-                || shouldOverrideActivityAnimation()) {
-            overridePendingTransition(R.anim.no_change, R.anim.slide_out);
-        }
-    }
-
-    @Override
-    public void initUiComponents() {
-        initToolbar();
-        initBottomSheet();
-    }
-
-    @Override
-    public boolean isPermissionGranted(String permission) {
-        return PermissionUtil.isPermissionGranted(this, permission);
-    }
-
-    @Override
-    public void askForPermission(String permission) {
-        final String[] permissions = {permission};
-        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void showImageStream(List<Uri> images, boolean showCamera) {
-        final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
-        layoutParams.height = MATCH_PARENT;
-        bottomSheet.setLayoutParams(layoutParams);
-
-        int columns = getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
-
-        final ImageStreamAdapter adapter = new ImageStreamAdapter(this, images, showCamera);
-        final StaggeredGridLayoutManager staggeredGridLayoutManager =
-                new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
-        // https://code.google.com/p/android/issues/detail?id=230295
-        staggeredGridLayoutManager.setItemPrefetchEnabled(false);
-
-        initRecycler(adapter, staggeredGridLayoutManager);
-    }
-
-    @Override
-    public void showList(MediaIntent cameraIntent, MediaIntent documentIntent) {
-        final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
-        layoutParams.height = WRAP_CONTENT;
-        bottomSheet.setLayoutParams(layoutParams);
-
-        final ImageStreamAdapter adapter = new ImageStreamAdapter(this);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        initRecycler(adapter, linearLayoutManager);
-    }
-
-    @Override
-    public void showDocumentMenuItem(boolean visible) {
-        if (galleryMenuItem != null) {
-            galleryMenuItem.setVisible(visible);
-
-        }
-        if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.ic_file, new View.OnClickListener() {
+            askForPermissions(permissions, new InternalPermissionCallback() {
                 @Override
-                public void onClick(View v) {
-                    presenter.openGallery();
+                public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
+                    final List<MediaIntent> filteredMediaIntents = filterMediaIntents(mediaIntents);
+
+                    if(canShowImageStream()) {
+                        permissionCallback.ok(filteredMediaIntents);
+                    } else {
+                        permissionCallback.nope();
+                    }
                 }
             });
         }
     }
 
-    @Override
-    public void showGooglePhotosMenuItem(boolean visible) {
-        if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.ic_collections, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    presenter.openGooglePhotos();
-                }
-            });
-        }
+    private boolean canShowImageStream() {
+        final boolean isBelowKitkat = Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
+        final boolean hasReadPermission = isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        return isBelowKitkat || hasReadPermission;
     }
 
-    @Override
-    public void openMediaIntent(MediaIntent mediaIntent) {
-        mediaIntent.open(this);
-    }
+    private List<String> getPermissionsForImageStream() {
+        final List<String> permissions = new ArrayList<>();
 
-    @Override
-    public void finishWithoutResult() {
-        setResult(RESULT_CANCELED);
-        finish();
-    }
+        final boolean isBelowKitkat = Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
+        final boolean hasReadPermission = isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE);
 
-    @Override
-    public void finishIfNothingIsLeft() {
-        if (imageStreamAdapter == null) {
-            finishWithoutResult();
-        }
-    }
+        if(isBelowKitkat || hasReadPermission) {
+            // works
 
-    @Override
-    public void hideCameraOption() {
-        if (imageStreamAdapter != null) {
-            imageStreamAdapter.hideCameraOption();
+        } else if(!preferences.shouldINeverEverAskForThatPermissionAgain(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+
         } else {
-            finishWithoutResult();
+            //nope
+
         }
+
+        return permissions;
     }
 
-    @Override
-    public void imagesSelected(List<Uri> uris) {
-        final List<MediaResult> mediaResults = new ArrayList<>(uris.size());
-        for(Uri uri : uris) {
-            mediaResults.add(new MediaResult(null, uri, null, null)); // FIXME: temp workaround, this will go away
-        }
-        finishWithResult(mediaResults);
-    }
+    private List<String> getPermissionsFromIntents(List<MediaIntent> mediaIntents) {
+        final List<String> permission = new ArrayList<>();
 
-    @Override
-    public void openCamera() {
-        presenter.openCamera();
-    }
-
-    @Override
-    public void openGallery() {
-        presenter.openGallery();
-    }
-
-    private void initRecycler(ImageStreamAdapter adapter, RecyclerView.LayoutManager layoutManager) {
-        this.imageStreamAdapter = adapter;
-        imageList.setAdapter(adapter);
-        imageList.setItemAnimator(null);
-        imageList.setLayoutManager(layoutManager);
-        imageList.setHasFixedSize(true);
-    }
-
-    private void finishWithResult(List<MediaResult> belvedereResults) {
-        final Intent intent = ImageStream.this.getIntent();
-        intent.putParcelableArrayListExtra(MediaSource.INTERNAL_RESULT_KEY, new ArrayList<>(belvedereResults));
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    private void initToolbar() {
-        toolbar.setNavigationIcon(R.drawable.belvedere_ic_close);
-        setSupportActionBar(toolbar);
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle("Photo library");
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    private void bindViews() {
-        this.bottomSheet = findViewById(R.id.bottom_sheet);
-        this.dismissArea = findViewById(R.id.dismiss_area);
-        this.imageList = (RecyclerView) findViewById(R.id.image_list);
-        this.toolbar = (Toolbar) findViewById(R.id.image_stream_toolbar);
-        this.floatingActionMenu = (FloatingActionMenu) findViewById(R.id.floating_action_menu);
-    }
-
-    private void initBottomSheet() {
-        bottomSheet.setVisibility(View.VISIBLE);
-
-        ViewCompat.setElevation(imageList, getResources().getDimensionPixelSize(R.dimen.bottom_sheet_elevation));
-
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        finish();
-                        break;
-                }
+        for (MediaIntent intent : mediaIntents) {
+            if (!TextUtils.isEmpty(intent.getPermission()) &&
+                    !preferences.shouldINeverEverAskForThatPermissionAgain(intent.getPermission()) && intent.isAvailable()) {
+                permission.add(intent.getPermission());
             }
+        }
 
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                float offset = 0.6f;
-                if (slideOffset >= offset) {
-                    ViewCompat.setAlpha(toolbar, 1f - (1f - slideOffset) / (1f - offset));
-                    Utils.showToolbar(ImageStream.this);
+        return permission;
+    }
+
+    private List<MediaIntent> filterMediaIntents(List<MediaIntent> intents) {
+        final List<MediaIntent> filteredMediaIntents = new ArrayList<>();
+
+        for(MediaIntent mediaIntent : intents) {
+            if(mediaIntent.isAvailable()) {
+                if(TextUtils.isEmpty(mediaIntent.getPermission())) {
+                    filteredMediaIntents.add(mediaIntent);
                 } else {
-                    Utils.hideToolbar(ImageStream.this);
+                    if(isPermissionGranted(mediaIntent.getPermission())) {
+                        filteredMediaIntents.add(mediaIntent);
+                    }
                 }
             }
-        });
-
-        if (viewState.getBottomSheetState() == BottomSheetBehavior.STATE_EXPANDED) {
-            Utils.showToolbar(ImageStream.this);
-        } else {
-            Utils.hideToolbar(ImageStream.this);
         }
 
-        bottomSheetBehavior.setState(viewState.getBottomSheetState());
-        dismissArea.setOnClickListener(new View.OnClickListener() {
+        return filteredMediaIntents;
+    }
+
+    private void askForPermissions(final List<String> permissions, final InternalPermissionCallback permissionCallback) {
+        setListener(new InternalPermissionCallback() {
             @Override
-            public void onClick(View v) {
-                finish();
+            public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
+                for(String permission : dontAskAgain) {
+                    preferences.neverEverAskForThatPermissionAgain(permission);
+                }
+                permissionCallback.result(permissionResult, dontAskAgain);
+                setListener(null);
             }
         });
-        bottomSheet.setClickable(true);
+
+        if(keyboardHelper.get() != null) {
+            keyboardHelper.get().hideKeyboard();
+        }
+
+        final String[] strings = permissions.toArray(new String[permissions.size()]);
+        requestPermissions(strings, PERMISSION_REQUEST_CODE);
+    }
+
+    public KeyboardHelper getKeyboardHelper() {
+        return keyboardHelper.get();
+    }
+
+    void setKeyboardHelper(KeyboardHelper keyboardHelper) {
+        this.keyboardHelper = new WeakReference<>(keyboardHelper);
+    }
+
+    void setImageStreamUi(ImageStreamUi imageStreamPopup) {
+        this.imageStreamPopup = imageStreamPopup;
+    }
+
+    public void addListener(Listener listener) {
+        imageStreamListener.add(new WeakReference<>(listener));
+    }
+
+    public void addScrollListener(ScrollListener listener) {
+        imageStreamScrollListener.add(new WeakReference<>(listener));
+    }
+
+    void notifyScrollListener(int height, int scrollArea, float scrollPosition) {
+        for(WeakReference<ScrollListener> ref : imageStreamScrollListener) {
+            final ScrollListener scrollListener = ref.get();
+            if(scrollListener != null) {
+                scrollListener.onScroll(height, scrollArea, scrollPosition);
+            }
+        }
+    }
+
+    void notifyImageSelected(List<MediaResult> mediaResults, boolean replace) {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onImageSelected(mediaResults, replace);
+            }
+        }
+    }
+
+    void notifyDismissed() {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onDismissed();
+            }
+        }
+    }
+
+    public boolean wasOpen() {
+        return wasOpen;
+    }
+
+    public boolean isAttachmentsPopupVisible() {
+        return imageStreamPopup != null;
+    }
+
+    interface PermissionCallback {
+        void ok(List<MediaIntent> mediaIntents);
+        void nope();
+    }
+
+    interface InternalPermissionCallback {
+        void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain);
+    }
+
+    public interface Listener {
+        void onDismissed();
+        void onImageSelected(List<MediaResult> mediaResults, boolean replace);
+    }
+
+    public interface ScrollListener {
+        void onScroll(int height, int scrollArea, float scrollPosition);
     }
 }

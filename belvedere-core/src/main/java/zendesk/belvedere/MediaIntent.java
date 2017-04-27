@@ -55,6 +55,10 @@ public class MediaIntent implements Parcelable {
         return target;
     }
 
+    int getRequestCode() {
+        return requestCode;
+    }
+
     public static class DocumentIntentBuilder {
 
         private final MediaSource mediaSource;
@@ -102,8 +106,7 @@ public class MediaIntent implements Parcelable {
 
         boolean video;
 
-        CameraIntentBuilder(int requestCode, MediaSource mediaSource,
-                                   IntentRegistry intentRegistry) {
+        CameraIntentBuilder(int requestCode, MediaSource mediaSource, IntentRegistry intentRegistry) {
             this.requestCode = requestCode;
             this.mediaSource = mediaSource;
             this.intentRegistry = intentRegistry;
@@ -115,7 +118,7 @@ public class MediaIntent implements Parcelable {
             final MediaIntent mediaIntent = cameraIntent.first;
             final MediaResult result = cameraIntent.second;
 
-            if(mediaIntent.isAvailable()){
+            if (mediaIntent.isAvailable()) {
                 intentRegistry.updateRequestCode(requestCode, result);
             }
 
