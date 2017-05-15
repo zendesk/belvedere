@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.StyleRes;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -16,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
 
     private View fab;
     private LayoutInflater layoutInflater;
-    private List<Pair<ImageView, View.OnClickListener>> menuItems;
+    private List<Pair<FloatingActionButton, View.OnClickListener>> menuItems;
     private boolean isExpanded;
     private int animationDuration;
     private int animationRotationAngle;
@@ -79,7 +80,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     @Override
     public void onClick(View v) {
         if (menuItems.size() == 1) {
-            final Pair<ImageView, View.OnClickListener> menuItem = menuItems.get(0);
+            final Pair<FloatingActionButton, View.OnClickListener> menuItem = menuItems.get(0);
             menuItem.second.onClick(menuItem.first);
         } else {
             isExpanded = !isExpanded;
@@ -92,7 +93,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         long startOffset = 0;
 
         if (isExpanded) {
-            for (Pair<ImageView, View.OnClickListener> menuItem : menuItems) {
+            for (Pair<FloatingActionButton, View.OnClickListener> menuItem : menuItems) {
                 Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.show_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
                 a.setStartOffset(startOffset);
@@ -105,7 +106,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             Animation lastAnimation = null;
 
             for (int i = menuItems.size() - 1; i >= 0; i--) {
-                final Pair<ImageView, View.OnClickListener> menuItem = menuItems.get(i);
+                final Pair<FloatingActionButton, View.OnClickListener> menuItem = menuItems.get(i);
 
                 Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.hide_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
@@ -135,19 +136,21 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     }
 
     public void addMenuItem(@DrawableRes int iconId, @NonNull View.OnClickListener clickListener) {
-        ImageView imageView = (ImageView) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
-        imageView.setOnClickListener(clickListener);
-        imageView.setImageResource(iconId);
+        FloatingActionButton fab = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
+        fab.setOnClickListener(clickListener);
+        fab.setImageResource(iconId);
 
-        addView(imageView, 0);
-        menuItems.add(Pair.create(imageView, clickListener));
+        fab.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.floating_action_menu_item_background));
+
+        addView(fab, 0);
+        menuItems.add(Pair.create(fab, clickListener));
         setVisibility(VISIBLE);
     }
 
     private AnimationListenerAdapter setGone = new AnimationListenerAdapter() {
         @Override
         public void onAnimationEnd(Animation animation) {
-            for (Pair<ImageView, OnClickListener> menuItem : menuItems) {
+            for (Pair<FloatingActionButton, OnClickListener> menuItem : menuItems) {
                 menuItem.first.setVisibility(GONE);
             }
         }
