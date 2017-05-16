@@ -5,10 +5,7 @@
 
     <dimen name="image_stream_image_width">220dp</dimen>
 
-    <dimen name="fam_margin">16dp</dimen>
     <dimen name="fam_item_margin">8dp</dimen>
-    <dimen name="fam_item_padding">8dp</dimen>
-    <dimen name="fam_item_size">40dp</dimen>
 
     <bool name="bottom_sheet_portrait">true</bool>
 
