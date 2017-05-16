@@ -1,6 +1,7 @@
 package zendesk.belvedere;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.AttrRes;
@@ -138,9 +139,9 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     public void addMenuItem(@DrawableRes int iconId, @NonNull View.OnClickListener clickListener) {
         FloatingActionButton fab = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
         fab.setOnClickListener(clickListener);
-        fab.setImageResource(iconId);
 
-        fab.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.floating_action_menu_item_background));
+        fab.setBackgroundResource(iconId);
+        fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.floating_action_menu_item_background)));
 
         addView(fab, 0);
         menuItems.add(Pair.create(fab, clickListener));
