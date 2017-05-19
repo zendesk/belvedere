@@ -153,7 +153,7 @@ public class Belvedere implements InstanceBuilder {
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
             final MediaResult r = Storage.getMediaResultForUri(context, uri);
-            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize());
+            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize(), r.getWidth(), r.getHeight());
         }
 
         return null;

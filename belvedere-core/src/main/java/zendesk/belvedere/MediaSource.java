@@ -172,7 +172,7 @@ class MediaSource {
 
                 if(resultCode == Activity.RESULT_OK){
                     final MediaResult r = Storage.getMediaResultForUri(context, belvedereResult.getUri());
-                    result.add(new MediaResult(belvedereResult.getFile(), belvedereResult.getUri(), belvedereResult.getOriginalUri(), belvedereResult.getName(), r.getMimeType(), r.getSize()));
+                    result.add(new MediaResult(belvedereResult.getFile(), belvedereResult.getUri(), belvedereResult.getOriginalUri(), belvedereResult.getName(), r.getMimeType(), r.getSize(), r.getWidth(), r.getHeight()));
                     L.d(Belvedere.LOG_TAG, (String.format(Locale.US, "Image from camera: %s", belvedereResult.getFile())));
                 }
 
@@ -276,7 +276,7 @@ class MediaSource {
                 !PermissionUtil.isPermissionGranted(context, Manifest.permission.CAMERA);
 
         final MediaResult r = Storage.getMediaResultForUri(context, uriForFile);
-        final MediaResult belvedereResult = new MediaResult(imagePath, uriForFile, uriForFile, imagePath.getName(), r.getMimeType(), r.getSize());
+        final MediaResult belvedereResult = new MediaResult(imagePath, uriForFile, uriForFile, imagePath.getName(), r.getMimeType(), r.getSize(), r.getWidth(), r.getHeight());
         final MediaIntent mediaIntent = new MediaIntent(
                 requestCode,
                 intent,

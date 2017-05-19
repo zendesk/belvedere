@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static zendesk.belvedere.MediaResult.UNKNOWN_VALUE;
+
 public class BelvedereUi {
 
     private final static String FRAGMENT_TAG = "BelvedereDialog";
@@ -96,7 +98,7 @@ public class BelvedereUi {
         public ImageStreamBuilder withSelectedItemsUri(List<Uri> selectedItems) {
             final List<MediaResult> mediaResults = new ArrayList<>(selectedItems.size());
             for(Uri uri : selectedItems) {
-                mediaResults.add(new MediaResult(null, uri, uri, null, null, -1L));
+                mediaResults.add(new MediaResult(null, uri, uri, null, null, UNKNOWN_VALUE, UNKNOWN_VALUE, UNKNOWN_VALUE));
             }
             this.selectedItems = mediaResults;
             return this;
