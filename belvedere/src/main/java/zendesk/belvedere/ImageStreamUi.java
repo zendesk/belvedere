@@ -138,7 +138,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
     @Override
     public void showDocumentMenuItem(boolean visible) {
-        if (floatingActionMenu != null) {
+        if (floatingActionMenu != null && visible) {
             floatingActionMenu.addMenuItem(R.drawable.ic_file, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -150,7 +150,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
     @Override
     public void showGooglePhotosMenuItem(boolean visible) {
-        if (floatingActionMenu != null) {
+        if (floatingActionMenu != null && visible) {
             floatingActionMenu.addMenuItem(R.drawable.ic_collections, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
