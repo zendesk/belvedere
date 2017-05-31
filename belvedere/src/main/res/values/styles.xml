@@ -2,16 +2,6 @@
 <resources>
 
     <color name="image_stream_status_bar_color">#f5f5f5</color>
-
-    <style name="FloatingActionMenuItem">
-        <item name="android:layout_width">@dimen/fam_item_size</item>
-        <item name="android:layout_height">@dimen/fam_item_size</item>
-        <item name="android:layout_margin">@dimen/fam_item_margin</item>
-        <item name="android:padding">@dimen/fam_item_padding</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:background">@drawable/fam_item_rounded_background</item>
-    </style>
-
     <color name="floating_action_menu_item_background">@android:color/white</color>
 
 </resources>
