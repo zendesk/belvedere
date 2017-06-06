@@ -82,7 +82,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
                     }
 
                     final MediaResult r = Storage.getMediaResultForUri(context, uri);
-                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), uri, file.getName(), r.getMimeType(), r.getSize()));
+                    success.add(new MediaResult(file, storage.getFileProviderUri(context, file), uri, file.getName(), r.getMimeType(), r.getSize(), r.getWidth(), r.getHeight()));
 
                 } else {
                     L.w(

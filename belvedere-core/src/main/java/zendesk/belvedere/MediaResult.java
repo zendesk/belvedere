@@ -12,8 +12,10 @@ import java.io.File;
  */
 public class MediaResult implements Parcelable, Comparable<MediaResult> {
 
+    public static final long UNKNOWN_VALUE = -1L;
+
     static MediaResult empty() {
-        return new MediaResult(null, null, null, null, null, -1L);
+        return new MediaResult(null, null, null, null, null, UNKNOWN_VALUE, UNKNOWN_VALUE, UNKNOWN_VALUE);
     }
 
     private final File file;
@@ -22,15 +24,19 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
     private final String name;
     private final String mimeType;
     private final long size;
+    private final long width;
+    private final long height;
 
     public MediaResult(final File file, final Uri uri, final Uri originalUri,
-                final String name, final String mimeType, final long size) {
+                final String name, final String mimeType, final long size, final long width, final long height) {
         this.file = file;
         this.uri = uri;
         this.originalUri = originalUri;
         this.mimeType = mimeType;
         this.name = name;
         this.size = size;
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -86,6 +92,20 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
         return size;
     }
 
+    /**
+     * Gets the width of the image.
+     */
+    public long getWidth() {
+        return width;
+    }
+
+    /**
+     * Gets the height of the image.
+     */
+    public long getHeight() {
+        return height;
+    }
+
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeSerializable(file);
@@ -94,6 +114,8 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
         dest.writeString(mimeType);
         dest.writeParcelable(originalUri, flags);
         dest.writeLong(size);
+        dest.writeLong(width);
+        dest.writeLong(height);
     }
 
     public static final Parcelable.Creator<MediaResult> CREATOR
@@ -115,6 +137,8 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
         this.mimeType = in.readString();
         this.originalUri = in.readParcelable(MediaResult.class.getClassLoader());
         this.size = in.readLong();
+        this.width = in.readLong();
+        this.height = in.readLong();
     }
 
     @Override
@@ -125,6 +149,7 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
         MediaResult that = (MediaResult) o;
 
         if (size != that.size) return false;
+        if (width != that.width || height != that.height) return false;
         if (file != null ? !file.equals(that.file) : that.file != null) return false;
         if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
         if (originalUri != null ? !originalUri.equals(that.originalUri) : that.originalUri != null)
@@ -141,6 +166,8 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
         result = 31 * result + (int) (size ^ (size >>> 32));
+        result = 31 * result + (int) (width ^ (width >>> 32));
+        result = 31 * result + (int) (height ^ (height >>> 32));
         return result;
     }
 

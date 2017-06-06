@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Locale;
 public class Belvedere implements InstanceBuilder {
 
     final static String LOG_TAG = "Belvedere";
+    private static final String MIME_TYPE_IMAGE = "image";
 
     @SuppressLint("StaticFieldLeak")
     private static Belvedere instance;
@@ -153,7 +155,17 @@ public class Belvedere implements InstanceBuilder {
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
             final MediaResult r = Storage.getMediaResultForUri(context, uri);
-            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize());
+
+            final long width, height;
+            if (r.getMimeType().contains(MIME_TYPE_IMAGE)) {
+                final Pair<Integer, Integer> imageDimensions = BitmapUtils.getImageDimensions(file);
+                width = imageDimensions.first;
+                height = imageDimensions.second;
+            } else {
+                width = MediaResult.UNKNOWN_VALUE;
+                height = MediaResult.UNKNOWN_VALUE;
+            }
+            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize(), width, height);
         }
 
         return null;

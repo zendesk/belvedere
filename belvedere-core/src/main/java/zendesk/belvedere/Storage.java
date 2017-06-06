@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static zendesk.belvedere.MediaResult.UNKNOWN_VALUE;
+
 /**
  * Internal helper class. Responsible for creating files
  * and handling the {@link BelvedereFileProvider}.
@@ -358,12 +360,16 @@ class Storage {
 
     static MediaResult getMediaResultForUri(Context context, Uri uri) {
         final String schema = uri.getScheme();
-        long size = -1L;
+        long size = UNKNOWN_VALUE;
         String name = "";
         String mimeType = "";
 
         if (ContentResolver.SCHEME_CONTENT.equals(schema)) {
-            final String[] projection = {MediaStore.MediaColumns.SIZE, MediaStore.MediaColumns.DISPLAY_NAME};
+            final String[] projection = {
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+            };
+
             final ContentResolver contentResolver = context.getContentResolver();
             final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
 
@@ -374,7 +380,6 @@ class Storage {
                     if (cursor.moveToFirst()) {
                         size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
                         name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
-
                     }
                 } finally {
                     cursor.close();
@@ -382,6 +387,6 @@ class Storage {
             }
         }
 
-        return new MediaResult(null, uri, uri, name, mimeType, size);
+        return new MediaResult(null, uri, uri, name, mimeType, size, UNKNOWN_VALUE, UNKNOWN_VALUE);
     }
 }
