@@ -21,6 +21,7 @@ import java.util.Locale;
 public class Belvedere implements InstanceBuilder {
 
     final static String LOG_TAG = "Belvedere";
+    private static final String MIME_TYPE_IMAGE = "image";
 
     @SuppressLint("StaticFieldLeak")
     private static Belvedere instance;
@@ -154,8 +155,17 @@ public class Belvedere implements InstanceBuilder {
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
             final MediaResult r = Storage.getMediaResultForUri(context, uri);
-            final Pair<Integer, Integer> imageDimensions = BitmapUtils.getImageDimensions(file);
-            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize(), imageDimensions.first, imageDimensions.second);
+
+            final long width, height;
+            if (r.getMimeType().contains(MIME_TYPE_IMAGE)) {
+                final Pair<Integer, Integer> imageDimensions = BitmapUtils.getImageDimensions(file);
+                width = imageDimensions.first;
+                height = imageDimensions.second;
+            } else {
+                width = MediaResult.UNKNOWN_VALUE;
+                height = MediaResult.UNKNOWN_VALUE;
+            }
+            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize(), width, height);
         }
 
         return null;
