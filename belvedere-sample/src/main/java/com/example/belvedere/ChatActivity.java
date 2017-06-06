@@ -90,6 +90,7 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onImageSelected(List<MediaResult> r, boolean replace) {
+
             if(replace) {
                 mediaResults.clear();
             }

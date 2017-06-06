@@ -6,14 +6,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -362,26 +369,14 @@ class Storage {
     static MediaResult getMediaResultForUri(Context context, Uri uri) {
         final String schema = uri.getScheme();
         long size = UNKNOWN_VALUE;
-        long width = UNKNOWN_VALUE;
-        long height = UNKNOWN_VALUE;
         String name = "";
         String mimeType = "";
 
         if (ContentResolver.SCHEME_CONTENT.equals(schema)) {
-            final String[] projection;
-            if (Build.VERSION.SDK_INT >= 16) {
-                projection = new String[]{
-                        MediaStore.MediaColumns.SIZE,
-                        MediaStore.MediaColumns.DISPLAY_NAME,
-                        MediaStore.MediaColumns.WIDTH,
-                        MediaStore.MediaColumns.HEIGHT
-                };
-            } else {
-                projection = new String[]{
-                        MediaStore.MediaColumns.SIZE,
-                        MediaStore.MediaColumns.DISPLAY_NAME
-                };
-            }
+            final String[] projection = {
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+            };
 
             final ContentResolver contentResolver = context.getContentResolver();
             final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
@@ -392,10 +387,6 @@ class Storage {
                 try {
                     if (cursor.moveToFirst()) {
                         size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            width = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH));
-                            height = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT));
-                        }
                         name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
                     }
                 } finally {
@@ -404,6 +395,6 @@ class Storage {
             }
         }
 
-        return new MediaResult(null, uri, uri, name, mimeType, size, width, height);
+        return new MediaResult(null, uri, uri, name, mimeType, size, UNKNOWN_VALUE, UNKNOWN_VALUE);
     }
 }

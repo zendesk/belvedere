@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -153,7 +154,8 @@ public class Belvedere implements InstanceBuilder {
 
         if (file != null && (uri = storage.getFileProviderUri(context, file)) != null) {
             final MediaResult r = Storage.getMediaResultForUri(context, uri);
-            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize(), r.getWidth(), r.getHeight());
+            final Pair<Integer, Integer> imageDimensions = BitmapUtils.getImageDimensions(file);
+            return new MediaResult(file, uri, uri, fileName, r.getMimeType(), r.getSize(), imageDimensions.first, imageDimensions.second);
         }
 
         return null;
