@@ -251,6 +251,12 @@ public class ImageStream extends Fragment {
         }
     }
 
+    public void dismiss() {
+        if(isAttachmentsPopupVisible()) {
+            imageStreamPopup.dismiss();
+        }
+    }
+
     public boolean wasOpen() {
         return wasOpen;
     }

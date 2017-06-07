@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -13,13 +14,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,6 +58,8 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     private ImageStreamAdapter imageStreamAdapter;
     private Activity activity;
 
+    private BelvedereUi.UiConfig config;
+
     ImageStreamUi(Activity activity, View view, ImageStream popupBackend, BelvedereUi.UiConfig uiConfig) {
         super(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, false);
         setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -71,6 +72,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         this.popupBackend = popupBackend;
         this.activity = activity;
         this.dataSource = new ImageStreamDataSource();
+        this.config = uiConfig;
 
         final PermissionStorage preferences = new PermissionStorage(view.getContext());
         final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig, preferences);
@@ -270,16 +272,39 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     }
 
     private void initGesturePassThrough(final Activity activity) {
-        final GestureDetectorCompat gestureDetectorCompat =
-                new GestureDetectorCompat(activity, new PassThroughGestureListener());
         dismissArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
-                activity.dispatchTouchEvent(event);
-                if(gestureDetectorCompat.onTouchEvent(event)){
+
+                boolean dismiss = true;
+
+                final int touchX = (int) event.getX();
+                final int touchY = (int) event.getY();
+
+                for(int id : config.getTouchableElements()) {
+                    View view = activity.findViewById(id);
+
+                    if(view != null) {
+
+                        final Rect viewRect = new Rect();
+                        view.getGlobalVisibleRect(viewRect);
+
+                        final boolean xMatch = touchX >= viewRect.left && touchX <= viewRect.right;
+                        final boolean yMatch = touchY >= viewRect.top && touchY <= viewRect.bottom;
+
+                        if(xMatch && yMatch) {
+                            dismiss = false;
+                            view.dispatchTouchEvent(event);
+                            break;
+                        }
+                    }
+                }
+
+                if(dismiss) {
                     dismiss();
                 }
-                return true;
+
+                return false;
             }
         });
     }
@@ -293,38 +318,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         popupBackend.notifyScrollListener(0,0,0);
 
         popupBackend.notifyDismissed();
-    }
-
-    private class PassThroughGestureListener implements GestureDetector.OnGestureListener {
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return false;
-        }
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            return true;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            return true;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            dismiss();
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            return true;
-        }
     }
 
     private void tintStatusBar(float scrollOffset) {

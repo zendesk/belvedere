@@ -4,11 +4,16 @@ import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +54,19 @@ public class ChatActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(imageStream.isAttachmentsPopupVisible()){
+                    imageStream.dismiss();
+                }
                 mediaResults.clear();
                 extraResults.clear();
                 ((EditText)findViewById(R.id.input)).setText("");
                 ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
             }
         });
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new FakeAdapter());
 
         init();
     }
@@ -76,7 +88,11 @@ public class ChatActivity extends AppCompatActivity {
         findViewById(R.id.attachment).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showImageStream();
+                if(!imageStream.isAttachmentsPopupVisible()) {
+                    showImageStream();
+                } else {
+                    imageStream.dismiss();
+                }
             }
         });
     }
@@ -126,6 +142,27 @@ public class ChatActivity extends AppCompatActivity {
                 .withDocumentIntent("*/*", true)
                 .withSelectedItems(new ArrayList<>(mediaResults))
                 .withExtraItems(new ArrayList<>(extraResults))
+                .withTouchableItems(R.id.attachment, R.id.send)
                 .showPopup(ChatActivity.this);
+    }
+
+    class FakeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(android.R.layout.simple_list_item_1, parent, false);
+            return new RecyclerView.ViewHolder(v) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("bla");
+        }
+
+        @Override
+        public int getItemCount() {
+            return 1;
+        }
     }
 }
