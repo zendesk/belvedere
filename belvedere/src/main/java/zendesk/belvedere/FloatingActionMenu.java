@@ -141,14 +141,6 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
 
     public void addMenuItem(@DrawableRes int iconRes, @NonNull View.OnClickListener clickListener) {
         FloatingActionButton menuItem = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
-
-        // Reference: https://stackoverflow.com/a/30688147
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) menuItem.getLayoutParams();
-            p.setMargins(0,0,0,0);
-            menuItem.setLayoutParams(p);
-        }
-
         menuItem.setOnClickListener(clickListener);
         menuItem.setImageDrawable(getTintedDrawable(iconRes, R.color.floating_action_menu_item_icon_color));
 
