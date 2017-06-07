@@ -1,10 +1,11 @@
 package zendesk.belvedere;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,11 +13,13 @@ import android.support.annotation.RequiresApi;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -31,7 +34,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
 
     private static final float ANIMATION_ROTATION_INITIAL_ANGLE = 0f;
 
-    private View fab;
+    private FloatingActionButton fab;
     private LayoutInflater layoutInflater;
     private List<Pair<FloatingActionButton, View.OnClickListener>> menuItems;
     private boolean isExpanded;
@@ -67,7 +70,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         if (!isInEditMode()) {
             setOrientation(LinearLayout.VERTICAL);
             setOnClickListener(this);
-            fab = findViewById(R.id.floating_action_menu_fab);
+            fab = (FloatingActionButton) findViewById(R.id.floating_action_menu_fab);
             layoutInflater = LayoutInflater.from(context);
             menuItems = new ArrayList<>();
 
@@ -136,15 +139,23 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         ViewCompat.animate(fab).rotation(angle).setDuration(animationDuration).start();
     }
 
-    public void addMenuItem(@DrawableRes int iconId, @NonNull View.OnClickListener clickListener) {
-        FloatingActionButton fab = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
-        fab.setOnClickListener(clickListener);
+    public void addMenuItem(@DrawableRes int iconRes, @NonNull View.OnClickListener clickListener) {
+        FloatingActionButton menuItem = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
+        menuItem.setOnClickListener(clickListener);
+        menuItem.setImageDrawable(getTintedDrawable(iconRes, R.color.floating_action_menu_item_icon_color));
 
-        fab.setBackgroundResource(iconId);
-        fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.floating_action_menu_item_background)));
+        menuItems.add(Pair.create(menuItem, clickListener));
 
-        addView(fab, 0);
-        menuItems.add(Pair.create(fab, clickListener));
+        if (menuItems.size() == 1) {
+            fab.setImageDrawable(getTintedDrawable(iconRes, R.color.floating_action_menu_icon_color));
+        } else if (menuItems.size() == 2) {
+            addView(menuItems.get(0).first, 0);
+            addView(menuItem, 0);
+
+            fab.setImageDrawable(getTintedDrawable(R.drawable.fam_icon_add, R.color.floating_action_menu_icon_color));
+        } else {
+            addView(menuItem, 0);
+        }
         setVisibility(VISIBLE);
     }
 
@@ -156,6 +167,14 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             }
         }
     };
+
+    private Drawable getTintedDrawable(@DrawableRes int drawableRes, @ColorRes int colorRes) {
+        final Context context = getContext();
+        final Drawable originalDrawable = ContextCompat.getDrawable(context, drawableRes);
+        final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(context, colorRes));
+        return wrappedDrawable;
+    }
 
     private abstract class AnimationListenerAdapter implements Animation.AnimationListener {
 
