@@ -54,6 +54,7 @@ public class BelvedereUi {
         private List<MediaIntent> mediaIntents = new ArrayList<>();
         private List<MediaResult> selectedItems = new ArrayList<>();
         private List<MediaResult> extraItems = new ArrayList<>();
+        private List<Integer> touchableItems = new ArrayList<>();
 
         private ImageStreamBuilder(Context context){
             this.context = context;
@@ -95,6 +96,15 @@ public class BelvedereUi {
             return this;
         }
 
+        public ImageStreamBuilder withTouchableItems(int... ids) {
+            final List<Integer> objects = new ArrayList<>(ids.length);
+            for(int id : ids) {
+                objects.add(id);
+            }
+            this.touchableItems = objects;
+            return this;
+        }
+
         public ImageStreamBuilder withSelectedItemsUri(List<Uri> selectedItems) {
             final List<MediaResult> mediaResults = new ArrayList<>(selectedItems.size());
             for(Uri uri : selectedItems) {
@@ -128,7 +138,7 @@ public class BelvedereUi {
                                         appCompatActivity,
                                         decorView,
                                         popupBackend,
-                                        new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia));
+                                        new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems));
                                 popupBackend.setImageStreamUi(show);
                             }
                         });
@@ -153,7 +163,7 @@ public class BelvedereUi {
         }
 
         final BelvedereDialog dialog = new BelvedereDialog();
-        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(0), new ArrayList<MediaResult>(0), true));
+        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(0), new ArrayList<MediaResult>(0), true, new ArrayList<Integer>(0)));
         dialog.show(fm.beginTransaction(), FRAGMENT_TAG);
     }
 
@@ -166,7 +176,7 @@ public class BelvedereUi {
         showDialog(fm, Arrays.asList(mediaIntent));
     }
 
-    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems, List<MediaResult> extraItems, boolean resolveMedia) {
+    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems, List<MediaResult> extraItems, boolean resolveMedia, List<Integer> touchableIds) {
 
         final List<MediaIntent> intents = new ArrayList<>();
         final List<MediaResult> selected = new ArrayList<>();
@@ -184,7 +194,7 @@ public class BelvedereUi {
             extra.addAll(extraItems);
         }
 
-        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia);
+        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_MEDIA_INTENT, uiConfig);
 
@@ -206,27 +216,32 @@ public class BelvedereUi {
         private final List<MediaIntent> intents;
         private final List<MediaResult> selectedItems;
         private final List<MediaResult> extraItems;
+        private final List<Integer> touchableElements;
         private final boolean resolveMedia;
 
         public UiConfig() {
             this.intents = new ArrayList<>();
             this.selectedItems = new ArrayList<>();
             this.extraItems = new ArrayList<>();
+            this.touchableElements = new ArrayList<>();
             this.resolveMedia = true;
         }
 
         public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
-                        List<MediaResult> extraItems, boolean resolveMedia) {
+                        List<MediaResult> extraItems, boolean resolveMedia, List<Integer> touchableElements) {
             this.intents = intents;
             this.selectedItems = selectedItems;
             this.extraItems = extraItems;
             this.resolveMedia = resolveMedia;
+            this.touchableElements = touchableElements;
         }
 
         protected UiConfig(Parcel in) {
             this.intents = in.createTypedArrayList(MediaIntent.CREATOR);
             this.selectedItems = in.createTypedArrayList(MediaResult.CREATOR);
             this.extraItems = in.createTypedArrayList(MediaResult.CREATOR);
+            this.touchableElements = new ArrayList<>();
+            in.readList(touchableElements, Integer.class.getClassLoader());
             this.resolveMedia = in.readInt() == 1;
         }
 
@@ -244,6 +259,10 @@ public class BelvedereUi {
 
         public List<MediaResult> getExtraItems() {
             return extraItems;
+        }
+
+        public List<Integer> getTouchableElements() {
+            return touchableElements;
         }
 
         public static final Creator<UiConfig> CREATOR = new Creator<UiConfig>() {
@@ -268,6 +287,7 @@ public class BelvedereUi {
             dest.writeTypedList(intents);
             dest.writeTypedList(selectedItems);
             dest.writeTypedList(extraItems);
+            dest.writeList(touchableElements);
             dest.writeInt(resolveMedia ? 1 : 0);
         }
     }
