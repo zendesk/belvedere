@@ -251,6 +251,15 @@ public class ImageStream extends Fragment {
         }
     }
 
+    void notifyVisible() {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onVisible();
+            }
+        }
+    }
+
     public void dismiss() {
         if(isAttachmentsPopupVisible()) {
             imageStreamPopup.dismiss();
@@ -276,6 +285,7 @@ public class ImageStream extends Fragment {
 
     public interface Listener {
         void onDismissed();
+        void onVisible();
         void onImageSelected(List<MediaResult> mediaResults, boolean replace);
     }
 
