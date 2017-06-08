@@ -275,11 +275,10 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         dismissArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
-
                 boolean dismiss = true;
 
-                final int touchX = (int) event.getX();
-                final int touchY = (int) event.getY();
+                final int touchX = (int) event.getRawX();
+                final int touchY = (int) event.getRawY();
 
                 for(int id : config.getTouchableElements()) {
                     View view = activity.findViewById(id);
@@ -294,7 +293,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
                         if(xMatch && yMatch) {
                             dismiss = false;
-                            view.dispatchTouchEvent(event);
+                            activity.dispatchTouchEvent(MotionEvent.obtain(event));
                             break;
                         }
                     }
@@ -304,7 +303,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
                     dismiss();
                 }
 
-                return false;
+                return true;
             }
         });
     }
