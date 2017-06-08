@@ -135,6 +135,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         initRecycler(adapter, staggeredGridLayoutManager);
 
         dataSource.setItemsSelected(selectedUris);
+        popupBackend.notifyVisible();
     }
 
 
