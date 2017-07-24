@@ -148,6 +148,7 @@ public class ChatActivity extends AppCompatActivity {
                 .withSelectedItems(new ArrayList<>(mediaResults))
                 .withExtraItems(new ArrayList<>(extraResults))
                 .withTouchableItems(R.id.attachment, R.id.send)
+                .withMaxFileSize(1024L * 1024L * 1024L * 10L, "File too large")
                 .showPopup(ChatActivity.this);
     }
 

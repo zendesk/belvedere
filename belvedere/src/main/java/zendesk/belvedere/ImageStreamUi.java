@@ -121,7 +121,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         display.getSize(size);
         final int width = size.x / columns;
 
-        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext(), width));
+        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext(), width, config.getMaxFileSize(), config.getMaxSizeErrorMessage()));
 
         final List<Uri> selectedUris = new ArrayList<>();
         for(MediaResult mediaResult : selectedImages) {
@@ -312,7 +312,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     @Override
     public void dismiss() {
         super.dismiss();
-        popupBackend.setImageStreamUi(null);
+        popupBackend.setImageStreamUi(null, null);
 
         tintStatusBar(0);
         popupBackend.notifyScrollListener(0,0,0);

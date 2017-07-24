@@ -10,7 +10,7 @@ ext {
 
     targetSdkVersion = 25
 
-    supportLibVersion = "25.3.1"
+    supportLibVersion = "25.4.0"
     versionName = "2.0.0.1-SNAPSHOT"
 
     buildSettings = [
@@ -21,10 +21,11 @@ ext {
 buildscript {
 
     repositories {
+        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }

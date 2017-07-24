@@ -8,6 +8,7 @@ ext {
 
 allprojects {
     repositories {
+        google()
         jcenter()
 
         maven {
