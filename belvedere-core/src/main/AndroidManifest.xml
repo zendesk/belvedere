@@ -5,6 +5,7 @@
             android:name="zendesk.belvedere.BelvedereFileProvider"
             android:authorities="${applicationId}${belvedereFileProviderAuthoritySuffix}"
             android:exported="false"
+            android:readPermission="true"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"

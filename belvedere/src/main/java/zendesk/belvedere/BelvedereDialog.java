@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import zendesk.belvedere.ui.R;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import zendesk.belvedere.ui.R;
 
 /**
  * This is a {@link DialogFragment} that allows the user to select an image source.
@@ -48,7 +47,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.belvedere_dialog, container, false);
-        listView = (ListView) view.findViewById(R.id.belvedere_dialog_listview);
+        listView = view.findViewById(R.id.belvedere_dialog_listview);
         return view;
     }
 

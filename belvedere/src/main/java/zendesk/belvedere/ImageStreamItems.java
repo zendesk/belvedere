@@ -137,11 +137,11 @@ class ImageStreamItems {
         @Override
         void bind(View view, final int position) {
             final Context context = view.getContext();
-            final ImageView icon = (ImageView) view.findViewById(R.id.list_item_file_icon);
-            final TextView title = (TextView) view.findViewById(R.id.list_item_file_title);
-            final TextView label = (TextView) view.findViewById(R.id.list_item_file_label);
-            final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_file_overlay);
-            final CardView container = (CardView) view.findViewById(R.id.list_item_file_container);
+            final ImageView icon = view.findViewById(R.id.list_item_file_icon);
+            final TextView title = view.findViewById(R.id.list_item_file_title);
+            final TextView label = view.findViewById(R.id.list_item_file_label);
+            final ImageView selectOverlay = view.findViewById(R.id.list_item_file_overlay);
+            final CardView container = view.findViewById(R.id.list_item_file_container);
             final View holder = view.findViewById(R.id.list_item_file_holder);
 
             title.setText(mediaResult.getName());
@@ -170,7 +170,7 @@ class ImageStreamItems {
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mediaResult.getSize() <= maxFileSize) {
+                    if(mediaResult.getSize() <= maxFileSize || maxFileSize == -1L) {
                         setSelected(!isSelected());
                         delegate.setSelected(mediaResult, isSelected(), position);
                     } else {
@@ -265,8 +265,8 @@ class ImageStreamItems {
         @Override
         public void bind(View view, final int position) {
             final Context context = view.getContext();
-            final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
-            final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_image_overlay);
+            final ImageView imageView = view.findViewById(R.id.list_item_image);
+            final ImageView selectOverlay = view.findViewById(R.id.list_item_image_overlay);
             final View container = view.findViewById(R.id.list_item_container);
 
             if(isSelected()) {
@@ -282,7 +282,7 @@ class ImageStreamItems {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(uri.getSize() <= maxFileSize) {
+                    if(uri.getSize() <= maxFileSize || maxFileSize == -1L) {
                         setSelected(!isSelected());
                         delegate.setSelected(uri, isSelected(), position);
                     } else {
@@ -290,7 +290,6 @@ class ImageStreamItems {
                     }
                 }
             });
-
 
 
             imageView.setOnLongClickListener(new View.OnLongClickListener() {

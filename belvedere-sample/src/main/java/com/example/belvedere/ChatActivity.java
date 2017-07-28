@@ -1,7 +1,6 @@
 package com.example.belvedere;
 
 import android.os.Bundle;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
         imageStream.addListener(listener);
         imageStream.addScrollListener(scrollListener);
 
-        this.input = (EditText) findViewById(R.id.input);
+        this.input = findViewById(R.id.input);
 
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.activity_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new FakeAdapter());
 
@@ -134,8 +133,8 @@ public class ChatActivity extends AppCompatActivity {
             final Interpolator interpolator = PathInterpolatorCompat.create(.19f,0f,.2f,1f);
             final float interpolation = interpolator.getInterpolation((scrollPosition * .30f));
             final int bottomPadding = (int) (-1f * interpolation * scrollArea);
-            ViewCompat.setTranslationY(findViewById(R.id.activity_input), bottomPadding);
-            ViewCompat.setTranslationY(findViewById(R.id.activity_recyclerview), bottomPadding);
+            findViewById(R.id.activity_input).setTranslationY(bottomPadding);
+            findViewById(R.id.activity_recyclerview).setTranslationY(bottomPadding);
         }
     }
 

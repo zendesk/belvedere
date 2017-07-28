@@ -89,7 +89,7 @@ public class ImageStream extends Fragment {
             public void success(List<MediaResult> result) {
                 List<MediaResult> filteredMediaResult = new ArrayList<>(result.size());
                 for(MediaResult m : result) {
-                    if(m.getSize() <= uiConfig.getMaxFileSize()) {
+                    if(m.getSize() <= uiConfig.getMaxFileSize() || uiConfig.getMaxFileSize() == -1L) {
                         filteredMediaResult.add(m);
                     }
                 }

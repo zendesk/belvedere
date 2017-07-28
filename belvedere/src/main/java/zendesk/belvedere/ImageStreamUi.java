@@ -371,7 +371,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
             notifyListener(parent.getHeight(), scrollArea, scrollPosition);
             animateToolbarShiftIn(scrollArea, scrollPosition, ViewCompat.getMinimumHeight(toolbar), child);
-            //animateToolbarFadeIn(scrollPosition); // TODO add config option
 
             return true;
         }
@@ -381,20 +380,9 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
             if(scrollArea - posInScrollArea <= toolbarHeight) {
                 Utils.showToolbar(getContentView(), true);
-                ViewCompat.setY(toolbar, scrollArea - posInScrollArea);
+                toolbar.setAlpha(1.f - ((scrollArea - posInScrollArea) / toolbarHeight));
+                toolbar.setY(scrollArea - posInScrollArea);
 
-            } else {
-                Utils.showToolbar(getContentView(), false);
-            }
-
-            tintStatusBar(scrollPosition);
-        }
-
-        private void animateToolbarFadeIn(float scrollPosition) {
-            float offset = 0.6f;
-            if (scrollPosition >= offset) {
-                ViewCompat.setAlpha(toolbar, 1f - (1f - scrollPosition) / (1f - offset));
-                Utils.showToolbar(getContentView(), true);
             } else {
                 Utils.showToolbar(getContentView(), false);
             }
