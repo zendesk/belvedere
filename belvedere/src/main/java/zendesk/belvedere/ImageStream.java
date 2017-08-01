@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class ImageStream extends Fragment {
     private List<WeakReference<ScrollListener>> imageStreamScrollListener = new ArrayList<>();
 
     private ImageStreamUi imageStreamPopup = null;
+    private BelvedereUi.UiConfig uiConfig = null;
     private boolean wasOpen = false;
 
     @Override
@@ -80,12 +82,24 @@ public class ImageStream extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Belvedere.from(this.getContext()).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
             @Override
             public void success(List<MediaResult> result) {
-                notifyImageSelected(result, false);
+                List<MediaResult> filteredMediaResult = new ArrayList<>(result.size());
+                for(MediaResult m : result) {
+                    if(m.getSize() <= uiConfig.getMaxFileSize() || uiConfig.getMaxFileSize() == -1L) {
+                        filteredMediaResult.add(m);
+                    }
+                }
+
+                if(filteredMediaResult.size() != result.size()) {
+                    Toast.makeText(getContext(), uiConfig.getMaxSizeErrorMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+                notifyImageSelected(filteredMediaResult, false);
+
             }
         }, false);
     }
@@ -212,8 +226,11 @@ public class ImageStream extends Fragment {
         this.keyboardHelper = new WeakReference<>(keyboardHelper);
     }
 
-    void setImageStreamUi(ImageStreamUi imageStreamPopup) {
+    void setImageStreamUi(ImageStreamUi imageStreamPopup, BelvedereUi.UiConfig uiConfig) {
         this.imageStreamPopup = imageStreamPopup;
+        if(uiConfig != null) {
+            this.uiConfig = uiConfig;
+        }
     }
 
     public void addListener(Listener listener) {

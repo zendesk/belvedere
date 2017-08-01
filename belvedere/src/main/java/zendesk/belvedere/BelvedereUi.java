@@ -55,6 +55,8 @@ public class BelvedereUi {
         private List<MediaResult> selectedItems = new ArrayList<>();
         private List<MediaResult> extraItems = new ArrayList<>();
         private List<Integer> touchableItems = new ArrayList<>();
+        private long maxFileSize = -1L;
+        private String maxSizeErrorMessage;
 
         private ImageStreamBuilder(Context context){
             this.context = context;
@@ -114,6 +116,12 @@ public class BelvedereUi {
             return this;
         }
 
+        public ImageStreamBuilder withMaxFileSize(long maxFileSize, String errorMessage) {
+            this.maxFileSize = maxFileSize;
+            this.maxSizeErrorMessage = errorMessage;
+            return this;
+        }
+
         public ImageStreamBuilder resolveMedia(boolean enabled) {
             this.resolveMedia = enabled;
             return this;
@@ -134,12 +142,13 @@ public class BelvedereUi {
                         decorView.post(new Runnable() {
                             @Override
                             public void run() {
+                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems, maxFileSize, maxSizeErrorMessage);
                                 final ImageStreamUi show = ImageStreamUi.show(
                                         appCompatActivity,
                                         decorView,
                                         popupBackend,
-                                        new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems));
-                                popupBackend.setImageStreamUi(show);
+                                        uiConfig);
+                                popupBackend.setImageStreamUi(show, uiConfig);
                             }
                         });
                     }
@@ -194,7 +203,7 @@ public class BelvedereUi {
             extra.addAll(extraItems);
         }
 
-        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds);
+        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds, -1L, "");
         final Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_MEDIA_INTENT, uiConfig);
 
@@ -218,6 +227,8 @@ public class BelvedereUi {
         private final List<MediaResult> extraItems;
         private final List<Integer> touchableElements;
         private final boolean resolveMedia;
+        private final long maxFileSize;
+        private final String maxSizeErrorMessage;
 
         public UiConfig() {
             this.intents = new ArrayList<>();
@@ -225,15 +236,21 @@ public class BelvedereUi {
             this.extraItems = new ArrayList<>();
             this.touchableElements = new ArrayList<>();
             this.resolveMedia = true;
+            this.maxFileSize = -1L;
+            this.maxSizeErrorMessage = "";
         }
 
         public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
-                        List<MediaResult> extraItems, boolean resolveMedia, List<Integer> touchableElements) {
+                        List<MediaResult> extraItems, boolean resolveMedia,
+                        List<Integer> touchableElements, long maxFileSize,
+                        String maxSizeErrorMessage) {
             this.intents = intents;
             this.selectedItems = selectedItems;
             this.extraItems = extraItems;
             this.resolveMedia = resolveMedia;
             this.touchableElements = touchableElements;
+            this.maxFileSize = maxFileSize;
+            this.maxSizeErrorMessage = maxSizeErrorMessage;
         }
 
         protected UiConfig(Parcel in) {
@@ -243,6 +260,8 @@ public class BelvedereUi {
             this.touchableElements = new ArrayList<>();
             in.readList(touchableElements, Integer.class.getClassLoader());
             this.resolveMedia = in.readInt() == 1;
+            this.maxFileSize = in.readLong();
+            this.maxSizeErrorMessage = in.readString();
         }
 
         public List<MediaIntent> getIntents() {
@@ -263,6 +282,14 @@ public class BelvedereUi {
 
         public List<Integer> getTouchableElements() {
             return touchableElements;
+        }
+
+        public long getMaxFileSize() {
+            return maxFileSize;
+        }
+
+        public String getMaxSizeErrorMessage() {
+            return maxSizeErrorMessage;
         }
 
         public static final Creator<UiConfig> CREATOR = new Creator<UiConfig>() {
@@ -289,6 +316,8 @@ public class BelvedereUi {
             dest.writeTypedList(extraItems);
             dest.writeList(touchableElements);
             dest.writeInt(resolveMedia ? 1 : 0);
+            dest.writeLong(maxFileSize);
+            dest.writeString(maxSizeErrorMessage);
         }
     }
 

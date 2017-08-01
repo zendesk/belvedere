@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -31,14 +32,14 @@ class ImageStreamItems {
     private final static float SELECTED_OPACITY = .8F;
 
     static List<Item> fromUris(List<MediaResult> uris, ImageStreamAdapter.Delegate delegate,
-                               Context context, int itemWidth) {
+                               Context context, int itemWidth, long maxFileSize, String maxFileSizeErrorMessage) {
         final List<Item> items = new ArrayList<>(uris.size());
 
         for(MediaResult uri : uris) {
             if(uri.getMimeType() != null && uri.getMimeType().startsWith("image")) {
-                items.add(new StreamItemImage(delegate, uri, context, itemWidth));
+                items.add(new StreamItemImage(delegate, uri, context, itemWidth, maxFileSize, maxFileSizeErrorMessage));
             } else {
-                items.add(new StreamItemFile(delegate, uri, context));
+                items.add(new StreamItemFile(delegate, uri, context, maxFileSize, maxFileSizeErrorMessage));
             }
         }
 
@@ -95,11 +96,15 @@ class ImageStreamItems {
         private final int colorPrimary;
         private final int padding;
         private final int paddingSelectedHorizontal;
+        private final long maxFileSize;
+        private final String maxFileSizeErrorMessage;
 
         private int w = -1, h = -1;
 
-        StreamItemFile(ImageStreamAdapter.Delegate delegate, MediaResult mediaResult, Context context) {
+        StreamItemFile(ImageStreamAdapter.Delegate delegate, MediaResult mediaResult, Context context, long maxFileSize, String maxFileSizeErrorMessage) {
             super(R.layout.stream_list_item_genric_file);
+            this.maxFileSize = maxFileSize;
+            this.maxFileSizeErrorMessage = maxFileSizeErrorMessage;
             this.mediaResult = mediaResult;
             this.resolveInfo = getAppInfoForFile(mediaResult.getName(), context);
             this.delegate = delegate;
@@ -132,11 +137,11 @@ class ImageStreamItems {
         @Override
         void bind(View view, final int position) {
             final Context context = view.getContext();
-            final ImageView icon = (ImageView) view.findViewById(R.id.list_item_file_icon);
-            final TextView title = (TextView) view.findViewById(R.id.list_item_file_title);
-            final TextView label = (TextView) view.findViewById(R.id.list_item_file_label);
-            final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_file_overlay);
-            final CardView container = (CardView) view.findViewById(R.id.list_item_file_container);
+            final ImageView icon = view.findViewById(R.id.list_item_file_icon);
+            final TextView title = view.findViewById(R.id.list_item_file_title);
+            final TextView label = view.findViewById(R.id.list_item_file_label);
+            final ImageView selectOverlay = view.findViewById(R.id.list_item_file_overlay);
+            final CardView container = view.findViewById(R.id.list_item_file_container);
             final View holder = view.findViewById(R.id.list_item_file_holder);
 
             title.setText(mediaResult.getName());
@@ -165,8 +170,12 @@ class ImageStreamItems {
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setSelected(!isSelected());
-                    delegate.setSelected(mediaResult, isSelected(), position);
+                    if(mediaResult.getSize() <= maxFileSize || maxFileSize == -1L) {
+                        setSelected(!isSelected());
+                        delegate.setSelected(mediaResult, isSelected(), position);
+                    } else {
+                        Toast.makeText(v.getContext(), maxFileSizeErrorMessage, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -238,11 +247,15 @@ class ImageStreamItems {
 
         private final int colorPrimary;
 
-        StreamItemImage(ImageStreamAdapter.Delegate delegate, MediaResult uri, Context context, int itemWidth) {
+        private final long maxFileSize;
+        private final String maxFileSizeErrorMessage;
+
+        StreamItemImage(ImageStreamAdapter.Delegate delegate, MediaResult uri, Context context, int itemWidth, long maxFileSize, String maxFileSizeErrorMessage) {
             super(R.layout.stream_list_item);
             this.delegate = delegate;
             this.uri = uri;
-
+            this.maxFileSize = maxFileSize;
+            this.maxFileSizeErrorMessage = maxFileSizeErrorMessage;
             this.padding = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding);
             this.paddingSelectedHorizontal = context.getResources().getDimensionPixelOffset(R.dimen.image_stream_image_padding_selected);
             this.itemWidth = itemWidth;
@@ -252,8 +265,8 @@ class ImageStreamItems {
         @Override
         public void bind(View view, final int position) {
             final Context context = view.getContext();
-            final ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
-            final ImageView selectOverlay = (ImageView) view.findViewById(R.id.list_item_image_overlay);
+            final ImageView imageView = view.findViewById(R.id.list_item_image);
+            final ImageView selectOverlay = view.findViewById(R.id.list_item_image_overlay);
             final View container = view.findViewById(R.id.list_item_container);
 
             if(isSelected()) {
@@ -269,10 +282,15 @@ class ImageStreamItems {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setSelected(!isSelected());
-                    delegate.setSelected(uri, isSelected(), position);
+                    if(uri.getSize() <= maxFileSize || maxFileSize == -1L) {
+                        setSelected(!isSelected());
+                        delegate.setSelected(uri, isSelected(), position);
+                    } else {
+                        Toast.makeText(v.getContext(), maxFileSizeErrorMessage, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
+
 
             imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

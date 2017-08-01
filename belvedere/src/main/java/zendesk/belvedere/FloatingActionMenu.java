@@ -19,7 +19,6 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -70,7 +69,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         if (!isInEditMode()) {
             setOrientation(LinearLayout.VERTICAL);
             setOnClickListener(this);
-            fab = (FloatingActionButton) findViewById(R.id.floating_action_menu_fab);
+            fab = findViewById(R.id.floating_action_menu_fab);
             layoutInflater = LayoutInflater.from(context);
             menuItems = new ArrayList<>();
 

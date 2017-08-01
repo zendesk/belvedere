@@ -34,7 +34,7 @@
             android:layout_height="64dp"
             android:layout_gravity="bottom"
             android:orientation="horizontal"
-            android:background="#ff0000">
+            android:background="#00ff00">
 
             <FrameLayout
                 android:layout_width="wrap_content"
