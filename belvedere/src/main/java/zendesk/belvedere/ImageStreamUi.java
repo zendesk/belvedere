@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -15,10 +14,10 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -114,14 +113,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
 
-
-        final Activity context = (Activity) getContentView().getContext();
-        Display display = context.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        final int width = size.x / columns;
-
-        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext(), width, config.getMaxFileSize(), config.getMaxSizeErrorMessage()));
+        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext(), config.getMaxFileSize(), config.getMaxSizeErrorMessage()));
 
         final List<Uri> selectedUris = new ArrayList<>();
         for(MediaResult mediaResult : selectedImages) {
@@ -194,10 +186,10 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
     private void bindViews(View view) {
         this.bottomSheet = view.findViewById(R.id.bottom_sheet);
         this.dismissArea = view.findViewById(R.id.dismiss_area);
-        this.imageList = (RecyclerView) view.findViewById(R.id.image_list);
-        this.toolbar = (Toolbar) view.findViewById(R.id.image_stream_toolbar);
+        this.imageList = view.findViewById(R.id.image_list);
+        this.toolbar = view.findViewById(R.id.image_stream_toolbar);
         this.toolbarContainer = view.findViewById(R.id.image_stream_toolbar_container);
-        this.floatingActionMenu = (FloatingActionMenu) view.findViewById(R.id.floating_action_menu);
+        this.floatingActionMenu = view.findViewById(R.id.floating_action_menu);
     }
 
     private void initToolbar() {
@@ -209,7 +201,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
-
 
         CoordinatorLayout.LayoutParams layoutParams = null;
         if(toolbar.getLayoutParams() instanceof  CoordinatorLayout.LayoutParams) {
@@ -225,10 +216,12 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
     private void initRecycler(ImageStreamAdapter adapter, RecyclerView.LayoutManager layoutManager) {
         this.imageStreamAdapter = adapter;
-        imageList.setItemAnimator(null);
         imageList.setHasFixedSize(true);
         imageList.setDrawingCacheEnabled(true);
         imageList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        final DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
+        defaultItemAnimator.setSupportsChangeAnimations(false);
+        imageList.setItemAnimator(defaultItemAnimator);
         imageList.setAdapter(adapter);
         imageList.setLayoutManager(layoutManager);
     }

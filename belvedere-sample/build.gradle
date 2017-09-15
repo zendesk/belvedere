@@ -18,26 +18,29 @@ android {
             minifyEnabled false
         }
 
-        travis {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+//        travis {
+//            initWith release
+//            minifyEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
     }
 }
 
 dependencies {
-    compile group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
-    compile group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
-    compile group: 'com.android.support', name: 'gridlayout-v7', version: rootProject.ext.supportLibVersion
-    compile group: 'com.android.support', name: 'palette-v7', version: rootProject.ext.supportLibVersion
-    compile group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'gridlayout-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'palette-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
 
-    compile group: 'com.jakewharton', name: 'butterknife', version: '8.5.1'
+    implementation group: 'com.jakewharton', name: 'butterknife', version: '8.5.1'
     annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.5.1'
 
+    implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
+
     if (useLocalDependency()) {
-        compile project(':belvedere')
+        api project(':belvedere')
     } else {
-        compile group: 'com.zendesk.belvedere2', name: 'belvedere', version: rootProject.ext.versionName, changing: true
+        api group: 'com.zendesk.belvedere2', name: 'belvedere', version: rootProject.ext.versionName, changing: true
     }
 }
