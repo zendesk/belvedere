@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dimensions -->
+    <dimen name="belvedere_bottom_sheet_height">350dp</dimen>
+    <dimen name="belvedere_bottom_sheet_elevation">4dp</dimen>
+    <dimen name="belvedere_image_stream_image_padding">4dp</dimen>
+    <dimen name="belvedere_image_stream_item_radius">2dp</dimen>
+    <dimen name="belvedere_image_stream_image_height">220dp</dimen>
+    <dimen name="belvedere_fam_item_margin">8dp</dimen>
+
+    <!-- Colors -->
+    <color name="belvedere_image_stream_status_bar_color">#f5f5f5</color>
+    <color name="belvedere_floating_action_menu_icon_color">@android:color/white</color>
+    <color name="belvedere_floating_action_menu_item_icon_color">#89000000</color>
+    <color name="belvedere_floating_action_menu_item_background">@android:color/white</color>
+
+    <!-- Values -->
+    <integer name="belvedere_fam_animation_duration">150</integer>
+    <integer name="belvedere_fam_animation_rotation_angle">45</integer>
+    <integer name="belvedere_fam_animation_delay_subsequent_item">50</integer>
+    <integer name="belvedere_image_stream_column_count">2</integer>
+
+</resources>

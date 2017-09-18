@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <color name="image_stream_status_bar_color">#f5f5f5</color>
-    <color name="floating_action_menu_icon_color">@android:color/white</color>
-    <color name="floating_action_menu_item_icon_color">#89000000</color>
-    <color name="floating_action_menu_item_background">@android:color/white</color>
-
-</resources>

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="bottom_sheet_height">200dp</dimen>
-    <bool name="bottom_sheet_portrait">false</bool>
-</resources>

@@ -48,7 +48,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
     }
 
     void init() {
-        viewHeight = getResources().getDimensionPixelOffset(R.dimen.image_stream_image_height);
+        viewHeight = getResources().getDimensionPixelOffset(R.dimen.belvedere_image_stream_image_height);
     }
 
     public void showImage(final Picasso picasso, final Uri uri, CalculatedDimensions dimensions) {
@@ -166,7 +166,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
 
         picasso.load(uri)
                 .resize(scaledImageWidth, scaledImageHeight)
-                .transform(Utils.roundTransformation(getContext(), R.dimen.image_stream_item_radius))
+                .transform(Utils.roundTransformation(getContext(), R.dimen.belvedere_image_stream_item_radius))
                 .into((ImageView) this);
     }
 

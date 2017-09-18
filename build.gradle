@@ -9,7 +9,7 @@ ext {
     minSdkVersionUi = 16
 
     supportLibVersion = "26.0.1"
-    versionName = "2.0.0.1-SNAPSHOT"
+    versionName = "2.0.0-SNAPSHOT"
 
     buildSettings = [
             localBuild : true,

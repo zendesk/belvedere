@@ -19,7 +19,7 @@ import zendesk.belvedere.ui.R;
 class ImageStreamItems {
 
     private final static int PIC_CAMERA = R.drawable.belvedere_ic_camera_black;
-    private final static int LAYOUT_GRID = R.layout.stream_list_item_square_static;
+    private final static int LAYOUT_GRID = R.layout.belvedere_stream_list_item_square_static;
 
     static List<Item> fromMediaResults(List<MediaResult> mediaResults, ImageStreamAdapter.Listener listener, Context context) {
 
@@ -89,7 +89,7 @@ class ImageStreamItems {
         private final ImageStreamAdapter.Listener listener;
 
         StreamItemFile(ImageStreamAdapter.Listener listener, MediaResult mediaResult, Context context) {
-            super(R.layout.stream_list_item_genric_file, mediaResult);
+            super(R.layout.belvedere_stream_list_item_genric_file, mediaResult);
             this.mediaResult = mediaResult;
             this.resolveInfo = getAppInfoForFile(mediaResult.getName(), context);
             this.listener = listener;
@@ -153,7 +153,7 @@ class ImageStreamItems {
         private FixedWidthImageView.CalculatedDimensions dimensions;
 
         StreamItemImage(ImageStreamAdapter.Listener listener, MediaResult mediaResult) {
-            super(R.layout.stream_list_item, mediaResult);
+            super(R.layout.belvedere_stream_list_item, mediaResult);
             this.listener = listener;
             this.mediaResult = mediaResult;
         }

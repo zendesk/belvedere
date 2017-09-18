@@ -64,7 +64,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     }
 
     private void initView(@NonNull Context context) {
-        inflate(context, R.layout.floating_action_menu, this);
+        inflate(context, R.layout.belvedere_floating_action_menu, this);
 
         if (!isInEditMode()) {
             setOrientation(LinearLayout.VERTICAL);
@@ -74,9 +74,9 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             menuItems = new ArrayList<>();
 
             final Resources resource = getResources();
-            animationDuration = resource.getInteger(R.integer.floating_action_menu_animation_duration);
-            animationRotationAngle = resource.getInteger(R.integer.floating_action_menu_animation_rotation_angle);
-            animationDelaySubsequentItem = getResources().getInteger(R.integer.floating_action_menu_animation_delay_subsequent_item);
+            animationDuration = resource.getInteger(R.integer.belvedere_fam_animation_duration);
+            animationRotationAngle = resource.getInteger(R.integer.belvedere_fam_animation_rotation_angle);
+            animationDelaySubsequentItem = getResources().getInteger(R.integer.belvedere_fam_animation_delay_subsequent_item);
         }
     }
 
@@ -97,7 +97,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
 
         if (isExpanded) {
             for (Pair<FloatingActionButton, View.OnClickListener> menuItem : menuItems) {
-                Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.show_menu_item);
+                Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.belvedere_show_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
                 a.setStartOffset(startOffset);
                 menuItem.first.setVisibility(VISIBLE);
@@ -111,7 +111,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             for (int i = menuItems.size() - 1; i >= 0; i--) {
                 final Pair<FloatingActionButton, View.OnClickListener> menuItem = menuItems.get(i);
 
-                Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.hide_menu_item);
+                Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.belvedere_hide_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
                 a.setStartOffset(startOffset);
                 a.setAnimationListener(new AnimationListenerAdapter() {
@@ -139,20 +139,20 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     }
 
     public void addMenuItem(@DrawableRes int iconRes, @NonNull String tag, @NonNull View.OnClickListener clickListener) {
-        FloatingActionButton menuItem = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
+        FloatingActionButton menuItem = (FloatingActionButton) layoutInflater.inflate(R.layout.belvedere_floating_action_menu_item, this, false);
         menuItem.setOnClickListener(clickListener);
-        menuItem.setImageDrawable(getTintedDrawable(iconRes, R.color.floating_action_menu_item_icon_color));
+        menuItem.setImageDrawable(getTintedDrawable(iconRes, R.color.belvedere_floating_action_menu_item_icon_color));
         menuItem.setTag(tag);
 
         menuItems.add(Pair.create(menuItem, clickListener));
 
         if (menuItems.size() == 1) {
-            fab.setImageDrawable(getTintedDrawable(iconRes, R.color.floating_action_menu_icon_color));
+            fab.setImageDrawable(getTintedDrawable(iconRes, R.color.belvedere_floating_action_menu_icon_color));
         } else if (menuItems.size() == 2) {
             addView(menuItems.get(0).first, 0);
             addView(menuItem, 0);
 
-            fab.setImageDrawable(getTintedDrawable(R.drawable.fam_icon_add, R.color.floating_action_menu_icon_color));
+            fab.setImageDrawable(getTintedDrawable(R.drawable.belvedere_fam_icon_add, R.color.belvedere_floating_action_menu_icon_color));
         } else {
             addView(menuItem, 0);
         }

@@ -35,7 +35,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     static ImageStreamUi show(Activity activity, final ViewGroup parent, ImageStream popupBackend, BelvedereUi.UiConfig config) {
-        final View v = LayoutInflater.from(activity).inflate(R.layout.activity_image_stream, parent, false);
+        final View v = LayoutInflater.from(activity).inflate(R.layout.belvedere_image_stream, parent, false);
         final ImageStreamUi attachmentPicker = new ImageStreamUi(activity, v, popupBackend, config);
         attachmentPicker.showAtLocation(parent, Gravity.TOP, 0, 0);
         return attachmentPicker;
@@ -109,14 +109,14 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     @Override
     public void showDocumentMenuItem(View.OnClickListener onClickListener) {
         if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.ic_file, "belvedere_fam_documents", onClickListener);
+            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_file, "belvedere_fam_documents", onClickListener);
         }
     }
 
     @Override
     public void showGooglePhotosMenuItem(View.OnClickListener onClickListener) {
         if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.ic_collections, "belvedere_fam_google_photos", onClickListener);
+            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_collections, "belvedere_fam_google_photos", onClickListener);
         }
     }
 
@@ -194,7 +194,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     }
 
     private void initBottomSheet() {
-        ViewCompat.setElevation(imageList, bottomSheet.getContext().getResources().getDimensionPixelSize(R.dimen.bottom_sheet_elevation));
+        ViewCompat.setElevation(imageList, bottomSheet.getContext().getResources().getDimensionPixelSize(R.dimen.belvedere_bottom_sheet_elevation));
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -289,7 +289,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     private void tintStatusBar(float scrollOffset) {
 
-        int statusBarColor = toolbar.getResources().getColor(R.color.image_stream_status_bar_color);
+        int statusBarColor = toolbar.getResources().getColor(R.color.belvedere_image_stream_status_bar_color);
         int colorPrimaryDark = Utils.getThemeColor(toolbar.getContext(), R.attr.colorPrimaryDark);
         boolean fullyExpanded = scrollOffset == 1.f;
         final Window window = activity.getWindow();

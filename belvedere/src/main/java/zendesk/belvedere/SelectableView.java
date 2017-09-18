@@ -156,7 +156,7 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         }
 
         if(getChildCount() > 2) {
-            throw new RuntimeException("Only a single view is supported");
+            throw new RuntimeException("SelectableView can only host one view at a time");
         }
 
         if(getChildAt(0).getTag().equals(getId() + "_checkbox")) {

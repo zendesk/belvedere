@@ -18,11 +18,13 @@ android {
             minifyEnabled false
         }
 
-//        travis {
-//            initWith release
-//            minifyEnabled true
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//        }
+        travis {
+            initWith debug
+            matchingFallbacks = ['debug']
+
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
 }
 
