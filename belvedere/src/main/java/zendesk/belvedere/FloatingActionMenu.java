@@ -138,10 +138,11 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         ViewCompat.animate(fab).rotation(angle).setDuration(animationDuration).start();
     }
 
-    public void addMenuItem(@DrawableRes int iconRes, @NonNull View.OnClickListener clickListener) {
+    public void addMenuItem(@DrawableRes int iconRes, @NonNull String tag, @NonNull View.OnClickListener clickListener) {
         FloatingActionButton menuItem = (FloatingActionButton) layoutInflater.inflate(R.layout.floating_action_menu_item, this, false);
         menuItem.setOnClickListener(clickListener);
         menuItem.setImageDrawable(getTintedDrawable(iconRes, R.color.floating_action_menu_item_icon_color));
+        menuItem.setTag(tag);
 
         menuItems.add(Pair.create(menuItem, clickListener));
 

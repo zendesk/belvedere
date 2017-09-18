@@ -1,16 +1,20 @@
 package zendesk.belvedere;
 
 
+import android.view.View;
+
 import java.util.List;
 
-class ImageStreamPresenter implements ImageStreamMvp.Presenter {
+class ImageStreamPresenter implements ImageStreamMvp.Presenter{
 
     private final ImageStreamMvp.Model model;
-    private final ImageStreamMvp.View view;
+    private final ImageStreamUi view;
+    private final ImageStream imageStreamBackend;
 
-    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamMvp.View view) {
+    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamUi view, ImageStream imageStreamBackend) {
         this.model = model;
         this.view = view;
+        this.imageStreamBackend = imageStreamBackend;
     }
 
     @Override
@@ -22,31 +26,50 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
     @Override
     public void initMenu() {
-        view.showGooglePhotosMenuItem(model.hasGooglePhotosIntent());
-        view.showDocumentMenuItem(model.hasDocumentIntent());
-    }
+        if(model.hasGooglePhotosIntent()) {
+            final View.OnClickListener clickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageStreamPresenter.this.view.openMediaIntent(model.getGooglePhotosIntent(), imageStreamBackend);
+                }
+            };
 
-    @Override
-    public void openCamera() {
-        if (model.hasCameraIntent()) {
-            view.openMediaIntent(model.getCameraIntent());
+            view.showGooglePhotosMenuItem(clickListener);
+        }
+
+        if(model.hasDocumentIntent()) {
+            final View.OnClickListener clickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageStreamPresenter.this.view.openMediaIntent(model.getDocumentIntent(), imageStreamBackend);
+                }
+            };
+
+            view.showDocumentMenuItem(clickListener);
         }
     }
 
     @Override
-    public void openGallery() {
-        if (model.hasDocumentIntent()) {
-            view.openMediaIntent(model.getDocumentIntent());
+    public void onImageStreamScrolled(int height, int scrollArea, float scrollPosition) {
+        if(scrollPosition >= 0) {
+            imageStreamBackend.notifyScrollListener(height, scrollArea, scrollPosition);
         }
     }
 
     @Override
-    public void openGooglePhotos() {
-        if (model.hasGooglePhotosIntent()) {
-            view.openMediaIntent(model.getGooglePhotosIntent());
-        }
+    public void dismiss() {
+        // null out references
+        imageStreamBackend.setImageStreamUi(null, null);
+
+        // reset animations
+        view.tintStatusBar(0);
+        imageStreamBackend.notifyScrollListener(0,0,0);
+
+        // notify dismiss
+        imageStreamBackend.notifyDismissed();
     }
 
+    @Override
     public List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected) {
         final List<MediaResult> mediaResults;
 
@@ -56,15 +79,41 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
             mediaResults = model.removeFromSelectedItems(mediaResult);
         }
 
-        view.updateToolbarTitle(mediaResults.size());
         return mediaResults;
     }
 
     private void presentStream() {
         final List<MediaResult> latestImages = model.getLatestImages();
         final List<MediaResult> selectedImages = model.getSelectedImages();
-        view.initUiComponents();
-        view.showImageStream(latestImages, selectedImages, model.hasCameraIntent());
+        view.initViews(model.getUiConfig().getTouchableElements());
+        view.showImageStream(latestImages, selectedImages, model.hasCameraIntent(), imageStreamListener);
+        imageStreamBackend.notifyVisible();
     }
 
+    private final ImageStreamAdapter.Listener imageStreamListener = new ImageStreamAdapter.Listener() {
+        @Override
+        public void onOpenCamera() {
+            if (model.hasCameraIntent()) {
+                view.openMediaIntent(model.getCameraIntent(), imageStreamBackend);
+            }
+        }
+
+        @Override
+        public void onSelectionChanged(ImageStreamItems.Item item, int position) {
+            MediaResult media = item.getMediaResult();
+            final BelvedereUi.UiConfig uiConfig = model.getUiConfig();
+
+            if(media != null && media.getSize() <= uiConfig.getMaxFileSize() || uiConfig.getMaxFileSize() == -1L) {
+                item.setSelected(!item.isSelected());
+
+                List<MediaResult> items = setItemSelected(media, item.isSelected());
+
+                view.updateToolbarTitle(items.size());
+
+                imageStreamBackend.notifyImageSelected(items, true);
+            } else {
+                view.showToast(model.getUiConfig().getMaxSizeErrorMessage());
+            }
+        }
+    };
 }

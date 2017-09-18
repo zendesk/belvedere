@@ -3,11 +3,9 @@ package zendesk.belvedere;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -24,11 +22,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,30 +32,28 @@ import zendesk.belvedere.ui.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, ImageStreamAdapter.Delegate {
+public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
-    static ImageStreamUi show(Activity activity, ViewGroup parent, ImageStream popupBackend, BelvedereUi.UiConfig config) {
+    static ImageStreamUi show(Activity activity, final ViewGroup parent, ImageStream popupBackend, BelvedereUi.UiConfig config) {
         final View v = LayoutInflater.from(activity).inflate(R.layout.activity_image_stream, parent, false);
         final ImageStreamUi attachmentPicker = new ImageStreamUi(activity, v, popupBackend, config);
         attachmentPicker.showAtLocation(parent, Gravity.TOP, 0, 0);
         return attachmentPicker;
     }
 
-    private final ImageStream popupBackend;
-    private final ImageStreamMvp.Presenter presenter;
-    private final ImageStreamDataSource dataSource;
+    private final ImageStreamPresenter presenter;
+    private final ImageStreamAdapter adapter;
+
+    private KeyboardHelper keyboardHelper;
 
     private View bottomSheet, dismissArea, toolbarContainer;
     private FloatingActionMenu floatingActionMenu;
     private RecyclerView imageList;
     private Toolbar toolbar;
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private ImageStreamAdapter imageStreamAdapter;
     private Activity activity;
 
-    private BelvedereUi.UiConfig config;
-
-    ImageStreamUi(Activity activity, View view, ImageStream popupBackend, BelvedereUi.UiConfig uiConfig) {
+    private ImageStreamUi(Activity activity, View view, ImageStream imageStreamBackend, BelvedereUi.UiConfig uiConfig) {
         super(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, false);
         setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         setFocusable(true);
@@ -68,109 +62,71 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         setOutsideTouchable(true);
         bindViews(view);
 
-        this.popupBackend = popupBackend;
         this.activity = activity;
-        this.dataSource = new ImageStreamDataSource();
-        this.config = uiConfig;
+        this.adapter = new ImageStreamAdapter();
+        this.keyboardHelper = imageStreamBackend.getKeyboardHelper();
 
         final PermissionStorage preferences = new PermissionStorage(view.getContext());
         final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig, preferences);
+        this.presenter = new ImageStreamPresenter(model, this, imageStreamBackend);
 
-        this.presenter = new ImageStreamPresenter(model, this);
         presenter.init();
     }
 
     @Override
-    public void initUiComponents() {
+    public void initViews(List<Integer> touchableItemIds) {
+        initRecycler(adapter);
         initToolbar();
         initBottomSheet();
-        initGesturePassThrough(activity);
-    }
-
-    private void showKeyboard(final EditText editText) {
-        editText.post(new Runnable() {
-            @Override
-            public void run() {
-                if(editText.requestFocus()) {
-                    InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
-                }
-            }
-        });
+        initGesturePassThrough(activity, touchableItemIds);
     }
 
     @Override
-    public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera) {
-        showKeyboard(popupBackend.getKeyboardHelper().getInputTrap());
+    public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener) {
+        KeyboardHelper.showKeyboard(keyboardHelper.getInputTrap());
 
         final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = MATCH_PARENT;
         bottomSheet.setLayoutParams(layoutParams);
 
-        final int columns = bottomSheet.getContext().getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
-
-        final ImageStreamAdapter adapter = new ImageStreamAdapter(dataSource);
-        final StaggeredGridLayoutManager staggeredGridLayoutManager =
-                new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
-
-        dataSource.initializeWithImages(ImageStreamItems.fromUris(images, this, bottomSheet.getContext(), config.getMaxFileSize(), config.getMaxSizeErrorMessage()));
-
-        final List<Uri> selectedUris = new ArrayList<>();
-        for(MediaResult mediaResult : selectedImages) {
-            selectedUris.add(mediaResult.getOriginalUri());
-        }
-
+        // Add camera item
         if(showCamera){
-            dataSource.addStaticItem(ImageStreamItems.forCameraSquare(this));
+            adapter.addStaticItem(ImageStreamItems.forCameraSquare(listener));
         }
 
-        initRecycler(adapter, staggeredGridLayoutManager);
+        // Add recent images
+        adapter.initializeWithImages(ImageStreamItems.fromMediaResults(images, listener, bottomSheet.getContext()));
 
-        dataSource.setItemsSelected(selectedUris);
-        popupBackend.notifyVisible();
+        // Mark selected images
+        adapter.setItemsSelected(selectedImages);
+
+        // Reload RecyclerView
+        adapter.notifyDataSetChanged();
     }
 
-
     @Override
-    public void showDocumentMenuItem(boolean visible) {
-        if (floatingActionMenu != null && visible) {
-            floatingActionMenu.addMenuItem(R.drawable.ic_file, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    presenter.openGallery();
-                }
-            });
+    public void showDocumentMenuItem(View.OnClickListener onClickListener) {
+        if (floatingActionMenu != null) {
+            floatingActionMenu.addMenuItem(R.drawable.ic_file, "belvedere_fam_documents", onClickListener);
         }
     }
 
     @Override
-    public void showGooglePhotosMenuItem(boolean visible) {
-        if (floatingActionMenu != null && visible) {
-            floatingActionMenu.addMenuItem(R.drawable.ic_collections, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    presenter.openGooglePhotos();
-                }
-            });
+    public void showGooglePhotosMenuItem(View.OnClickListener onClickListener) {
+        if (floatingActionMenu != null) {
+            floatingActionMenu.addMenuItem(R.drawable.ic_collections, "belvedere_fam_google_photos", onClickListener);
         }
     }
 
     @Override
-    public void openMediaIntent(MediaIntent mediaIntent) {
-        mediaIntent.open(popupBackend);
+    public void openMediaIntent(MediaIntent mediaIntent, ImageStream imageStream) {
+        //keyboardHelper.hideKeyboard();
+        mediaIntent.open(imageStream);
     }
 
     @Override
-    public void openCamera() {
-        popupBackend.getKeyboardHelper().hideKeyboard();
-        presenter.openCamera();
-    }
-
-    @Override
-    public void setSelected(MediaResult uri, boolean isSelected, int position) {
-        imageStreamAdapter.notifyItemChanged(position);
-        final List<MediaResult> selectedItems = presenter.setItemSelected(uri, isSelected);
-        popupBackend.notifyImageSelected(selectedItems, true);
+    public void showToast(String text) {
+        Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -203,7 +159,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         });
 
         CoordinatorLayout.LayoutParams layoutParams = null;
-        if(toolbar.getLayoutParams() instanceof  CoordinatorLayout.LayoutParams) {
+        if(toolbar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
             layoutParams = (CoordinatorLayout.LayoutParams) toolbar.getLayoutParams();
         } else if(toolbarContainer.getLayoutParams() instanceof CoordinatorLayout.LayoutParams){
             layoutParams = (CoordinatorLayout.LayoutParams) toolbarContainer.getLayoutParams();
@@ -214,16 +170,21 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         }
     }
 
-    private void initRecycler(ImageStreamAdapter adapter, RecyclerView.LayoutManager layoutManager) {
-        this.imageStreamAdapter = adapter;
+    private void initRecycler(ImageStreamAdapter adapter) {
+        final int columns = bottomSheet.getContext().getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
+        final StaggeredGridLayoutManager staggeredGridLayoutManager =
+                new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
+
+        imageList.setLayoutManager(staggeredGridLayoutManager);
         imageList.setHasFixedSize(true);
         imageList.setDrawingCacheEnabled(true);
         imageList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
         final DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
         defaultItemAnimator.setSupportsChangeAnimations(false);
         imageList.setItemAnimator(defaultItemAnimator);
+
         imageList.setAdapter(adapter);
-        imageList.setLayoutManager(layoutManager);
     }
 
     private void initBottomSheet() {
@@ -248,7 +209,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
 
         Utils.showToolbar(getContentView(), false);
 
-        final KeyboardHelper keyboardHelper = popupBackend.getKeyboardHelper();
         bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
@@ -265,7 +225,13 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
         bottomSheet.setVisibility(View.VISIBLE);
     }
 
-    private void initGesturePassThrough(final Activity activity) {
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        presenter.dismiss();
+    }
+
+    private void initGesturePassThrough(final Activity activity, final List<Integer> touchableIds) {
         dismissArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
@@ -274,7 +240,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
                 final int touchX = (int) event.getRawX();
                 final int touchY = (int) event.getRawY();
 
-                for(int id : config.getTouchableElements()) {
+                for(int id : touchableIds) {
                     View view = activity.findViewById(id);
 
                     if(view != null) {
@@ -300,17 +266,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
                 return true;
             }
         });
-    }
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
-        popupBackend.setImageStreamUi(null, null);
-
-        tintStatusBar(0);
-        popupBackend.notifyScrollListener(0,0,0);
-
-        popupBackend.notifyDismissed();
     }
 
     private void tintStatusBar(float scrollOffset) {
@@ -362,7 +317,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
             int scrollArea = parent.getHeight() - bottomSheetBehavior.getPeekHeight();
             float scrollPosition = (parent.getHeight() - dependency.getY() - bottomSheetBehavior.getPeekHeight()) / scrollArea;
 
-            notifyListener(parent.getHeight(), scrollArea, scrollPosition);
+            presenter.onImageStreamScrolled(parent.getHeight(), scrollArea, scrollPosition);
             animateToolbarShiftIn(scrollArea, scrollPosition, ViewCompat.getMinimumHeight(toolbar), child);
 
             return true;
@@ -381,12 +336,6 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View, I
             }
 
             tintStatusBar(scrollPosition);
-        }
-
-        private void notifyListener(int height, int scrollArea, float scrollPosition) {
-            if(scrollPosition >= 0) {
-                popupBackend.notifyScrollListener(height, scrollArea, scrollPosition);
-            }
         }
     }
 }

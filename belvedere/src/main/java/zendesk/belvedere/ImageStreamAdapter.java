@@ -1,47 +1,96 @@
 package zendesk.belvedere;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ImageStreamDataSource imageStreamDataSource;
+    private List<ImageStreamItems.Item> staticItems;
+    private List<ImageStreamItems.Item> imageStream;
 
-    ImageStreamAdapter(ImageStreamDataSource dataSource) {
-        setHasStableIds(true);
-        this.imageStreamDataSource = dataSource;
+    private List<ImageStreamItems.Item> list;
+
+    ImageStreamAdapter() {
+        staticItems = new ArrayList<>();
+        imageStream = new ArrayList<>();
+        list = new ArrayList<>();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
-        return new RecyclerView.ViewHolder(v){};
+        return new RecyclerView.ViewHolder(v) {};
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        imageStreamDataSource.getItemForPos(position).bind(holder.itemView, position);
+        list.get(position).bind(holder.itemView, position);
     }
 
     @Override
     public long getItemId(int position) {
-        return imageStreamDataSource.getItemForPos(position).getId();
+        return list.get(position).getId();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return imageStreamDataSource.getItemForPos(position).getLayoutId();
+        return list.get(position).getLayoutId();
     }
 
     @Override
     public int getItemCount() {
-        return imageStreamDataSource.getItemCount();
+        return list.size();
     }
 
-    interface Delegate {
-        void openCamera();
-        void setSelected(MediaResult uri, boolean selected, int position);
+    void initializeWithImages(List<ImageStreamItems.Item> imageStream) {
+        updateDataSet(staticItems, imageStream);
     }
+
+    void setItemsSelected(List<MediaResult> mediaResults) {
+        final ArrayList<ImageStreamItems.Item> streamItemImages = new ArrayList<>(imageStream);
+        final Set<Uri> uris = new HashSet<>();
+
+        for(MediaResult mediaResult : mediaResults) {
+            uris.add(mediaResult.getOriginalUri());
+        }
+
+        for (ImageStreamItems.Item item : streamItemImages) {
+            final boolean selected = uris.contains(item.getMediaResult().getOriginalUri());
+            item.setSelected(selected);
+        }
+
+        updateDataSet(staticItems, streamItemImages);
+    }
+
+    void addStaticItem(ImageStreamItems.Item staticItem) {
+        updateDataSet(Collections.singletonList(staticItem), imageStream);
+    }
+
+    private void updateDataSet(List<ImageStreamItems.Item> newStaticItems,
+                               List<ImageStreamItems.Item> newImageStream) {
+        List<ImageStreamItems.Item> newList = new ArrayList<>(newStaticItems.size() + newImageStream.size());
+        newList.addAll(newStaticItems);
+        newList.addAll(newImageStream);
+
+        staticItems = newStaticItems;
+        imageStream = newImageStream;
+        list = newList;
+    }
+
+    interface Listener {
+
+        void onOpenCamera();
+
+        void onSelectionChanged(ImageStreamItems.Item item, int position);
+    }
+
 }

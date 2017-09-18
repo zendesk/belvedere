@@ -26,21 +26,25 @@ interface ImageStreamMvp {
 
         List<MediaResult> removeFromSelectedItems(MediaResult mediaResult);
 
+        BelvedereUi.UiConfig getUiConfig();
+
     }
 
     interface View {
 
-        void initUiComponents();
+        void initViews(List<Integer> touchableItemIds);
+
+        void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener);
+
+        void showDocumentMenuItem(android.view.View.OnClickListener onClickListener);
+
+        void showGooglePhotosMenuItem(android.view.View.OnClickListener onClickListener);
+
+        void openMediaIntent(MediaIntent mediaIntent, ImageStream imageStream);
+
+        void showToast(String text);
 
         void updateToolbarTitle(int selectedImages);
-
-        void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera);
-
-        void showDocumentMenuItem(boolean visible);
-
-        void showGooglePhotosMenuItem(boolean visible);
-
-        void openMediaIntent(MediaIntent mediaIntent);
 
     }
 
@@ -50,13 +54,11 @@ interface ImageStreamMvp {
 
         void initMenu();
 
-        void openCamera();
+        void onImageStreamScrolled(int height, int scrollArea, float scrollPosition);
 
-        void openGallery();
+        void dismiss();
 
-        void openGooglePhotos();
-
-        List<MediaResult> setItemSelected(MediaResult uri, boolean b);
+        List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected);
 
     }
 

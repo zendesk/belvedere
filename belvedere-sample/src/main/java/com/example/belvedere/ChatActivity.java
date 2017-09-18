@@ -141,7 +141,6 @@ public class ChatActivity extends AppCompatActivity {
     private void showImageStream() {
         BelvedereUi
                 .imageStream(ChatActivity.this)
-                .resolveMedia(false)
                 .withCameraIntent()
                 .withDocumentIntent("*/*", true)
                 .withSelectedItems(new ArrayList<>(mediaResults))

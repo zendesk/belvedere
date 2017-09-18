@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,28 +21,26 @@ class ImageStreamItems {
     private final static int PIC_CAMERA = R.drawable.belvedere_ic_camera_black;
     private final static int LAYOUT_GRID = R.layout.stream_list_item_square_static;
 
-    static List<Item> fromUris(List<MediaResult> uris,
-                               ImageStreamAdapter.Delegate delegate,
-                               Context context, long maxFileSize,
-                               String maxFileSizeErrorMessage) {
-        final List<Item> items = new ArrayList<>(uris.size());
+    static List<Item> fromMediaResults(List<MediaResult> mediaResults, ImageStreamAdapter.Listener listener, Context context) {
 
-        for(MediaResult mediaResult : uris) {
+        final List<Item> items = new ArrayList<>(mediaResults.size());
+
+        for(MediaResult mediaResult : mediaResults) {
             if(mediaResult.getMimeType() != null && mediaResult.getMimeType().startsWith("image")) {
-                items.add(new StreamItemImage(delegate, mediaResult, maxFileSize, maxFileSizeErrorMessage));
+                items.add(new StreamItemImage(listener, mediaResult));
             } else {
-                items.add(new StreamItemFile(delegate, mediaResult, context, maxFileSize, maxFileSizeErrorMessage));
+                items.add(new StreamItemFile(listener, mediaResult, context));
             }
         }
 
         return items;
     }
 
-    static StaticItem forCameraSquare(final ImageStreamAdapter.Delegate delegate) {
+    static StaticItem forCameraSquare(final ImageStreamAdapter.Listener listener) {
         return new StaticItem(LAYOUT_GRID, PIC_CAMERA, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delegate.openCamera();
+                listener.onOpenCamera();
             }
         });
     }
@@ -52,10 +49,12 @@ class ImageStreamItems {
 
         private final int layoutId;
         private final long id;
+        private final MediaResult mediaResult;
         private boolean isSelected;
 
-        Item(int layoutId) {
+        Item(int layoutId, MediaResult mediaResult) {
             this.layoutId = layoutId;
+            this.mediaResult = mediaResult;
             this.id = UUID.randomUUID().hashCode();
             this.isSelected = false;
         }
@@ -70,7 +69,9 @@ class ImageStreamItems {
 
         abstract void bind(View view, int position);
 
-        abstract MediaResult getMediaResult();
+        MediaResult getMediaResult() {
+            return mediaResult;
+        }
 
         void setSelected(boolean selected) {
             this.isSelected = selected;
@@ -85,39 +86,13 @@ class ImageStreamItems {
 
         private final MediaResult mediaResult;
         private final ResolveInfo resolveInfo;
-        private final ImageStreamAdapter.Delegate delegate;
-        private final long maxFileSize;
-        private final String maxFileSizeErrorMessage;
+        private final ImageStreamAdapter.Listener listener;
 
-        StreamItemFile(ImageStreamAdapter.Delegate delegate, MediaResult mediaResult, Context context,
-                       long maxFileSize, String maxFileSizeErrorMessage) {
-            super(R.layout.stream_list_item_genric_file);
-            this.maxFileSize = maxFileSize;
-            this.maxFileSizeErrorMessage = maxFileSizeErrorMessage;
+        StreamItemFile(ImageStreamAdapter.Listener listener, MediaResult mediaResult, Context context) {
+            super(R.layout.stream_list_item_genric_file, mediaResult);
             this.mediaResult = mediaResult;
             this.resolveInfo = getAppInfoForFile(mediaResult.getName(), context);
-            this.delegate = delegate;
-        }
-
-        ResolveInfo getAppInfoForFile(String fileName, Context context) {
-            final PackageManager pm = context.getPackageManager();
-            final MediaResult file = Belvedere.from(context).getFile("tmp", fileName);
-
-            if(file == null) {
-                return null;
-            }
-
-            final Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(file.getUri());
-
-            final List<ResolveInfo> matchingApps =
-                    pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-
-            if(matchingApps != null && matchingApps.size() > 0) {
-                return matchingApps.get(0);
-            }
-
-            return null;
+            this.listener = listener;
         }
 
         @Override
@@ -143,38 +118,44 @@ class ImageStreamItems {
             holder.setSelectionListener(new SelectableView.SelectionListener() {
                 @Override
                 public void onSelectionChanged(boolean selected) {
-                    if(mediaResult.getSize() <= maxFileSize || maxFileSize == -1L) {
-                        setSelected(!isSelected());
-                        delegate.setSelected(mediaResult, isSelected(), position);
-                    } else {
-                        Toast.makeText(context, maxFileSizeErrorMessage, Toast.LENGTH_SHORT).show();
-                    }
+                    listener.onSelectionChanged(StreamItemFile.this, position);
                 }
             });
         }
 
-        @Override
-        MediaResult getMediaResult() {
-            return mediaResult;
+        private ResolveInfo getAppInfoForFile(String fileName, Context context) {
+            final PackageManager pm = context.getPackageManager();
+            final MediaResult file = Belvedere.from(context).getFile("tmp", fileName);
+
+            if(file == null) {
+                return null;
+            }
+
+            final Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(file.getUri());
+
+            final List<ResolveInfo> matchingApps =
+                    pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+            if(matchingApps != null && matchingApps.size() > 0) {
+                return matchingApps.get(0);
+            }
+
+            return null;
         }
     }
 
     static class StreamItemImage extends Item {
 
         private final MediaResult mediaResult;
-        private final ImageStreamAdapter.Delegate delegate;
-
-        private final long maxFileSize;
-        private final String maxFileSizeErrorMessage;
+        private final ImageStreamAdapter.Listener listener;
 
         private FixedWidthImageView.CalculatedDimensions dimensions;
 
-        StreamItemImage(ImageStreamAdapter.Delegate delegate, MediaResult uri, long maxFileSize, String maxFileSizeErrorMessage) {
-            super(R.layout.stream_list_item);
-            this.delegate = delegate;
-            this.mediaResult = uri;
-            this.maxFileSize = maxFileSize;
-            this.maxFileSizeErrorMessage = maxFileSizeErrorMessage;
+        StreamItemImage(ImageStreamAdapter.Listener listener, MediaResult mediaResult) {
+            super(R.layout.stream_list_item, mediaResult);
+            this.listener = listener;
+            this.mediaResult = mediaResult;
         }
 
         @Override
@@ -198,19 +179,9 @@ class ImageStreamItems {
             container.setSelectionListener(new SelectableView.SelectionListener() {
                 @Override
                 public void onSelectionChanged(boolean selected) {
-                    if(mediaResult.getSize() <= maxFileSize || maxFileSize == -1L) {
-                        setSelected(!isSelected());
-                        delegate.setSelected(mediaResult, isSelected(), position);
-                    } else {
-                        Toast.makeText(context, maxFileSizeErrorMessage, Toast.LENGTH_SHORT).show();
-                    }
+                    listener.onSelectionChanged(StreamItemImage.this, position);
                 }
             });
-        }
-
-        @Override
-        MediaResult getMediaResult() {
-            return mediaResult;
         }
     }
 
@@ -220,7 +191,7 @@ class ImageStreamItems {
         private final View.OnClickListener onClickListener;
 
         private StaticItem(int layoutId, int iconId, View.OnClickListener onClickListener) {
-            super(layoutId);
+            super(layoutId, null);
             this.iconId = iconId;
             this.onClickListener = onClickListener;
         }
@@ -229,11 +200,6 @@ class ImageStreamItems {
         public void bind(View view, int position) {
             ((ImageView)view.findViewById(R.id.list_item_static_image)).setImageResource(iconId);
             view.findViewById(R.id.list_item_static_click_area).setOnClickListener(onClickListener);
-        }
-
-        @Override
-        MediaResult getMediaResult() {
-            return null;
         }
     }
 }

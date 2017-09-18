@@ -122,19 +122,13 @@ public class BelvedereUi {
             return this;
         }
 
-        public ImageStreamBuilder resolveMedia(boolean enabled) {
-            this.resolveMedia = enabled;
-            return this;
-        }
-
         public void showPopup(AppCompatActivity activity) {
             final ImageStream popupBackend = BelvedereUi.install(activity);
-
             final WeakReference<AppCompatActivity> activityReference = new WeakReference<>(activity);
 
-            popupBackend.handlePermissions(mediaIntents, new ImageStream.PermissionCallback() {
+            popupBackend.handlePermissions(mediaIntents, new PermissionManager.PermissionCallback() {
                 @Override
-                public void ok(final List<MediaIntent> mediaIntents) {
+                public void onPermissionsGranted(final List<MediaIntent> mediaIntents) {
                     final AppCompatActivity appCompatActivity = activityReference.get();
 
                     if(appCompatActivity != null) {
@@ -155,10 +149,10 @@ public class BelvedereUi {
                 }
 
                 @Override
-                public void nope() {
+                public void onPermissionsDenied() {
                     AppCompatActivity appCompatActivity = activityReference.get();
                     if(appCompatActivity != null) {
-                        Toast.makeText(appCompatActivity, "nope", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(appCompatActivity, "Permissions denied", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -270,10 +264,6 @@ public class BelvedereUi {
 
         public List<MediaResult> getSelectedItems() {
             return selectedItems;
-        }
-
-        public boolean shouldResolveMedia() {
-            return resolveMedia;
         }
 
         public List<MediaResult> getExtraItems() {

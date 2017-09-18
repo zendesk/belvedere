@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static zendesk.belvedere.MediaResult.UNKNOWN_VALUE;
 
 class ImageStreamModel implements ImageStreamMvp.Model {
 
@@ -96,25 +93,22 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         return selectedImages;
     }
 
+    @Override
+    public BelvedereUi.UiConfig getUiConfig() {
+        return startConfig;
+    }
+
     private List<MediaResult> queryRecentImages() {
         final List<MediaResult> mediaResults = new ArrayList<>();
 
-        final String[] projection;
-        if (Build.VERSION.SDK_INT >= 16) {
-            projection = new String[]{
+        final String[] projection = new String[]{
                     MediaStore.Images.ImageColumns._ID,
                     MediaStore.MediaColumns.DISPLAY_NAME,
                     MediaStore.MediaColumns.SIZE,
                     MediaStore.MediaColumns.WIDTH,
                     MediaStore.MediaColumns.HEIGHT
             };
-        } else {
-            projection = new String[]{
-                    MediaStore.Images.ImageColumns._ID,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
-                    MediaStore.MediaColumns.SIZE
-            };
-        }
+
 
         final Cursor cursor = context.getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
@@ -127,13 +121,8 @@ class ImageStreamModel implements ImageStreamMvp.Model {
                             cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
 
                     final long size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
-                    final long width, height;
-                    if (Build.VERSION.SDK_INT >= 16) {
-                        width = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH));
-                        height = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT));
-                    } else {
-                        width = height = UNKNOWN_VALUE;
-                    }
+                    final long width = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH));
+                    final long height = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT));
                     final String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
 
                     final int index = name.lastIndexOf(".");
