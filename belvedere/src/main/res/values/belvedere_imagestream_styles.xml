@@ -21,4 +21,8 @@
     <integer name="belvedere_fam_animation_delay_subsequent_item">50</integer>
     <integer name="belvedere_image_stream_column_count">2</integer>
 
+    <!-- IDs -->
+    <item name="belvedere_fam_item_google_photos" type="id"/>
+    <item name="belvedere_fam_item_documents" type="id"/>
+
 </resources>

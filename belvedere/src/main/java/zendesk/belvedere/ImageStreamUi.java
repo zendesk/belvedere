@@ -109,14 +109,14 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     @Override
     public void showDocumentMenuItem(View.OnClickListener onClickListener) {
         if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_file, "belvedere_fam_documents", onClickListener);
+            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_file, R.id.belvedere_fam_item_documents, onClickListener);
         }
     }
 
     @Override
     public void showGooglePhotosMenuItem(View.OnClickListener onClickListener) {
         if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_collections, "belvedere_fam_google_photos", onClickListener);
+            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_collections, R.id.belvedere_fam_item_google_photos, onClickListener);
         }
     }
 
