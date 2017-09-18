@@ -110,7 +110,7 @@ class ImageStreamItems {
                 label.setText(resolveInfo.loadLabel(pm));
                 icon.setImageDrawable(resolveInfo.loadIcon(pm));
             } else {
-                label.setText("Unknown");
+                label.setText(R.string.belvedere_image_stream_unknown_app);
                 icon.setImageResource(android.R.drawable.sym_def_app_icon);
             }
 

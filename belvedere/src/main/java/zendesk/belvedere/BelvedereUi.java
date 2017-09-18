@@ -167,7 +167,7 @@ public class BelvedereUi {
 
         final BelvedereDialog dialog = new BelvedereDialog();
         dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(0), new ArrayList<MediaResult>(0), true, new ArrayList<Integer>(0)));
-        dialog.show(fm.beginTransaction(), FRAGMENT_TAG);
+        dialog.show(fm, FRAGMENT_TAG);
     }
 
     @Deprecated

@@ -7,10 +7,6 @@
 
     <dimen name="fam_item_margin">8dp</dimen>
 
-    <bool name="bottom_sheet_portrait">true</bool>
-
     <dimen name="image_stream_image_padding">4dp</dimen>
-    <dimen name="image_stream_image_padding_selected">16dp</dimen>
-
     <dimen name="image_stream_item_radius">2dp</dimen>
 </resources>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="belvedere_animation_duration">250</integer>
     <integer name="floating_action_menu_animation_duration">150</integer>
     <integer name="floating_action_menu_animation_rotation_angle">45</integer>
     <integer name="floating_action_menu_animation_delay_subsequent_item">50</integer>
