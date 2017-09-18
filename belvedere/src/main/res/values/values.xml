@@ -4,4 +4,7 @@
     <integer name="floating_action_menu_animation_duration">150</integer>
     <integer name="floating_action_menu_animation_rotation_angle">45</integer>
     <integer name="floating_action_menu_animation_delay_subsequent_item">50</integer>
+
+    <integer name="belvedere_image_stream_column_count">2</integer>
+
 </resources>

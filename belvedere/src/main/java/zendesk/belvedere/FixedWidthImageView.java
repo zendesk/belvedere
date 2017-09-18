@@ -166,7 +166,6 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
 
         picasso.load(uri)
                 .resize(scaledImageWidth, scaledImageHeight)
-                .onlyScaleDown()
                 .transform(Utils.roundTransformation(getContext(), R.dimen.image_stream_item_radius))
                 .into((ImageView) this);
     }

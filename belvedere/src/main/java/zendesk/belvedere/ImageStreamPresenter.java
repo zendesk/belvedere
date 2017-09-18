@@ -8,7 +8,7 @@ import java.util.List;
 class ImageStreamPresenter implements ImageStreamMvp.Presenter{
 
     private final ImageStreamMvp.Model model;
-    private final ImageStreamUi view;
+    private final ImageStreamMvp.View view;
     private final ImageStream imageStreamBackend;
 
     ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamUi view, ImageStream imageStreamBackend) {
@@ -62,7 +62,6 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
         imageStreamBackend.setImageStreamUi(null, null);
 
         // reset animations
-        view.tintStatusBar(0);
         imageStreamBackend.notifyScrollListener(0,0,0);
 
         // notify dismiss

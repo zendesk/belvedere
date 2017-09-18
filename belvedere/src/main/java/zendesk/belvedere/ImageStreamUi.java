@@ -83,7 +83,9 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     @Override
     public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener) {
-        KeyboardHelper.showKeyboard(keyboardHelper.getInputTrap());
+        if(!isInExoticWindowMode()) {
+            KeyboardHelper.showKeyboard(keyboardHelper.getInputTrap());
+        }
 
         final ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
         layoutParams.height = MATCH_PARENT;
@@ -154,7 +156,11 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                if(!isInExoticWindowMode()) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                } else {
+                    dismiss();
+                }
             }
         });
 
@@ -171,7 +177,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     }
 
     private void initRecycler(ImageStreamAdapter adapter) {
-        final int columns = bottomSheet.getContext().getResources().getBoolean(R.bool.bottom_sheet_portrait) ? 2 : 3;
+        final int columns = bottomSheet.getContext().getResources().getInteger(R.integer.belvedere_image_stream_column_count);
         final StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL);
 
@@ -209,17 +215,22 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
         Utils.showToolbar(getContentView(), false);
 
-        bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-        keyboardHelper.setKeyboardHeightListener(new KeyboardHelper.SizeListener() {
-            @Override
-            public void onSizeChanged(int keyboardHeight) {
-                if(keyboardHeight != bottomSheetBehavior.getPeekHeight()) {
-                    bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
+        if (!isInExoticWindowMode()) {
+            bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            keyboardHelper.setKeyboardHeightListener(new KeyboardHelper.SizeListener() {
+                @Override
+                public void onSizeChanged(int keyboardHeight) {
+                    if(keyboardHeight != bottomSheetBehavior.getPeekHeight()) {
+                        bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            bottomSheetBehavior.setSkipCollapsed(true);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            KeyboardHelper.hideKeyboard(activity);
+        }
 
         imageList.setClickable(true);
         bottomSheet.setVisibility(View.VISIBLE);
@@ -228,7 +239,15 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     @Override
     public void dismiss() {
         super.dismiss();
+        tintStatusBar(0);
         presenter.dismiss();
+    }
+
+    private boolean isInExoticWindowMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return activity.isInMultiWindowMode() || activity.isInPictureInPictureMode();
+        }
+        return false;
     }
 
     private void initGesturePassThrough(final Activity activity, final List<Integer> touchableIds) {
@@ -317,8 +336,11 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
             int scrollArea = parent.getHeight() - bottomSheetBehavior.getPeekHeight();
             float scrollPosition = (parent.getHeight() - dependency.getY() - bottomSheetBehavior.getPeekHeight()) / scrollArea;
 
-            presenter.onImageStreamScrolled(parent.getHeight(), scrollArea, scrollPosition);
             animateToolbarShiftIn(scrollArea, scrollPosition, ViewCompat.getMinimumHeight(toolbar), child);
+
+            if(!isInExoticWindowMode()) {
+                presenter.onImageStreamScrolled(parent.getHeight(), scrollArea, scrollPosition);
+            }
 
             return true;
         }

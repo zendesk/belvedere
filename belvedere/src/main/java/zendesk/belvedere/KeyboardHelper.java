@@ -48,6 +48,16 @@ public class KeyboardHelper extends FrameLayout {
         });
     }
 
+    static void hideKeyboard(final Activity activity) {
+        final View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
     private final int statusBarHeight;
 
     private int viewInset = -1;
