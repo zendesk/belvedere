@@ -56,7 +56,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     void setItemsSelected(List<MediaResult> mediaResults) {
-        final ArrayList<ImageStreamItems.Item> streamItemImages = new ArrayList<>(imageStream);
+        final List<ImageStreamItems.Item> streamItemImages = new ArrayList<>(imageStream);
         final Set<Uri> uris = new HashSet<>();
 
         for(MediaResult mediaResult : mediaResults) {

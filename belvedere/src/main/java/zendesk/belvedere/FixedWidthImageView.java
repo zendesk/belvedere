@@ -18,7 +18,7 @@ import zendesk.belvedere.ui.R;
 
 public class FixedWidthImageView extends AppCompatImageView implements Target {
 
-    private static final String LOG_TAG = "FWRCSImageView";
+    private static final String LOG_TAG = "FixedWidthImageView";
 
     private int viewWidth = -1;
     private int viewHeight = -1;
@@ -175,8 +175,8 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
         this.rawImageHeight = bitmap.getHeight();
         this.rawImageWidth = bitmap.getWidth();
 
-        Pair<Integer, Integer> scaledDimensions = scale(this.viewWidth, rawImageWidth, rawImageHeight);
-        loadImage(this.picasso, scaledDimensions.first, scaledDimensions.second, this.uri);
+        Pair<Integer, Integer> scaledDimensions = scale(viewWidth, rawImageWidth, rawImageHeight);
+        loadImage(picasso, scaledDimensions.first, scaledDimensions.second, uri);
     }
 
     @Override

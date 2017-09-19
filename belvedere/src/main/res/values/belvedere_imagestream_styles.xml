@@ -24,5 +24,6 @@
     <!-- IDs -->
     <item name="belvedere_fam_item_google_photos" type="id"/>
     <item name="belvedere_fam_item_documents" type="id"/>
+    <item name="belvedere_selectable_view_checkbox" type="id"/>
 
 </resources>

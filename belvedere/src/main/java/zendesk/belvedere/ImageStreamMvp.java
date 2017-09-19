@@ -42,7 +42,7 @@ interface ImageStreamMvp {
 
         void openMediaIntent(MediaIntent mediaIntent, ImageStream imageStream);
 
-        void showToast(String text);
+        void showToast(int textId);
 
         void updateToolbarTitle(int selectedImages);
 

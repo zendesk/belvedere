@@ -12,8 +12,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageStream extends Fragment {
+import zendesk.belvedere.ui.R;
 
+public class ImageStream extends Fragment {
 
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
 
@@ -66,7 +67,7 @@ public class ImageStream extends Fragment {
                 }
 
                 if(filteredMediaResult.size() != result.size()) {
-                    Toast.makeText(getContext(), uiConfig.getMaxSizeErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.belvedere_image_stream_file_too_large, Toast.LENGTH_SHORT).show();
                 }
 
                 notifyImageSelected(filteredMediaResult, false);

@@ -5,4 +5,5 @@
 
     <string name="belvedere_image_stream_title">Photo library</string>
     <string name="belvedere_image_stream_unknown_app">Unknown</string>
+    <string name="belvedere_image_stream_file_too_large">File too large</string>
 </resources>

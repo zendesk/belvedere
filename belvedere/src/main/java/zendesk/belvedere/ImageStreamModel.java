@@ -2,11 +2,7 @@ package zendesk.belvedere;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.webkit.MimeTypeMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +10,9 @@ import java.util.List;
 class ImageStreamModel implements ImageStreamMvp.Model {
 
     private static final String GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos";
-
     private static final int MAX_IMAGES = 500;
 
-    private final Context context;
+    private final ImageStreamService imageStreamProvider;
     private final PermissionStorage preferences;
 
     private final BelvedereUi.UiConfig startConfig;
@@ -25,10 +20,8 @@ class ImageStreamModel implements ImageStreamMvp.Model {
 
     private final List<MediaResult> selectedImages;
 
-    ImageStreamModel(Context context,
-                     BelvedereUi.UiConfig startConfig,
-                     PermissionStorage preferences) {
-        this.context = context;
+    ImageStreamModel(Context context, BelvedereUi.UiConfig startConfig, PermissionStorage preferences) {
+        this.imageStreamProvider = new ImageStreamService(context);
         this.preferences = preferences;
         this.startConfig = startConfig;
         this.mediaIntents = filterIntents(startConfig.getIntents());
@@ -37,7 +30,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
 
     @Override
     public List<MediaResult> getLatestImages() {
-        final List<MediaResult> mediaResults = queryRecentImages();
+        final List<MediaResult> mediaResults = imageStreamProvider.queryRecentImages(MAX_IMAGES);
         final List<MediaResult> userProvidedResults = mergeMediaResultLists(startConfig.getExtraItems(), startConfig.getSelectedItems());
         return mergeMediaResultLists(mediaResults, userProvidedResults);
     }
@@ -54,7 +47,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
 
     @Override
     public boolean hasGooglePhotosIntent() {
-        return getDocumentIntent() != null && Utils.isAppAvailable(GOOGLE_PHOTOS_PACKAGE_NAME, context);
+        return getDocumentIntent() != null && imageStreamProvider.isAppAvailable(GOOGLE_PHOTOS_PACKAGE_NAME);
     }
 
     @Override
@@ -96,51 +89,6 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     @Override
     public BelvedereUi.UiConfig getUiConfig() {
         return startConfig;
-    }
-
-    private List<MediaResult> queryRecentImages() {
-        final List<MediaResult> mediaResults = new ArrayList<>();
-
-        final String[] projection = new String[]{
-                    MediaStore.Images.ImageColumns._ID,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
-                    MediaStore.MediaColumns.SIZE,
-                    MediaStore.MediaColumns.WIDTH,
-                    MediaStore.MediaColumns.HEIGHT
-            };
-
-
-        final Cursor cursor = context.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT " + MAX_IMAGES);
-
-        try {
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    final Uri uri = MediaStore.Files.getContentUri("external",
-                            cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
-
-                    final long size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
-                    final long width = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH));
-                    final long height = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT));
-                    final String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
-
-                    final int index = name.lastIndexOf(".");
-                    String mimeType = "image/jpeg";
-                    if(index != -1) {
-                        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(index + 1));
-                    }
-
-                    mediaResults.add(new MediaResult(null, uri, uri, name, mimeType, size, width, height));
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return mediaResults;
     }
 
     private List<MediaResult> mergeMediaResultLists(List<MediaResult> images, List<MediaResult> toMerge) {

@@ -4,6 +4,7 @@ package zendesk.belvedere;
 import android.view.View;
 
 import java.util.List;
+import zendesk.belvedere.ui.R;
 
 class ImageStreamPresenter implements ImageStreamMvp.Presenter{
 
@@ -58,13 +59,13 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
 
     @Override
     public void dismiss() {
-        // null out references
+        // Null out references
         imageStreamBackend.setImageStreamUi(null, null);
 
-        // reset animations
+        // Reset animation listener
         imageStreamBackend.notifyScrollListener(0,0,0);
 
-        // notify dismiss
+        // notify observers
         imageStreamBackend.notifyDismissed();
     }
 
@@ -82,10 +83,19 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
     }
 
     private void presentStream() {
-        final List<MediaResult> latestImages = model.getLatestImages();
-        final List<MediaResult> selectedImages = model.getSelectedImages();
+        // Init the ui
         view.initViews(model.getUiConfig().getTouchableElements());
+
+        // Load recent images
+        final List<MediaResult> latestImages = model.getLatestImages();
+
+        // Load selected images
+        final List<MediaResult> selectedImages = model.getSelectedImages();
+
+        // Populate image stream
         view.showImageStream(latestImages, selectedImages, model.hasCameraIntent(), imageStreamListener);
+
+        // Notify observers
         imageStreamBackend.notifyVisible();
     }
 
@@ -111,7 +121,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
 
                 imageStreamBackend.notifyImageSelected(items, true);
             } else {
-                view.showToast(model.getUiConfig().getMaxSizeErrorMessage());
+                view.showToast(R.string.belvedere_image_stream_file_too_large);
             }
         }
     };

@@ -46,7 +46,7 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         setFocusable(true);
         setOnClickListener(this);
 
-        int colorPrimary = Utils.getThemeColor(getContext(), R.attr.colorPrimary);
+        final int colorPrimary = Utils.getThemeColor(getContext(), R.attr.colorPrimary);
         checkbox = getCheckBox(colorPrimary);
         addView(checkbox);
     }
@@ -68,14 +68,14 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         scaleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                scale((Float) valueAnimator.getAnimatedValue());
+                scale((float) valueAnimator.getAnimatedValue());
             }
         });
 
         alphaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                alpha((Float) valueAnimator.getAnimatedValue());
+                alpha((float) valueAnimator.getAnimatedValue());
             }
         });
 
@@ -120,7 +120,7 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         params.gravity = Gravity.CENTER;
 
         final ImageView imageView = new ImageView(getContext());
-        imageView.setTag(getId() + "_checkbox");
+        imageView.setId(R.id.belvedere_selectable_view_checkbox);
         imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.belvedere_ic_check_circle));
         ViewCompat.setBackground(imageView, ContextCompat.getDrawable(getContext(), R.drawable.belvedere_ic_check_bg));
         imageView.setLayoutParams(params);
@@ -155,14 +155,16 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
             return child;
         }
 
-        if(getChildCount() > 2) {
-            throw new RuntimeException("SelectableView can only host one view at a time");
+        if(getChildCount() != 2) {
+            throw new RuntimeException("SelectableView has more than 1 or less than 2 children. Not cool.");
         }
 
-        if(getChildAt(0).getTag().equals(getId() + "_checkbox")) {
-            child = getChildAt(1);
-        } else {
-            child = getChildAt(0);
+        for(int i = 0; i < getChildCount(); i++) {
+            final View c = getChildAt(i);
+            if(c.getId() != R.id.belvedere_selectable_view_checkbox) {
+                child = c;
+                break;
+            }
         }
 
         return child;

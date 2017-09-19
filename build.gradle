@@ -9,7 +9,7 @@ ext {
     minSdkVersionUi = 16
 
     supportLibVersion = "26.0.1"
-    versionName = "2.0.0-SNAPSHOT"
+    versionName = "2.0.1-SNAPSHOT"
 
     buildSettings = [
             localBuild : true,
@@ -24,6 +24,6 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta5'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
     }
 }

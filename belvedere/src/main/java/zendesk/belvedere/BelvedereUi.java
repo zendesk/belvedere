@@ -1,5 +1,6 @@
 package zendesk.belvedere;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +30,9 @@ public class BelvedereUi {
 
     public static ImageStream install(AppCompatActivity activity) {
         final FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
-        Fragment fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_POPUP);
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_POPUP);
 
-        ImageStream popupBackend;
+        final ImageStream popupBackend;
         if(fragment instanceof ImageStream) {
             popupBackend = (ImageStream) fragment;
         } else {
@@ -56,7 +56,6 @@ public class BelvedereUi {
         private List<MediaResult> extraItems = new ArrayList<>();
         private List<Integer> touchableItems = new ArrayList<>();
         private long maxFileSize = -1L;
-        private String maxSizeErrorMessage;
 
         private ImageStreamBuilder(Context context){
             this.context = context;
@@ -116,27 +115,25 @@ public class BelvedereUi {
             return this;
         }
 
-        public ImageStreamBuilder withMaxFileSize(long maxFileSize, String errorMessage) {
+        public ImageStreamBuilder withMaxFileSize(long maxFileSize) {
             this.maxFileSize = maxFileSize;
-            this.maxSizeErrorMessage = errorMessage;
             return this;
         }
 
         public void showPopup(AppCompatActivity activity) {
             final ImageStream popupBackend = BelvedereUi.install(activity);
-            final WeakReference<AppCompatActivity> activityReference = new WeakReference<>(activity);
 
             popupBackend.handlePermissions(mediaIntents, new PermissionManager.PermissionCallback() {
                 @Override
                 public void onPermissionsGranted(final List<MediaIntent> mediaIntents) {
-                    final AppCompatActivity appCompatActivity = activityReference.get();
+                    final Activity appCompatActivity = popupBackend.getActivity();
 
-                    if(appCompatActivity != null) {
+                    if(appCompatActivity != null && !appCompatActivity.isChangingConfigurations()) {
                         final ViewGroup decorView = (ViewGroup) appCompatActivity.getWindow().getDecorView();
                         decorView.post(new Runnable() {
                             @Override
                             public void run() {
-                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems, maxFileSize, maxSizeErrorMessage);
+                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems, maxFileSize);
                                 final ImageStreamUi show = ImageStreamUi.show(
                                         appCompatActivity,
                                         decorView,
@@ -150,7 +147,7 @@ public class BelvedereUi {
 
                 @Override
                 public void onPermissionsDenied() {
-                    AppCompatActivity appCompatActivity = activityReference.get();
+                    Activity appCompatActivity = popupBackend.getActivity();
                     if(appCompatActivity != null) {
                         Toast.makeText(appCompatActivity, "Permissions denied", Toast.LENGTH_SHORT).show();
                     }
@@ -197,7 +194,7 @@ public class BelvedereUi {
             extra.addAll(extraItems);
         }
 
-        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds, -1L, "");
+        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds, -1L);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_MEDIA_INTENT, uiConfig);
 
@@ -222,7 +219,6 @@ public class BelvedereUi {
         private final List<Integer> touchableElements;
         private final boolean resolveMedia;
         private final long maxFileSize;
-        private final String maxSizeErrorMessage;
 
         public UiConfig() {
             this.intents = new ArrayList<>();
@@ -231,20 +227,17 @@ public class BelvedereUi {
             this.touchableElements = new ArrayList<>();
             this.resolveMedia = true;
             this.maxFileSize = -1L;
-            this.maxSizeErrorMessage = "";
         }
 
         public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
                         List<MediaResult> extraItems, boolean resolveMedia,
-                        List<Integer> touchableElements, long maxFileSize,
-                        String maxSizeErrorMessage) {
+                        List<Integer> touchableElements, long maxFileSize) {
             this.intents = intents;
             this.selectedItems = selectedItems;
             this.extraItems = extraItems;
             this.resolveMedia = resolveMedia;
             this.touchableElements = touchableElements;
             this.maxFileSize = maxFileSize;
-            this.maxSizeErrorMessage = maxSizeErrorMessage;
         }
 
         protected UiConfig(Parcel in) {
@@ -255,7 +248,6 @@ public class BelvedereUi {
             in.readList(touchableElements, Integer.class.getClassLoader());
             this.resolveMedia = in.readInt() == 1;
             this.maxFileSize = in.readLong();
-            this.maxSizeErrorMessage = in.readString();
         }
 
         public List<MediaIntent> getIntents() {
@@ -276,10 +268,6 @@ public class BelvedereUi {
 
         public long getMaxFileSize() {
             return maxFileSize;
-        }
-
-        public String getMaxSizeErrorMessage() {
-            return maxSizeErrorMessage;
         }
 
         public static final Creator<UiConfig> CREATOR = new Creator<UiConfig>() {
@@ -307,7 +295,6 @@ public class BelvedereUi {
             dest.writeList(touchableElements);
             dest.writeInt(resolveMedia ? 1 : 0);
             dest.writeLong(maxFileSize);
-            dest.writeString(maxSizeErrorMessage);
         }
     }
 

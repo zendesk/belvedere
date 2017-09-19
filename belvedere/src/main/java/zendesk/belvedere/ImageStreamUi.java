@@ -122,13 +122,12 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     @Override
     public void openMediaIntent(MediaIntent mediaIntent, ImageStream imageStream) {
-        //keyboardHelper.hideKeyboard();
         mediaIntent.open(imageStream);
     }
 
     @Override
-    public void showToast(String text) {
-        Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
+    public void showToast(int textId) {
+        Toast.makeText(activity, textId, Toast.LENGTH_SHORT).show();
     }
 
     @Override
