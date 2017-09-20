@@ -33,7 +33,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        list.get(position).bind(holder.itemView, position);
+        list.get(position).bind(holder.itemView);
     }
 
     @Override
@@ -90,7 +90,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onOpenCamera();
 
-        void onSelectionChanged(ImageStreamItems.Item item, int position);
+        void onSelectionChanged(ImageStreamItems.Item item);
     }
 
 }

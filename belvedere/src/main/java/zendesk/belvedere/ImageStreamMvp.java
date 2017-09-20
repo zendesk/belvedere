@@ -1,5 +1,7 @@
 package zendesk.belvedere;
 
+import android.view.View.OnClickListener;
+
 import java.util.List;
 
 interface ImageStreamMvp {
@@ -20,25 +22,25 @@ interface ImageStreamMvp {
 
         MediaIntent getGooglePhotosIntent();
 
-        List<MediaResult> getSelectedImages();
+        List<MediaResult> getSelectedMediaResults();
 
         List<MediaResult> addToSelectedItems(MediaResult mediaResult);
 
         List<MediaResult> removeFromSelectedItems(MediaResult mediaResult);
 
-        BelvedereUi.UiConfig getUiConfig();
+        long getMaxFileSize();
 
     }
 
     interface View {
 
-        void initViews(List<Integer> touchableItemIds);
+        void initViews();
 
         void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener);
 
-        void showDocumentMenuItem(android.view.View.OnClickListener onClickListener);
+        void showDocumentMenuItem(OnClickListener onClickListener);
 
-        void showGooglePhotosMenuItem(android.view.View.OnClickListener onClickListener);
+        void showGooglePhotosMenuItem(OnClickListener onClickListener);
 
         void openMediaIntent(MediaIntent mediaIntent, ImageStream imageStream);
 
@@ -52,13 +54,9 @@ interface ImageStreamMvp {
 
         void init();
 
-        void initMenu();
-
         void onImageStreamScrolled(int height, int scrollArea, float scrollPosition);
 
         void dismiss();
-
-        List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected);
 
     }
 

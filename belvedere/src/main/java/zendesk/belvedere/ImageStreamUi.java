@@ -43,6 +43,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     private final ImageStreamPresenter presenter;
     private final ImageStreamAdapter adapter;
+    private final List<Integer> touchableItemIds;
 
     private KeyboardHelper keyboardHelper;
 
@@ -65,16 +66,16 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         this.activity = activity;
         this.adapter = new ImageStreamAdapter();
         this.keyboardHelper = imageStreamBackend.getKeyboardHelper();
+        this.touchableItemIds = uiConfig.getTouchableElements();
 
-        final PermissionStorage preferences = new PermissionStorage(view.getContext());
-        final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig, preferences);
+        final ImageStreamMvp.Model model = new ImageStreamModel(view.getContext(), uiConfig);
         this.presenter = new ImageStreamPresenter(model, this, imageStreamBackend);
 
         presenter.init();
     }
 
     @Override
-    public void initViews(List<Integer> touchableItemIds) {
+    public void initViews() {
         initRecycler(adapter);
         initToolbar();
         initBottomSheet();

@@ -8,10 +8,17 @@ import android.webkit.MimeTypeMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 class ImageStreamService {
 
-
+    private final static String[] PROJECTION = new String[]{
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.MediaColumns.DISPLAY_NAME,
+            MediaStore.MediaColumns.SIZE,
+            MediaStore.MediaColumns.WIDTH,
+            MediaStore.MediaColumns.HEIGHT
+    };
 
     private final Context context;
 
@@ -22,18 +29,9 @@ class ImageStreamService {
     List<MediaResult> queryRecentImages(int count) {
         final List<MediaResult> mediaResults = new ArrayList<>();
 
-        final String[] projection = new String[]{
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.SIZE,
-                MediaStore.MediaColumns.WIDTH,
-                MediaStore.MediaColumns.HEIGHT
-        };
-
-
+        final String order = String.format(Locale.US, "%s DESC LIMIT %s", MediaStore.Images.ImageColumns.DATE_TAKEN, count);
         final Cursor cursor = context.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT " + count);
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PROJECTION, null, null, order);
 
         try {
             if (cursor != null) {

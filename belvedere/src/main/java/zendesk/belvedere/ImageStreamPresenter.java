@@ -4,15 +4,16 @@ package zendesk.belvedere;
 import android.view.View;
 
 import java.util.List;
+
 import zendesk.belvedere.ui.R;
 
-class ImageStreamPresenter implements ImageStreamMvp.Presenter{
+class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
     private final ImageStreamMvp.Model model;
     private final ImageStreamMvp.View view;
     private final ImageStream imageStreamBackend;
 
-    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamUi view, ImageStream imageStreamBackend) {
+    ImageStreamPresenter(ImageStreamMvp.Model model, ImageStreamMvp.View view, ImageStream imageStreamBackend) {
         this.model = model;
         this.view = view;
         this.imageStreamBackend = imageStreamBackend;
@@ -22,11 +23,41 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
     public void init() {
         presentStream();
         initMenu();
-        view.updateToolbarTitle(model.getSelectedImages().size());
+        view.updateToolbarTitle(model.getSelectedMediaResults().size());
     }
 
     @Override
-    public void initMenu() {
+    public void onImageStreamScrolled(int height, int scrollArea, float scrollPosition) {
+        if(scrollPosition >= 0) {
+            imageStreamBackend.notifyScrollListener(height, scrollArea, scrollPosition);
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        // Null out references
+        imageStreamBackend.setImageStreamUi(null, null);
+
+        // Reset animation listener
+        imageStreamBackend.notifyScrollListener(0,0,0);
+
+        // notify observers
+        imageStreamBackend.notifyDismissed();
+    }
+
+    private List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected) {
+        final List<MediaResult> mediaResults;
+
+        if(isSelected) {
+            mediaResults = model.addToSelectedItems(mediaResult);
+        } else{
+            mediaResults = model.removeFromSelectedItems(mediaResult);
+        }
+
+        return mediaResults;
+    }
+
+    private void initMenu() {
         if(model.hasGooglePhotosIntent()) {
             final View.OnClickListener clickListener = new View.OnClickListener() {
                 @Override
@@ -50,47 +81,15 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
         }
     }
 
-    @Override
-    public void onImageStreamScrolled(int height, int scrollArea, float scrollPosition) {
-        if(scrollPosition >= 0) {
-            imageStreamBackend.notifyScrollListener(height, scrollArea, scrollPosition);
-        }
-    }
-
-    @Override
-    public void dismiss() {
-        // Null out references
-        imageStreamBackend.setImageStreamUi(null, null);
-
-        // Reset animation listener
-        imageStreamBackend.notifyScrollListener(0,0,0);
-
-        // notify observers
-        imageStreamBackend.notifyDismissed();
-    }
-
-    @Override
-    public List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected) {
-        final List<MediaResult> mediaResults;
-
-        if(isSelected) {
-            mediaResults = model.addToSelectedItems(mediaResult);
-        } else{
-            mediaResults = model.removeFromSelectedItems(mediaResult);
-        }
-
-        return mediaResults;
-    }
-
     private void presentStream() {
         // Init the ui
-        view.initViews(model.getUiConfig().getTouchableElements());
+        view.initViews();
 
         // Load recent images
         final List<MediaResult> latestImages = model.getLatestImages();
 
         // Load selected images
-        final List<MediaResult> selectedImages = model.getSelectedImages();
+        final List<MediaResult> selectedImages = model.getSelectedMediaResults();
 
         // Populate image stream
         view.showImageStream(latestImages, selectedImages, model.hasCameraIntent(), imageStreamListener);
@@ -108,11 +107,11 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter{
         }
 
         @Override
-        public void onSelectionChanged(ImageStreamItems.Item item, int position) {
+        public void onSelectionChanged(ImageStreamItems.Item item) {
             MediaResult media = item.getMediaResult();
-            final BelvedereUi.UiConfig uiConfig = model.getUiConfig();
+            final long maxFileSize = model.getMaxFileSize();
 
-            if(media != null && media.getSize() <= uiConfig.getMaxFileSize() || uiConfig.getMaxFileSize() == -1L) {
+            if(media != null && media.getSize() <= maxFileSize || maxFileSize == -1L) {
                 item.setSelected(!item.isSelected());
 
                 List<MediaResult> items = setItemSelected(media, item.isSelected());

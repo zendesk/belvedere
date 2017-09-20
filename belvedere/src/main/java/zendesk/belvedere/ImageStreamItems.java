@@ -67,7 +67,7 @@ class ImageStreamItems {
             return id;
         }
 
-        abstract void bind(View view, int position);
+        abstract void bind(View view);
 
         MediaResult getMediaResult() {
             return mediaResult;
@@ -96,7 +96,7 @@ class ImageStreamItems {
         }
 
         @Override
-        void bind(View view, final int position) {
+        void bind(View view) {
             final Context context = view.getContext();
             final ImageView icon = view.findViewById(R.id.list_item_file_icon);
             final TextView title = view.findViewById(R.id.list_item_file_title);
@@ -118,7 +118,7 @@ class ImageStreamItems {
             holder.setSelectionListener(new SelectableView.SelectionListener() {
                 @Override
                 public void onSelectionChanged(boolean selected) {
-                    listener.onSelectionChanged(StreamItemFile.this, position);
+                    listener.onSelectionChanged(StreamItemFile.this);
                 }
             });
         }
@@ -159,7 +159,7 @@ class ImageStreamItems {
         }
 
         @Override
-        public void bind(final View view, final int position) {
+        public void bind(final View view) {
             final Context context = view.getContext();
             final FixedWidthImageView imageView = view.findViewById(R.id.list_item_image);
             final SelectableView container = view.findViewById(R.id.list_item_selectable);
@@ -179,7 +179,7 @@ class ImageStreamItems {
             container.setSelectionListener(new SelectableView.SelectionListener() {
                 @Override
                 public void onSelectionChanged(boolean selected) {
-                    listener.onSelectionChanged(StreamItemImage.this, position);
+                    listener.onSelectionChanged(StreamItemImage.this);
                 }
             });
         }
@@ -197,7 +197,7 @@ class ImageStreamItems {
         }
 
         @Override
-        public void bind(View view, int position) {
+        public void bind(View view) {
             ((ImageView)view.findViewById(R.id.list_item_static_image)).setImageResource(iconId);
             view.findViewById(R.id.list_item_static_click_area).setOnClickListener(onClickListener);
         }
