@@ -34,6 +34,30 @@ public class KeyboardHelper extends FrameLayout {
         return keyboardHelper;
     }
 
+    static void showKeyboard(final EditText editText) {
+        editText.post(new Runnable() {
+            @Override
+            public void run() {
+                if(editText.requestFocus()) {
+                    InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if(imm != null) {
+                        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                }
+            }
+        });
+    }
+
+    static void hideKeyboard(final Activity activity) {
+        final View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
     private final int statusBarHeight;
 
     private int viewInset = -1;
@@ -109,14 +133,6 @@ public class KeyboardHelper extends FrameLayout {
 
     public EditText getInputTrap() {
         return inputTrap;
-    }
-
-    public void hideKeyboard() {
-        final View view = ((Activity) getContext()).getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 
     public int getKeyboardHeight() {

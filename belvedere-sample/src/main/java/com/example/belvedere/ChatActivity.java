@@ -15,6 +15,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,8 +36,8 @@ public class ChatActivity extends AppCompatActivity {
     private Listener listener;
     private ImageStream.ScrollListener scrollListener;
 
-    static List<MediaResult> mediaResults = new ArrayList<>();
-    static Set<MediaResult> extraResults = new TreeSet<>();
+    static Collection<MediaResult> mediaResults = new ArrayList<>();
+    static Collection<MediaResult> extraResults = new LinkedHashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,10 +117,19 @@ public class ChatActivity extends AppCompatActivity {
 
             if(replace) {
                 mediaResults.clear();
-            }
+                mediaResults.addAll(new ArrayList<>(r));
+                extraResults.addAll(new ArrayList<>(r));
+            } else {
+                final List<MediaResult> newResults =  new ArrayList<>(r);
+                newResults.addAll(mediaResults);
+                mediaResults.clear();
+                mediaResults.addAll(newResults);
 
-            mediaResults.addAll(new ArrayList<>(r));
-            extraResults.addAll(new ArrayList<>(r));
+                final List<MediaResult> newExtra =  new ArrayList<>(r);
+                newExtra.addAll(extraResults);
+                extraResults.clear();
+                extraResults.addAll(newExtra);
+            }
 
             ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
 
@@ -141,13 +154,12 @@ public class ChatActivity extends AppCompatActivity {
     private void showImageStream() {
         BelvedereUi
                 .imageStream(ChatActivity.this)
-                .resolveMedia(false)
                 .withCameraIntent()
                 .withDocumentIntent("*/*", true)
                 .withSelectedItems(new ArrayList<>(mediaResults))
                 .withExtraItems(new ArrayList<>(extraResults))
                 .withTouchableItems(R.id.attachment, R.id.send)
-                .withMaxFileSize(1024L * 1024L * 1024L * 10L, "File too large")
+                .withMaxFileSize(1024L * 1024L * 1024L * 10L)
                 .showPopup(ChatActivity.this);
     }
 

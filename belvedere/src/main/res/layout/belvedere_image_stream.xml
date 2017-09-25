@@ -18,7 +18,7 @@
         android:paddingTop="?actionBarSize"
         android:visibility="gone"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="@dimen/bottom_sheet_height"
+        app:behavior_peekHeight="@dimen/belvedere_bottom_sheet_height"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <android.support.v7.widget.RecyclerView
@@ -46,6 +46,6 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <include layout="@layout/image_stream_toolbar"/>
+    <include layout="@layout/belvedere_image_stream_toolbar"/>
 
 </android.support.design.widget.CoordinatorLayout>

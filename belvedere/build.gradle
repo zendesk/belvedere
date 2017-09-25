@@ -5,6 +5,7 @@ ext {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../scripts/gradle/zendesk-javadoc.gradle'
 apply from: '../scripts/gradle/zendesk-deploy.gradle'
 apply from: '../scripts/gradle/gradle-commons.gradle'
@@ -26,15 +27,20 @@ android {
 }
 
 dependencies {
-    compile group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
-    compile group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
-    compile group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
-
-    compile group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
-
     if (useLocalDependency()) {
-        compile project(':belvedere-core')
+        api project(':belvedere-core')
     } else {
-        compile group: 'com.zendesk.belvedere2', name: 'belvedere-core', version: rootProject.ext.versionName, changing: true
+        api group: 'com.zendesk.belvedere2', name: 'belvedere-core', version: rootProject.ext.versionName, changing: true
     }
+
+    implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
+
+    // Unit tests
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.10.0'
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: rootProject.ext.kotlinVersion
+    testImplementation group: 'com.google.truth', name: 'truth', version: '0.35'
 }

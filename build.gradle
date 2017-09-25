@@ -2,16 +2,14 @@ apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/zendesk-repos.gradle'
 
 ext {
-    compileSdkVersion = 26
     buildToolsVersion = "26.0.1"
-
-    minSdkVersionCore = 14
-    minSdkVersionUi = 14
-
+    compileSdkVersion = 26
     targetSdkVersion = 26
+    minSdkVersionCore = 16
+    minSdkVersionUi = 16
 
-    supportLibVersion = "26.0.0"
-    versionName = "2.0.0.1-SNAPSHOT"
+    supportLibVersion = "26.0.1"
+    versionName = "2.0.0-SNAPSHOT"
 
     buildSettings = [
             localBuild : true,
@@ -20,12 +18,17 @@ ext {
 
 buildscript {
 
-    repositories {
+    ext {
+        kotlinVersion = "1.1.4-3"
+    }
+
+        repositories {
         google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlinVersion}"
     }
 }

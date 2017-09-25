@@ -11,8 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:src="@drawable/fam_icon_add"
-        android:tint="@color/floating_action_menu_icon_color"
+        android:src="@drawable/belvedere_fam_icon_add"
+        android:tint="@color/belvedere_floating_action_menu_icon_color"
         app:useCompatPadding="true" />
 
 </LinearLayout>

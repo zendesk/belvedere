@@ -228,9 +228,9 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
         public static AttachmentSource from(MediaIntent belvedereIntent, Context context) {
             if (belvedereIntent.getTarget() == MediaIntent.TARGET_CAMERA) {
-                return new AttachmentSource(R.drawable.ic_camera, context.getString(R.string.belvedere_dialog_camera));
+                return new AttachmentSource(R.drawable.belvedere_ic_camera, context.getString(R.string.belvedere_dialog_camera));
             } else if (belvedereIntent.getTarget() == MediaIntent.TARGET_DOCUMENT) {
-                return new AttachmentSource(R.drawable.ic_image, context.getString(R.string.belvedere_dialog_gallery));
+                return new AttachmentSource(R.drawable.belvedere_ic_image, context.getString(R.string.belvedere_dialog_gallery));
             } else {
                 return new AttachmentSource(-1, context.getString(R.string.belvedere_dialog_unknown));
             }
