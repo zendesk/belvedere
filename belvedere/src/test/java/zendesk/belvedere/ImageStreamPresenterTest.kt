@@ -3,13 +3,11 @@
 package zendesk.belvedere
 
 import android.view.View
-import com.google.common.truth.Truth
-import com.google.common.truth.Truth.*
+import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
@@ -119,7 +117,7 @@ class ImageStreamPresenterTest : TestHelper {
 
         assertThat(item.isSelected).isTrue()
         verify(model, times(1)).addToSelectedItems(eq(mediaResult))
-        verify(imageStreamBackend, times(1)).notifyImageSelected(eq(listOf(mediaResult)), eq(true))
+        verify(imageStreamBackend, times(1)).notifyImageSelected(eq(listOf(mediaResult)))
     }
 
     @Test
@@ -136,7 +134,7 @@ class ImageStreamPresenterTest : TestHelper {
 
         assertThat(item.isSelected).isFalse()
         verify(model, times(1)).removeFromSelectedItems(eq(mediaResult))
-        verify(imageStreamBackend, times(1)).notifyImageSelected(eq(listOf()), eq(true))
+        verify(imageStreamBackend, times(1)).notifyImageDeselected(eq(listOf(mediaResult)))
     }
 
     @Test
@@ -152,7 +150,7 @@ class ImageStreamPresenterTest : TestHelper {
 
         assertThat(item.isSelected).isTrue()
         verify(model, times(1)).addToSelectedItems(eq(mediaResult))
-        verify(imageStreamBackend, times(1)).notifyImageSelected(eq(listOf(mediaResult)), eq(true))
+        verify(imageStreamBackend, times(1)).notifyImageSelected(eq(listOf(mediaResult)))
     }
 
     @Test

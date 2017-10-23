@@ -70,8 +70,7 @@ public class ImageStream extends Fragment {
                     Toast.makeText(getContext(), R.string.belvedere_image_stream_file_too_large, Toast.LENGTH_SHORT).show();
                 }
 
-                notifyImageSelected(filteredMediaResult, false);
-
+                notifyImageSelected(filteredMediaResult);
             }
         }, false);
     }
@@ -96,11 +95,20 @@ public class ImageStream extends Fragment {
         }
     }
 
-    void notifyImageSelected(List<MediaResult> mediaResults, boolean replace) {
+    void notifyImageSelected(List<MediaResult> mediaResults) {
         for(WeakReference<Listener> ref : imageStreamListener) {
             final Listener listener = ref.get();
             if(listener != null) {
-                listener.onImageSelected(mediaResults, replace);
+                listener.onMediaSelected(mediaResults);
+            }
+        }
+    }
+
+    void notifyImageDeselected(List<MediaResult> mediaResults) {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onMediaDeselected(mediaResults);
             }
         }
     }
@@ -156,7 +164,9 @@ public class ImageStream extends Fragment {
     public interface Listener {
         void onDismissed();
         void onVisible();
-        void onImageSelected(List<MediaResult> mediaResults, boolean replace);
+
+        void onMediaSelected(List<MediaResult> mediaResults);
+        void onMediaDeselected(List<MediaResult> mediaResults);
     }
 
     public interface ScrollListener {

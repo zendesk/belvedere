@@ -3,6 +3,7 @@ package zendesk.belvedere;
 
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import zendesk.belvedere.ui.R;
@@ -118,7 +119,15 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
                 view.updateToolbarTitle(items.size());
 
-                imageStreamBackend.notifyImageSelected(items, true);
+                List<MediaResult> results = new ArrayList<>();
+                results.add(media);
+
+                if(item.isSelected()) {
+                    imageStreamBackend.notifyImageSelected(results);
+                } else {
+                    imageStreamBackend.notifyImageDeselected(results);
+                }
+
             } else {
                 view.showToast(R.string.belvedere_image_stream_file_too_large);
             }

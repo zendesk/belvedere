@@ -16,12 +16,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.ImageStream;
@@ -36,7 +32,7 @@ public class ChatActivity extends AppCompatActivity {
     private Listener listener;
     private ImageStream.ScrollListener scrollListener;
 
-    static Collection<MediaResult> mediaResults = new ArrayList<>();
+    static List<MediaResult> mediaResults = new ArrayList<>();
     static Collection<MediaResult> extraResults = new LinkedHashSet<>();
 
     @Override
@@ -113,30 +109,26 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onImageSelected(List<MediaResult> r, boolean replace) {
+        public void onMediaSelected(List<MediaResult> a) {
+            mediaResults.addAll(0, new ArrayList<>(a));
+            extraResults.addAll(new ArrayList<>(a));
+            refreshUi();
+        }
 
-            if(replace) {
-                mediaResults.clear();
-                mediaResults.addAll(new ArrayList<>(r));
-                extraResults.addAll(new ArrayList<>(r));
-            } else {
-                final List<MediaResult> newResults =  new ArrayList<>(r);
-                newResults.addAll(mediaResults);
-                mediaResults.clear();
-                mediaResults.addAll(newResults);
+        @Override
+        public void onMediaDeselected(List<MediaResult> a) {
+            mediaResults.removeAll(new ArrayList<>(a));
+            refreshUi();
+        }
 
-                final List<MediaResult> newExtra =  new ArrayList<>(r);
-                newExtra.addAll(extraResults);
-                extraResults.clear();
-                extraResults.addAll(newExtra);
-            }
-
+        private void refreshUi() {
             ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
 
             if(!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
         }
+
     }
 
     private class ScrollListener implements ImageStream.ScrollListener {
