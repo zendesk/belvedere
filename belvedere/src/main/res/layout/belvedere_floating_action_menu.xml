@@ -13,6 +13,7 @@
         android:layout_gravity="bottom|end"
         android:src="@drawable/belvedere_fam_icon_add"
         android:tint="@color/belvedere_floating_action_menu_icon_color"
+        app:fabSize="normal"
         app:useCompatPadding="true" />
 
 </LinearLayout>
