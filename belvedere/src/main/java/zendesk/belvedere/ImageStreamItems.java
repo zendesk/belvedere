@@ -117,8 +117,8 @@ class ImageStreamItems {
             holder.setSelected(isSelected());
             holder.setSelectionListener(new SelectableView.SelectionListener() {
                 @Override
-                public void onSelectionChanged(boolean selected) {
-                    listener.onSelectionChanged(StreamItemFile.this);
+                public boolean onSelectionChanged(boolean selected) {
+                    return listener.onSelectionChanged(StreamItemFile.this);
                 }
             });
         }
@@ -178,8 +178,8 @@ class ImageStreamItems {
             container.setSelected(isSelected());
             container.setSelectionListener(new SelectableView.SelectionListener() {
                 @Override
-                public void onSelectionChanged(boolean selected) {
-                    listener.onSelectionChanged(StreamItemImage.this);
+                public boolean onSelectionChanged(boolean selected) {
+                    return listener.onSelectionChanged(StreamItemImage.this);
                 }
             });
         }

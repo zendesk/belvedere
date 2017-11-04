@@ -1,7 +1,5 @@
 package zendesk.belvedere;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -55,46 +53,46 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
     public void onClick(final View view) {
         final boolean selected = !isSelected();
 
-        final ValueAnimator scaleAnimator;
-        final ValueAnimator alphaAnimator;
-        if(selected) {
-            scaleAnimator = ValueAnimator.ofFloat(1F, SELECTED_SCALE);
-            alphaAnimator = ValueAnimator.ofFloat(1F, SELECTED_ALPHA);
+        final boolean changeSelection;
+        if (selectionListener != null) {
+            changeSelection = selectionListener.onSelectionChanged(selected);
         } else {
-            scaleAnimator = ValueAnimator.ofFloat(SELECTED_SCALE, 1F);
-            alphaAnimator = ValueAnimator.ofFloat(SELECTED_ALPHA, 1F);
+            changeSelection = true;
         }
 
-        scaleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                scale((float) valueAnimator.getAnimatedValue());
+        if (changeSelection) {
+            setSelected(selected);
+
+            final ValueAnimator scaleAnimator;
+            final ValueAnimator alphaAnimator;
+            if (selected) {
+                scaleAnimator = ValueAnimator.ofFloat(1F, SELECTED_SCALE);
+                alphaAnimator = ValueAnimator.ofFloat(1F, SELECTED_ALPHA);
+            } else {
+                scaleAnimator = ValueAnimator.ofFloat(SELECTED_SCALE, 1F);
+                alphaAnimator = ValueAnimator.ofFloat(SELECTED_ALPHA, 1F);
             }
-        });
 
-        alphaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                alpha((float) valueAnimator.getAnimatedValue());
-            }
-        });
-
-        alphaAnimator.setDuration(ANIMATION_DURATION);
-        scaleAnimator.setDuration(ANIMATION_DURATION);
-
-        scaleAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                setSelected(selected);
-
-                if(selectionListener != null) {
-                    selectionListener.onSelectionChanged(selected);
+            scaleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    scale((float) valueAnimator.getAnimatedValue());
                 }
-            }
-        });
+            });
 
-        scaleAnimator.start();
-        alphaAnimator.start();
+            alphaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    alpha((float) valueAnimator.getAnimatedValue());
+                }
+            });
+
+            alphaAnimator.setDuration(ANIMATION_DURATION);
+            scaleAnimator.setDuration(ANIMATION_DURATION);
+
+            scaleAnimator.start();
+            alphaAnimator.start();
+        }
     }
 
     @Override
@@ -156,7 +154,7 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         }
 
         if(getChildCount() != 2) {
-            throw new RuntimeException("SelectableView has more than 1 or less than 2 children. Not cool.");
+            throw new RuntimeException("More then one child added to SelectableView");
         }
 
         for(int i = 0; i < getChildCount(); i++) {
@@ -171,6 +169,6 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
     }
 
     interface SelectionListener {
-        void onSelectionChanged(boolean selected);
+        boolean onSelectionChanged(boolean selected);
     }
 }

@@ -90,7 +90,7 @@ class ImageStreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onOpenCamera();
 
-        void onSelectionChanged(ImageStreamItems.Item item);
+        boolean onSelectionChanged(ImageStreamItems.Item item);
     }
 
 }

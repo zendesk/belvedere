@@ -108,12 +108,14 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         }
 
         @Override
-        public void onSelectionChanged(ImageStreamItems.Item item) {
+        public boolean onSelectionChanged(ImageStreamItems.Item item) {
             MediaResult media = item.getMediaResult();
             final long maxFileSize = model.getMaxFileSize();
+            final boolean changeSelection;
 
             if(media != null && media.getSize() <= maxFileSize || maxFileSize == -1L) {
                 item.setSelected(!item.isSelected());
+                changeSelection = true;
 
                 List<MediaResult> items = setItemSelected(media, item.isSelected());
 
@@ -129,8 +131,11 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
                 }
 
             } else {
+                changeSelection = false;
                 view.showToast(R.string.belvedere_image_stream_file_too_large);
             }
+
+            return changeSelection;
         }
     };
 }
