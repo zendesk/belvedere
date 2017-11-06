@@ -15,7 +15,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressLint("ViewConstructor")
 public class KeyboardHelper extends FrameLayout {
@@ -64,7 +67,7 @@ public class KeyboardHelper extends FrameLayout {
     private int keyboardHeight = -1;
     private boolean isKeyboardVisible = false;
 
-    private Listener keyboardListener;
+    private List<WeakReference<Listener>> keyboardListener = new ArrayList<>();
     private SizeListener keyboardSizeListener;
 
     private EditText inputTrap;
@@ -143,8 +146,8 @@ public class KeyboardHelper extends FrameLayout {
         return isKeyboardVisible;
     }
 
-    public void setListener(Listener keyboardListener) {
-        this.keyboardListener = keyboardListener;
+    public void addListener(Listener keyboardListener) {
+        this.keyboardListener.add(new WeakReference<>(keyboardListener));
     }
 
     void setKeyboardHeightListener(SizeListener sizeListener) {
@@ -173,13 +176,32 @@ public class KeyboardHelper extends FrameLayout {
             }
 
             if(keyboardListener != null && keyboardHeight > 0) {
-                keyboardListener.onKeyboardVisible();
+                notifyKeyboardVisible();
+            } else {
+                notifyKeyboardDismissed();
+            }
+        }
+    }
+
+    private void notifyKeyboardVisible() {
+        for(WeakReference<Listener> listeners : keyboardListener) {
+            if(listeners.get() != null) {
+                listeners.get().onKeyboardVisible();
+            }
+        }
+    }
+
+    private void notifyKeyboardDismissed() {
+        for(WeakReference<Listener> listeners : keyboardListener) {
+            if(listeners.get() != null) {
+                listeners.get().onKeyboardDismissed();
             }
         }
     }
 
     public interface Listener {
         void onKeyboardVisible();
+        void onKeyboardDismissed();
     }
 
     interface SizeListener {

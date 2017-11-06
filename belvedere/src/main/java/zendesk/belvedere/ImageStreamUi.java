@@ -3,6 +3,7 @@ package zendesk.belvedere;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -84,7 +85,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     @Override
     public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener) {
-        if(!isInExoticWindowMode()) {
+        if(!showFullScreen()) {
             KeyboardHelper.showKeyboard(keyboardHelper.getInputTrap());
         }
 
@@ -156,7 +157,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isInExoticWindowMode()) {
+                if(!showFullScreen()) {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 } else {
                     dismiss();
@@ -215,7 +216,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
         Utils.showToolbar(getContentView(), false);
 
-        if (!isInExoticWindowMode()) {
+        if (!showFullScreen()) {
             bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             keyboardHelper.setKeyboardHeightListener(new KeyboardHelper.SizeListener() {
@@ -243,11 +244,18 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         presenter.dismiss();
     }
 
-    private boolean isInExoticWindowMode() {
+    private boolean showFullScreen() {
+        final boolean isInExoticWindowMode;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return activity.isInMultiWindowMode() || activity.isInPictureInPictureMode();
+            isInExoticWindowMode = activity.isInMultiWindowMode() || activity.isInPictureInPictureMode();
+        } else {
+            isInExoticWindowMode = false;
         }
-        return false;
+
+        final boolean hasHardwareKeyboard =
+                activity.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
+
+        return isInExoticWindowMode || hasHardwareKeyboard;
     }
 
     private void initGesturePassThrough(final Activity activity, final List<Integer> touchableIds) {
@@ -338,7 +346,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
             animateToolbarShiftIn(scrollArea, scrollPosition, ViewCompat.getMinimumHeight(toolbar), child);
 
-            if(!isInExoticWindowMode()) {
+            if(!showFullScreen()) {
                 presenter.onImageStreamScrolled(parent.getHeight(), scrollArea, scrollPosition);
             }
 
