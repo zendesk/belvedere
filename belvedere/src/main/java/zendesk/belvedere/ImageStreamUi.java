@@ -136,7 +136,7 @@ public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     public void updateToolbarTitle(int selectedImages) {
         if(selectedImages > 0) {
             final String title = activity.getString(R.string.belvedere_image_stream_title);
-            toolbar.setTitle(String.format(Locale.US, "%s (%s)", title, selectedImages));
+            toolbar.setTitle(String.format(Locale.getDefault(), "%s (%d)", title, selectedImages));
         } else {
             toolbar.setTitle(R.string.belvedere_image_stream_title);
         }
