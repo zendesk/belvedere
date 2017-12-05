@@ -34,6 +34,10 @@ ext {
         "$System.env.CI" != "null"
     }
 
+    isReleaseBuild = {
+        return rootProject.ext.versionName.contains("SNAPSHOT") == false
+    }
+
     useLocalDependency = {
         if("$System.env.LOCAL_BUILD" != "null") {
             return System.env.LOCAL_BUILD.toBoolean()
