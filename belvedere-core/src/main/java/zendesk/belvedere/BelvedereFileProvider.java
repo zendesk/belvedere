@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.RestrictTo;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
@@ -12,11 +13,12 @@ import java.util.Arrays;
 /**
  * Belvedere's own {@link FileProvider}.
  * <p>
- *     Some Apps rely on {@link MediaStore.MediaColumns#DATA}. To prevent
- *     them to crash, a workaround was applied.
+ *     Some Apps rely on {@link MediaStore.MediaColumns#DATA}. This custom {@link FileProvider}
+ *     adds a workaround for preventing them to crash.
  * </p>
  * @see <a href="http://stackoverflow.com/a/25020642/4907293">http://stackoverflow.com/a/25020642/4907293</a>
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class BelvedereFileProvider extends FileProvider {
 
     @Override

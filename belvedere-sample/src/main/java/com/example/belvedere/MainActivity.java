@@ -59,21 +59,29 @@ public class MainActivity extends AppCompatActivity {
         documentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                BelvedereUi
-                        .showDialog(getSupportFragmentManager(), getMediaIntents());
+                BelvedereUi.showDialog(getSupportFragmentManager(), getMediaIntents());
             }
         });
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                BelvedereUi
-                        .imageStream(MainActivity.this)
+                BelvedereUi.imageStream(MainActivity.this)
                         .withCameraIntent()
                         .withDocumentIntent("*/*", true)
                         .showPopup(MainActivity.this);
             }
         });
+
+//        Belvedere.from(context)
+//                .document()
+//                ...
+//                .open(activity);
+
+//        Belvedere.from(context)
+//                .camera()
+//                .open(activity);
+
     }
 
     @Override

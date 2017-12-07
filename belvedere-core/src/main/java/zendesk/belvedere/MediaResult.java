@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 
@@ -44,6 +45,7 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
      *
      * @return The {@link File}
      */
+    @Nullable
     public File getFile() {
         return file;
     }
@@ -58,10 +60,22 @@ public class MediaResult implements Parcelable, Comparable<MediaResult> {
      *
      * @return The {@link Uri}
      */
+    @NonNull
     public Uri getUri() {
         return uri;
     }
 
+    /**
+     * Get the original {@link Uri} to the media.
+     * <br>
+     * <p>
+     *     This might not always be available or be invalid. This
+     *     is the original {@link Uri} before it was resolved.
+     * </p>
+     *
+     * @return the original {@link Uri}
+     */
+    @Nullable
     public Uri getOriginalUri() {
         return originalUri;
     }

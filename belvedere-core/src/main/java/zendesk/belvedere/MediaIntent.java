@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 
+/**
+ * Model for representing a
+ */
 public class MediaIntent implements Parcelable {
 
     final static int TARGET_DOCUMENT = 1;
@@ -104,7 +107,7 @@ public class MediaIntent implements Parcelable {
         private final IntentRegistry intentRegistry;
         private final int requestCode;
 
-        boolean video;
+        private boolean video;
 
         CameraIntentBuilder(int requestCode, MediaSource mediaSource, IntentRegistry intentRegistry) {
             this.requestCode = requestCode;
