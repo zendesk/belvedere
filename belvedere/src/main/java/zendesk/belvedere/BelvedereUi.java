@@ -2,10 +2,11 @@ package zendesk.belvedere;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,19 +17,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static zendesk.belvedere.MediaResult.UNKNOWN_VALUE;
-
+/**
+ * Main entry-point for interacting the UI components of Belvedere.
+ *
+ * There are two different UIs available:
+ *  - Dialog (from 1.x)
+ *  - ImageStream (BottomSheet)
+ */
 public class BelvedereUi {
 
     private final static String FRAGMENT_TAG = "BelvedereDialog";
     private final static String EXTRA_MEDIA_INTENT = "extra_intent";
     private final static String FRAGMENT_TAG_POPUP = "belvedere_image_stream";
 
-    public static ImageStreamBuilder imageStream(Context context) {
+    /**
+     * Gets the builder for showing the ImageStream.
+     */
+    public static ImageStreamBuilder imageStream(@NonNull Context context) {
         return new ImageStreamBuilder(context);
     }
 
-    public static ImageStream install(AppCompatActivity activity) {
+    /**
+     * Install the ImageStream to an {@link AppCompatActivity}
+     *
+     * @param activity the activity that will show the ImageStream
+     * @return an {@link ImageStream}
+     */
+    public static ImageStream install(@NonNull AppCompatActivity activity) {
         final FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_POPUP);
 
@@ -61,23 +76,22 @@ public class BelvedereUi {
             this.context = context;
         }
 
-        public ImageStreamBuilder withMediaIntents(List<MediaIntent> mediaIntents) {
-            this.mediaIntents.addAll(mediaIntents);
-            return this;
-        }
-
-        public ImageStreamBuilder withMediaIntents(MediaIntent... mediaIntents) {
-            this.mediaIntents.addAll(Arrays.asList(mediaIntents));
-            return this;
-        }
-
+        /**
+         * Allow the user to select an image from the camera.
+         */
         public ImageStreamBuilder withCameraIntent() {
             final MediaIntent cameraIntent = Belvedere.from(context).camera().build();
             this.mediaIntents.add(cameraIntent);
             return this;
         }
 
-        public ImageStreamBuilder withDocumentIntent(String contentType, boolean allowMultiple) {
+        /**
+         * Allow the user to select files from the system.
+         *
+         * @param contentType restrict the files to a content type.
+         * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file picker
+         */
+        public ImageStreamBuilder withDocumentIntent(@NonNull String contentType, boolean allowMultiple) {
             final MediaIntent mediaIntent = Belvedere.from(context)
                     .document()
                     .allowMultiple(allowMultiple)
@@ -87,17 +101,27 @@ public class BelvedereUi {
             return this;
         }
 
+        /**
+         * Pass in files that are should be marked as selected.
+         */
         public ImageStreamBuilder withSelectedItems(List<MediaResult> mediaResults) {
             this.selectedItems = new ArrayList<>(mediaResults);
             return this;
         }
 
+        /**
+         * Pass in files that are not selected but should show up in the ImageStream.
+         */
         public ImageStreamBuilder withExtraItems(List<MediaResult> mediaResults) {
             this.extraItems = new ArrayList<>(mediaResults);
             return this;
         }
 
-        public ImageStreamBuilder withTouchableItems(int... ids) {
+        /**
+         * Specify a list of ids from your activity that should be clickable
+         * although the ImageStream is visible.
+         */
+        public ImageStreamBuilder withTouchableItems(@IdRes int... ids) {
             final List<Integer> objects = new ArrayList<>(ids.length);
             for(int id : ids) {
                 objects.add(id);
@@ -106,20 +130,19 @@ public class BelvedereUi {
             return this;
         }
 
-        public ImageStreamBuilder withSelectedItemsUri(List<Uri> selectedItems) {
-            final List<MediaResult> mediaResults = new ArrayList<>(selectedItems.size());
-            for(Uri uri : selectedItems) {
-                mediaResults.add(new MediaResult(null, uri, uri, null, null, UNKNOWN_VALUE, UNKNOWN_VALUE, UNKNOWN_VALUE));
-            }
-            this.selectedItems = mediaResults;
-            return this;
-        }
-
+        /**
+         * Define a maximum file size. Files bigger than the provided value are not selectable.
+         *
+         * @param maxFileSize maximum file size in bytes
+         */
         public ImageStreamBuilder withMaxFileSize(long maxFileSize) {
             this.maxFileSize = maxFileSize;
             return this;
         }
 
+        /**
+         * Show the ImageStream to the user.
+         */
         public void showPopup(AppCompatActivity activity) {
             final ImageStream popupBackend = BelvedereUi.install(activity);
 
@@ -156,7 +179,12 @@ public class BelvedereUi {
         }
     }
 
-    @Deprecated
+    /**
+     * Show the Belvedere dialog to the user
+     *
+     * @param fm a valid {@link FragmentManager}
+     * @param mediaIntent a list of {@link MediaIntent}
+     */
     public static void showDialog(FragmentManager fm, List<MediaIntent> mediaIntent) {
         if (mediaIntent == null || mediaIntent.size() == 0) {
             return;
@@ -167,7 +195,12 @@ public class BelvedereUi {
         dialog.show(fm, FRAGMENT_TAG);
     }
 
-    @Deprecated
+    /**
+     * Show the Belvedere dialog to the user
+     *
+     * @param fm a valid {@link FragmentManager}
+     * @param mediaIntent a list of {@link MediaIntent}
+     */
     public static void showDialog(FragmentManager fm, MediaIntent... mediaIntent) {
         if (mediaIntent == null || mediaIntent.length == 0) {
             return;
@@ -220,7 +253,7 @@ public class BelvedereUi {
         private final boolean resolveMedia;
         private final long maxFileSize;
 
-        public UiConfig() {
+        UiConfig() {
             this.intents = new ArrayList<>();
             this.selectedItems = new ArrayList<>();
             this.extraItems = new ArrayList<>();
@@ -229,7 +262,7 @@ public class BelvedereUi {
             this.maxFileSize = -1L;
         }
 
-        public UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
+        UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
                         List<MediaResult> extraItems, boolean resolveMedia,
                         List<Integer> touchableElements, long maxFileSize) {
             this.intents = intents;
@@ -240,7 +273,7 @@ public class BelvedereUi {
             this.maxFileSize = maxFileSize;
         }
 
-        protected UiConfig(Parcel in) {
+        UiConfig(Parcel in) {
             this.intents = in.createTypedArrayList(MediaIntent.CREATOR);
             this.selectedItems = in.createTypedArrayList(MediaResult.CREATOR);
             this.extraItems = in.createTypedArrayList(MediaResult.CREATOR);
@@ -250,23 +283,23 @@ public class BelvedereUi {
             this.maxFileSize = in.readLong();
         }
 
-        public List<MediaIntent> getIntents() {
+        List<MediaIntent> getIntents() {
             return intents;
         }
 
-        public List<MediaResult> getSelectedItems() {
+        List<MediaResult> getSelectedItems() {
             return selectedItems;
         }
 
-        public List<MediaResult> getExtraItems() {
+        List<MediaResult> getExtraItems() {
             return extraItems;
         }
 
-        public List<Integer> getTouchableElements() {
+        List<Integer> getTouchableElements() {
             return touchableElements;
         }
 
-        public long getMaxFileSize() {
+        long getMaxFileSize() {
             return maxFileSize;
         }
 

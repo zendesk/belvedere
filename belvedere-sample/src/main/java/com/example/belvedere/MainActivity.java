@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import zendesk.belvedere.Belvedere;
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.Callback;
+import zendesk.belvedere.ImageStream;
 import zendesk.belvedere.MediaIntent;
 import zendesk.belvedere.MediaResult;
 
@@ -81,6 +82,12 @@ public class MainActivity extends AppCompatActivity {
 //        Belvedere.from(context)
 //                .camera()
 //                .open(activity);
+
+        ImageStream imageStream = BelvedereUi.install(this);
+
+        BelvedereUi.imageStream(this)
+                .showPopup(this);
+
 
     }
 
