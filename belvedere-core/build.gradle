@@ -2,11 +2,11 @@
 ext {
     artifactId = 'belvedere-core'
     javadocTitle = "Belvedere Core - ${rootProject.ext.versionName}"
+    packaging = 'aar'
     belvedereFileProviderAuthoritySuffix = ".belvedere2.attachments"
 }
 
 apply plugin: 'com.android.library'
-apply from: '../scripts/gradle/zendesk-javadoc.gradle'
 apply from: '../scripts/gradle/zendesk-deploy.gradle'
 
 android {

@@ -1,45 +1,100 @@
 apply plugin: 'maven'
+apply plugin: 'signing'
 apply from: '../scripts/gradle/gradle-commons.gradle'
 
 ext {
-    sdkGroupId = 'com.zendesk.belvedere2'
-    sdkArtifactId = project.ext.artifactId
-    sdkVersionName = rootProject.ext.versionName
+    SDK_GROUP_ID = 'com.zendesk.belvedere2'
+    SDK_URL = 'https://github.com/zendesk/belvedere'
+    PROJECT_NAME = 'belvedere'
+    PROJECT_DESCRIPTION = 'Media picker for Android'
+    SDK_VERSION_NAME = rootProject.ext.versionName
+    SDK_ARTIFACT_ID = project.ext.artifactId
+    SDK_PACKAGING = project.ext.packaging
+    JAVA_DOC_TITLE = project.ext.javadocTitle
+    POM_DEVELOPER_ID = 'zendesk'
+    POM_DEVELOPER_NAME = 'Zendesk, Inc.'
 
-    repoUsername = getConfigurationParameter("zendeskOssRepoUsername")
-    repoPassword = getConfigurationParameter("zendeskOssRepoPassword")
+    repoUsername = getConfigurationParameter("zenSonatypeUsername")
+    repoPassword = getConfigurationParameter("zenSonatypePassword")
 }
-
-uploadArchives.enabled = versionName.endsWith('SNAPSHOT') || "$System.env.BUILD_PRODUCTION" != "null"
 
 afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                snapshotRepository(url: "https://zendesk.artifactoryonline.com/zendesk/simple/oss-snapshots-local/") {
-                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                    authentication(userName: repoUsername, password: repoPassword)
                 }
 
-                repository(url: "http://zendesk.artifactoryonline.com/zendesk/simple/oss-releases-local/") {
-                    authentication(userName: rootProject.ext.repoUsername, password: rootProject.ext.repoPassword)
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                    authentication(userName: repoUsername, password: repoPassword)
                 }
 
                 pom.project {
-                    groupId sdkGroupId
-                    artifactId sdkArtifactId
-                    packaging 'aar'
-                    version sdkVersionName
+                    name PROJECT_NAME
+                    description PROJECT_DESCRIPTION
+                    groupId SDK_GROUP_ID
+                    artifactId SDK_ARTIFACT_ID
+                    packaging SDK_PACKAGING
+                    version SDK_VERSION_NAME
+                    url SDK_URL
+
+                    scm {
+                        url SDK_URL
+                        connection 'scm:git:https://github.com/zendesk/belvedere.git'
+                        developerConnection 'scm:git:git@github.com:zendesk/belvedere.git'
+                    }
 
                     licenses {
                         license {
-                            name 'Apache License Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0'
-                            distribution 'repo'
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
                         }
                     }
                 }
             }
         }
+    }
+
+    signing {
+        required { isReleaseBuild() }
+        sign configurations.archives
+    }
+
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.source
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.source
+    }
+
+    if (JavaVersion.current().isJava8Compatible()) {
+        allprojects {
+            tasks.withType(Javadoc) {
+                options.addStringOption('Xdoclint:none', '-quiet')
+            }
+        }
+    }
+
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
     }
 }
