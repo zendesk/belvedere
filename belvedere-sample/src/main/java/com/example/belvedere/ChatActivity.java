@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -42,13 +41,11 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.activity_request_toolbar));
         imageStream = BelvedereUi.install(this);
 
-        this.listener = new Listener();
-        this.scrollListener = new ScrollListener();
-
+        listener = new Listener();
+        scrollListener = new ScrollListener();
         imageStream.addListener(listener);
         imageStream.addScrollListener(scrollListener);
-
-        this.input = findViewById(R.id.input);
+        input = findViewById(R.id.input);
 
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,14 +56,12 @@ public class ChatActivity extends AppCompatActivity {
                 mediaResults.clear();
                 extraResults.clear();
                 ((EditText)findViewById(R.id.input)).setText("");
-                ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
             }
         });
 
         RecyclerView recyclerView = findViewById(R.id.activity_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new FakeAdapter());
-
         init();
     }
 
@@ -122,13 +117,10 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         private void refreshUi() {
-            ((Button)findViewById(R.id.attachment)).setText(mediaResults.size()+"");
-
             if(!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
         }
-
     }
 
     private class ScrollListener implements ImageStream.ScrollListener {
@@ -151,7 +143,6 @@ public class ChatActivity extends AppCompatActivity {
                 .withSelectedItems(new ArrayList<>(mediaResults))
                 .withExtraItems(new ArrayList<>(extraResults))
                 .withTouchableItems(R.id.attachment, R.id.send)
-                .withMaxFileSize(1024L * 1024L * 1024L * 10L)
                 .showPopup(ChatActivity.this);
     }
 
@@ -166,7 +157,7 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("bla");
+            ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("Belvedere Demo");
         }
 
         @Override

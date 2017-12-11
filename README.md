@@ -1,91 +1,176 @@
-## Belvedere
-Zero permissions file picker for Android.
+<p align="center">
 
-[![Build Status](https://travis-ci.org/zendesk/belvedere.svg?branch=master)](https://travis-ci.org/zendesk/belvedere)
+# Belvedere
+<p align="left">
+<a href="https://travis-ci.org/zendesk/Suas-Android"><img src="https://travis-ci.org/zendesk/belvedere.svg?branch=master" alt="Build Status" /></a>
+<a href="https://raw.githubusercontent.com/zendesk/Suas-Android/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+<img src="https://img.shields.io/maven-central/v/com.zendesk.belvedere2/suas.svg" alt="Belvedere version" />
+</p>
+
+A file picker for Android.
+<br />
+
+<p align="center">
+<img width="300" src="https://github.com/zendesk/belvedere/raw/schlan/javadoc/media/belvedere_stream_demo.gif"/>
+</p>
 
 ### Overview
 Belvedere gives you the power to easily integrate file selection from third party apps and the camera without the need to take care of permissions, ContentProvider, Intent permissions, and so on.
 
 ### Download
-To use Belvedere in your own Android application, add the following Maven repository:
+
+Add Belvedere as a dependency:
 
 ```
-repositories {
-    maven { url 'https://zendesk.artifactoryonline.com/zendesk/repo' }
-}
-```
-
-And add Belvedere as a dependency:
-
-```
-compile ‘com.zendesk:belvedere:1.2.0.1’
-```
-
-Belvedere relies on a certain feature of the [Android Manifest Merger](http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger) called [Placeholder support](http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger#TOC-Placeholder-support). Please make sure to provide the package name of your app as `applicationId` in your module specific `build.gradle`.
-For an example have a look at the sample app.
-
-If you’re not using Gradle, or you don’t have placeholder support please add the following to your `AndroidManifest.xml`:
-
-```xml
-<provider
-    android:name="com.zendesk.belvedere.BelvedereFileProvider"
-    android:authorities="<applicationId>.belvedere.attachments"
-    android:exported="false"
-    android:grantUriPermissions="true">
-
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/belvedere_attachment_storage" />
-
-</provider>
+compile ‘com.zendesk.belvedere2:belvedere:2.0.0’
 ```
 
 ### How to use Belvedere
 
-#### Obtaining an instance
-A Belvedere instance could be created as easily as the following:
+#### ImageStream
 
-```java
-Belvedere belvedere = Belvedere.from(context)
-                .withContentType("image/*")
-                .build();
+A simple implementation of the ImageStream looks like this:
+
 ```
+public class TestActivity extends AppCompatActivity implements ImageStream.Listener {
 
-The newly created instance is used to acquire images from third party apps.
+    private ImageStream imageStream;
+    private Button selectAttachment;
 
-Belvedere requires that you create an instance once and reuse that instance. We recommend to keep an instance in your global application class, in a headless fragment, a singleton or use your DI to take care of a Belvedere instance.
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // ...
 
-For all the available configuration options, please have a look at our Javadoc:
+        imageStream = BelvedereUi.install(this);
+        imageStream.addListener(this);
 
-#### Display the built-in dialog
-If you want to show the built-in dialog to let the user select a file, invoke the following:
+        selectAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BelvedereUi.imageStream(getApplicationContext())
+                        .withCameraIntent()
+                        .withDocumentIntent("*/*", true)
+                        .showPopup(TestActivity.this);
+            }
+        });
+    }
 
-```java
-belvedere.showDialog(fragmentManager);
-```
+    @Override
+    public void onDismissed() {
+        // Image Stream was dismissed
+    }
 
-#### Parsing the result
-To get access to the selected files, put the following into your Fragment’s or Activity’s `onActivityResult()`.
+    @Override
+    public void onVisible() {
+        // Image Stream was shown
+    }
 
-```java
-...
-protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-    belvedere.getFilesFromActivityOnResult(requestCode, resultCode, data, new BelvedereCallback<List<BelvedereResult>>() {
-        @Override
-        public void success(final List<BelvedereResult> result) {
-            // use data
-        }
-    });
+    @Override
+    public void onMediaSelected(List<MediaResult> mediaResults) {
+        // The user selected attachments
+    }
+
+    @Override
+    public void onMediaDeselected(List<MediaResult> mediaResults) {
+        // The user deselected attachments
+    }
 }
-...
 ```
-All files the user selects are copied into your apps internal cache. As a result Belvedere will return you a list of `BelvedereResult` objects. Each of these objects represents one selected file. To get access, call `BelvedereResult#getFile()` or `BelvedereResult#getUri()`, both of which point to the internal cache, so no permissions are needed to access them.
+
+#### Dialog (from 1.x)
+
+
+```
+public class TestActivity extends AppCompatActivity {
+
+    private ImageStream imageStream;
+    private Button selectAttachment;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // ...
+
+        selectAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Belvedere belvedere = Belvedere.from(this);
+                MediaIntent document = belvedere.document().build();
+                MediaIntent camera = belvedere.camera().build();
+
+                BelvedereUi.showDialog(getSupportFragmentManager(), document, camera);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
+            @Override
+            public void success(List<MediaResult> result) {
+                // Handle Selected files
+            }
+        });
+    }
+}
+```
+
+#### API only
+
+Select an image from the camera.
+
+```
+public class TestActivity extends AppCompatActivity {
+
+    private ImageStream imageStream;
+    private Button selectAttachmentFromCamera;
+    private Button selectAttachmentFromDocuments;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // ...
+
+        selectAttachmentFromCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Belvedere.from(TestActivity.this)
+                        .camera()
+                        .open(TestActivity.this);
+            }
+        });
+
+        selectAttachmentFromDocuments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Belvedere.from(TestActivity.this)
+                        .document()
+                        .open(TestActivity.this);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
+            @Override
+            public void success(List<MediaResult> result) {
+                // Handle Selected files
+            }
+        });
+    }
+}
+```
+
 
 #### Place a file into Belvedere’s internal storage
 Moreover, it’s possible to put your own data into Belvedere’s cache. To get access to an internal file, call:
 
 ```
-BelvedereResult file = belvedere.getFileRepresentation(“file_name.tmp”);
+MediaResult mediaResult = Belvedere.from(this).getFile("dire_name", "file_name.jpg");
 ```
 Again, you’ll get a file object and a `Uri`. For example, you can use the file to open a `FileOutputStream`.
 
@@ -95,20 +180,12 @@ Files that are available through Belvedere could be opened or shared with other 
 Use the first code snippet to open a file and the second one to share a file:
 
 ```java
-final Intent intent = new Intent(Intent.ACTION_VIEW);
-intent.setDataAndType(uri, "image/*");
-belvedere.grantPermissionsForUri(intent, uri);
-
-startActivity(intent);
+Intent viewIntent = Belvedere.from(this).getViewIntent(mediaResult.getUri(), mediaResult.getMimeType());
+startActivity(viewIntent);
 ```
 
 ```java
-final Intent shareIntent = new Intent();
-shareIntent.setAction(Intent.ACTION_SEND);
-shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-shareIntent.setType("image/*");
-belvedere.grantPermissionsForUri(shareIntent, uri);
-
+Intent shareIntent = Belvedere.from(this).getShareIntent(mediaResult.getUri(), mediaResult.getMimeType());
 startActivity(shareIntent);
 ```
 
@@ -126,16 +203,13 @@ If you’re submitting a bug report, please try to follow these steps:
  - Add reproduction steps. If possible provide sample code that showcases the issue.
  - Provide a failing test.
 
-### Team
-@schlan @baz8080 @brendan-fahy @a1cooke @ndobir @pmurph0
-
 ### Documentation
 
 [View](http://zdmobilesdkdocdev.herokuapp.com/belvedere/) | [Download](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.2.0.1/belvedere-1.2.0.1-javadoc.jar)
 
 ### License
 ```
-Copyright 2016 Zendesk
+Copyright 2018 Zendesk
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at

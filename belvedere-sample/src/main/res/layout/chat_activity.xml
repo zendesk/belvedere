@@ -4,7 +4,8 @@
     android:id="@+id/activity_create_request_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#fafafa">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/activity_request_toolbar"
@@ -31,39 +32,41 @@
         <LinearLayout
             android:id="@+id/activity_input"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="56dp"
             android:layout_gravity="bottom"
             android:orientation="horizontal"
-            android:background="#00ff00">
+            android:paddingBottom="4dp"
+            android:background="#fff">
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/attachment"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:text="A" />
-            </FrameLayout>
-
+            <ImageView
+                android:id="@+id/attachment"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="center"
+                android:layout_gravity="bottom"
+                android:foreground="?attr/selectableItemBackground"
+                android:src="@drawable/ic_attach_file_black_24dp"/>
 
             <EditText
                 android:id="@+id/input"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:hint="Enter a message"
                 android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/send"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@android:drawable/ic_menu_send"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_send_black_24dp"
+                android:scaleType="center"
+                android:layout_gravity="bottom"
+                android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true"
-                android:text="Send" />
-
+                android:focusable="true" />
 
         </LinearLayout>
     </FrameLayout>
