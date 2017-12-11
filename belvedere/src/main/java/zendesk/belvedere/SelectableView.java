@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 
 import zendesk.belvedere.ui.R;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class SelectableView extends FrameLayout implements View.OnClickListener {
 
     private final static long ANIMATION_DURATION = 75L;

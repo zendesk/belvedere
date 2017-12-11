@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 
+/**
+ * Model for representing a
+ */
 public class MediaIntent implements Parcelable {
 
     final static int TARGET_DOCUMENT = 1;
@@ -31,18 +34,30 @@ public class MediaIntent implements Parcelable {
         this.target = target;
     }
 
+    /**
+     * Fire the intent.
+     */
     public void open(Fragment fragment) {
         fragment.startActivityForResult(intent, requestCode);
     }
 
+    /**
+     * Fire the intent.
+     */
     public void open(Activity activity) {
         activity.startActivityForResult(intent, requestCode);
     }
 
+    /**
+     * Permission that has to be granted before calling {@link #open(Activity)}
+     */
     public String getPermission() {
         return permission;
     }
 
+    /**
+     * Get the raw intent
+     */
     public Intent getIntent() {
         return intent;
     }
@@ -51,6 +66,13 @@ public class MediaIntent implements Parcelable {
         return isAvailable;
     }
 
+    /**
+     * Get the target of the intent.
+     * <br />
+     * Either {@link #TARGET_CAMERA} or {@link #TARGET_DOCUMENT}
+     *
+     * @return
+     */
     public int getTarget() {
         return target;
     }
@@ -74,24 +96,39 @@ public class MediaIntent implements Parcelable {
             this.allowMultiple = false;
         }
 
+        /**
+         * Create the {@link MediaIntent}
+         */
         public MediaIntent build() {
             return mediaSource.getGalleryIntent(requestCode, contentType, allowMultiple);
         }
 
+        /**
+         * Restrict the selection to a content type
+         */
         public DocumentIntentBuilder contentType(String contentType) {
             this.contentType = contentType;
             return this;
         }
 
+        /**
+         * Allow to user to select multiple files.
+         */
         public DocumentIntentBuilder allowMultiple(boolean allowMultiple) {
             this.allowMultiple = allowMultiple;
             return this;
         }
 
+        /**
+         * Fire the intent.
+         */
         public void open(Fragment fragment) {
             this.build().open(fragment);
         }
 
+        /**
+         * Fire the intent.
+         */
         public void open(Activity activity) {
             this.build().open(activity);
         }
@@ -104,7 +141,7 @@ public class MediaIntent implements Parcelable {
         private final IntentRegistry intentRegistry;
         private final int requestCode;
 
-        boolean video;
+        private boolean video;
 
         CameraIntentBuilder(int requestCode, MediaSource mediaSource, IntentRegistry intentRegistry) {
             this.requestCode = requestCode;
@@ -113,6 +150,9 @@ public class MediaIntent implements Parcelable {
             this.video = false;
         }
 
+        /**
+         * Create the {@link MediaIntent}
+         */
         public MediaIntent build() {
             final Pair<MediaIntent, MediaResult> cameraIntent = mediaSource.getCameraIntent(requestCode);
             final MediaIntent mediaIntent = cameraIntent.first;
@@ -125,10 +165,16 @@ public class MediaIntent implements Parcelable {
             return mediaIntent;
         }
 
+        /**
+         * Fire the intent.
+         */
         public void open(Fragment fragment) {
             this.build().open(fragment);
         }
 
+        /**
+         * Fire the intent.
+         */
         public void open(Activity activity) {
             this.build().open(activity);
         }

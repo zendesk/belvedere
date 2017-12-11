@@ -34,16 +34,9 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
 
     static void start(Context context, Storage storage,
                       Callback<List<MediaResult>> callback, List<Uri> uriList, String subDirectory){
-
         final ResolveUriTask resolveUriTask = new ResolveUriTask(context, storage, callback, subDirectory);
-
         final Uri[] uris = uriList.toArray(new Uri[uriList.size()]);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            resolveUriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, uris);
-        } else {
-            resolveUriTask.execute(uris);
-        }
+        resolveUriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, uris);
     }
 
     private final WeakReference<Callback<List<MediaResult>>> callback;

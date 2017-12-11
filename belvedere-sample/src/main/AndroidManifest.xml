@@ -14,10 +14,6 @@
         android:theme="@style/AppTheme"
         android:name=".Global">
 
-        <activity android:name="com.example.belvedere.MainActivity">
-
-        </activity>
-
         <activity android:name=".ChatActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

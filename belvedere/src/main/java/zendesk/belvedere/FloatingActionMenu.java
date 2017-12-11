@@ -10,6 +10,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.RestrictTo;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +30,7 @@ import java.util.List;
 import zendesk.belvedere.ui.R;
 
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class FloatingActionMenu extends LinearLayout implements View.OnClickListener {
 
     private static final float ANIMATION_ROTATION_INITIAL_ANGLE = 0f;

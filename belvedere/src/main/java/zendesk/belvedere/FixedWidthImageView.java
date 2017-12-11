@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.annotation.RestrictTo;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import zendesk.belvedere.ui.R;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class FixedWidthImageView extends AppCompatImageView implements Target {
 
     private static final String LOG_TAG = "FixedWidthImageView";

@@ -14,6 +14,9 @@ import java.util.List;
 
 import zendesk.belvedere.ui.R;
 
+/**
+ * APIs for interacting with the ImageStream
+ */
 public class ImageStream extends Fragment {
 
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
@@ -135,41 +138,91 @@ public class ImageStream extends Fragment {
         permissionManager.handlePermissions(this, mediaIntents, permissionCallback);
     }
 
+    /**
+     * Gets the currently install {@link KeyboardHelper}
+     */
     public KeyboardHelper getKeyboardHelper() {
         return keyboardHelper.get();
     }
 
+    /**
+     * Add a {@link Listener} for getting notified when the users selects/deselects an attachment
+     * or the ImageStream gets visible or dismissed.
+     */
     public void addListener(Listener listener) {
         imageStreamListener.add(new WeakReference<>(listener));
     }
 
+    /**
+     * Add a {@link ScrollListener} to get informed when the ImageStream gets dragged by the user.
+     */
     public void addScrollListener(ScrollListener listener) {
         imageStreamScrollListener.add(new WeakReference<>(listener));
     }
 
+    /**
+     * Hide the ImageStream if visible
+     */
     public void dismiss() {
         if(isAttachmentsPopupVisible()) {
             imageStreamPopup.dismiss();
         }
     }
 
+    /**
+     * Check if the ImageStream was visible before the last configuration change.
+     *
+     * @return {@code true} if it was visible, {@code false} if not
+     */
     public boolean wasOpen() {
         return wasOpen;
     }
 
+    /**
+     * Check if the ImageStream is currently visible.
+     */
     public boolean isAttachmentsPopupVisible() {
         return imageStreamPopup != null;
     }
 
+    /**
+     * Listener for observing the user interaction with the ImageStream
+     */
     public interface Listener {
+
+        /**
+         * The user dismissed the ImageStream.
+         */
         void onDismissed();
+
+        /**
+         * The ImageStream became visible to the user.
+         */
         void onVisible();
 
+        /**
+         * The user selected one or multiple attachments.
+         */
         void onMediaSelected(List<MediaResult> mediaResults);
+
+        /**
+         * The user deselected one or multiple attachments.
+         */
         void onMediaDeselected(List<MediaResult> mediaResults);
     }
 
+    /**
+     * Informs about the scroll position of the ImageStream BottomSheet.
+     */
     public interface ScrollListener {
+
+        /**
+         * Called if the ImageStream gets dragged by the user.
+         *
+         * @param height
+         * @param scrollArea
+         * @param scrollPosition
+         */
         void onScroll(int height, int scrollArea, float scrollPosition);
     }
 }

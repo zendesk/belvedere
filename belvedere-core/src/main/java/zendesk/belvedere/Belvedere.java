@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import java.io.File;
@@ -18,7 +19,7 @@ import java.util.Locale;
  * Media picker manager.
  */
 @SuppressWarnings("unused")
-public class Belvedere implements InstanceBuilder {
+public class Belvedere {
 
     final static String LOG_TAG = "Belvedere";
     private static final String MIME_TYPE_IMAGE = "image";
@@ -45,6 +46,10 @@ public class Belvedere implements InstanceBuilder {
         L.d(LOG_TAG, "Belvedere initialized");
     }
 
+    /**
+     * Get the global {@link Belvedere} instance.
+     *
+     */
     @NonNull
     public static Belvedere from(@NonNull Context context) {
         synchronized (Belvedere.class) {
@@ -60,6 +65,13 @@ public class Belvedere implements InstanceBuilder {
         return instance;
     }
 
+    /**
+     * Set the global {@link Belvedere} instance.
+     * <br />
+     * This must be called before calling {@link Belvedere#from(Context)}
+     *
+     * @param belvedere an instance created through {@link Belvedere.Builder}
+     */
     public static void setSingletonInstance(@NonNull Belvedere belvedere) {
         if (belvedere == null) {
             throw new IllegalArgumentException("Belvedere must not be null.");
@@ -72,33 +84,68 @@ public class Belvedere implements InstanceBuilder {
         }
     }
 
+    /**
+     * Request an image from a camera app.
+     *
+     * <pre>
+     * Belvedere.from(context)
+     *   .camera()
+     *   .open(activity);
+     * </pre>
+     */
     @NonNull
     public MediaIntent.CameraIntentBuilder camera() {
         final int requestCode = intentRegistry.reserveSlot();
         return new MediaIntent.CameraIntentBuilder(requestCode, mediaSource, intentRegistry);
     }
 
+    /**
+     * Request media from an external app.
+     *
+     * <pre>
+     * Belvedere.from(context)
+     *   .document()
+     *   ...
+     *   .open(activity);
+     * </pre>
+     */
     @NonNull
     public MediaIntent.DocumentIntentBuilder document() {
         final int requestCode = intentRegistry.reserveSlot();
         return new MediaIntent.DocumentIntentBuilder(requestCode, mediaSource);
     }
 
+    /**
+     * Create an {@link Intent} for viewing an {@link Uri}.
+     *
+     * @param uri {@link Uri} pointing to a file
+     * @param contentType (optional) the content type of the {@link Uri}
+     */
     @NonNull
-    public Intent getViewIntent(@NonNull Uri uri, @NonNull String contentType) {
+    public Intent getViewIntent(@NonNull Uri uri, @Nullable String contentType) {
         final Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setDataAndType(uri, contentType);
+        if (!TextUtils.isEmpty(contentType)) {
+            intent.setDataAndType(uri, contentType);
+        }
         grantPermissionsForUri(intent, uri);
         return intent;
     }
 
+    /**
+     * Create an {@link Intent} for sharing an {@link Uri}.
+     *
+     * @param uri {@link Uri} pointing to a file
+     * @param contentType (optional) the content type of the {@link Uri}
+     */
     @NonNull
     public Intent getShareIntent(@NonNull Uri uri, @NonNull String contentType) {
         final Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        shareIntent.setType(contentType);
+        if (!TextUtils.isEmpty(contentType)) {
+            shareIntent.setType(contentType);
+        }
         grantPermissionsForUri(shareIntent, uri);
         return shareIntent;
     }
@@ -217,5 +264,52 @@ public class Belvedere implements InstanceBuilder {
     public void clearStorage() {
         L.d(LOG_TAG, "Clear Belvedere cache");
         storage.clearStorage(context);
+    }
+
+    /**
+     * Builder for creating a customize {@link Belvedere} instance.
+     * <br /><br />
+     * Example:
+     * <pre>
+     * Belvedere belvedere = new Belvedere.Builder(this)
+     *   .debug(true)
+     *   .build();
+     * Belvedere.setSingletonInstance(belvedere);
+     * </pre>
+     */
+    public static class Builder {
+
+        Context context;
+        L.Logger logger;
+        boolean debug;
+
+        public Builder(Context context) {
+            this.context = context;
+            this.logger = new L.DefaultLogger();
+            this.debug = false;
+        }
+
+        /**
+         * Provide a custom implementation of {@link L.Logger}
+         */
+        public Builder logger(L.Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
+        /**
+         * Enable/disable logging.
+         */
+        public Builder debug(boolean debug) {
+            this.debug = debug;
+            return this;
+        }
+
+        /**
+         * Create a custom instance of {@link Belvedere}
+         */
+        public Belvedere build() {
+            return new Belvedere(this);
+        }
     }
 }

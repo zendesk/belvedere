@@ -33,7 +33,7 @@ import zendesk.belvedere.ui.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
+class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     static ImageStreamUi show(Activity activity, final ViewGroup parent, ImageStream popupBackend, BelvedereUi.UiConfig config) {
         final View v = LayoutInflater.from(activity).inflate(R.layout.belvedere_image_stream, parent, false);

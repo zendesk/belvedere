@@ -45,7 +45,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     private PermissionStorage preferences;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.belvedere_dialog, container, false);
         listView = view.findViewById(R.id.belvedere_dialog_listview);
         return view;
