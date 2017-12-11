@@ -23,7 +23,6 @@ android:
 branches:
   only:
     - master
-    - v2.0
 env:
   global:
     # zenSonatypeUsername

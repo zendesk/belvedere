@@ -11,7 +11,7 @@ A file picker for Android.
 <br />
 
 <p align="center">
-<img width="300" src="https://github.com/zendesk/belvedere/raw/schlan/javadoc/media/belvedere_stream_demo.gif"/>
+<img width="300" src="https://raw.githubusercontent.com/zendesk/belvedere/master/media/belvedere_stream_demo.gif"/>
 </p>
 
 ### Overview
