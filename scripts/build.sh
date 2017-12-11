@@ -18,6 +18,11 @@ boxOut(){
     tput sgr 0
 }
 
+acceptLicenses() {
+    mkdir -p ${ANDROID_HOME}licenses
+    echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" > ${ANDROID_HOME}licenses/android-sdk-license
+}
+
 buildBelvedere() {
     ./gradlew :belvedere-core:assembleRelease :belvedere:assembleRelease
     exitOnFailedBuild
@@ -76,6 +81,8 @@ branchBuild() {
     boxOut "Upload Belvedere Snapshots"
     uploadSnapshotSdk
 }
+
+acceptLicenses
 
 # do the thing
 if isPullRequest ; then
