@@ -31,7 +31,7 @@ compile ‘com.zendesk.belvedere2:belvedere:2.0.0’
 
 A simple implementation of the ImageStream looks like this:
 
-```
+```java
 public class TestActivity extends AppCompatActivity implements ImageStream.Listener {
 
     private ImageStream imageStream;
@@ -81,7 +81,7 @@ public class TestActivity extends AppCompatActivity implements ImageStream.Liste
 #### Dialog (from 1.x)
 
 
-```
+```java
 public class TestActivity extends AppCompatActivity {
 
     private ImageStream imageStream;
@@ -121,7 +121,7 @@ public class TestActivity extends AppCompatActivity {
 
 Select an image from the camera.
 
-```
+```java
 public class TestActivity extends AppCompatActivity {
 
     private ImageStream imageStream;
@@ -169,7 +169,7 @@ public class TestActivity extends AppCompatActivity {
 #### Place a file into Belvedere’s internal storage
 Moreover, it’s possible to put your own data into Belvedere’s cache. To get access to an internal file, call:
 
-```
+```java
 MediaResult mediaResult = Belvedere.from(this).getFile("dire_name", "file_name.jpg");
 ```
 Again, you’ll get a file object and a `Uri`. For example, you can use the file to open a `FileOutputStream`.
