@@ -3,8 +3,8 @@
 # Belvedere
 <p align="left">
 <a href="https://travis-ci.org/zendesk/Suas-Android"><img src="https://travis-ci.org/zendesk/belvedere.svg?branch=master" alt="Build Status" /></a>
-<a href="https://raw.githubusercontent.com/zendesk/Suas-Android/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
-<img src="https://img.shields.io/maven-central/v/com.zendesk.belvedere2/belvedere.svg" alt="Belvedere version" />
+<a href="https://raw.githubusercontent.com/zendesk/belvedere/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+<img src="https://img.shields.io/maven-central/v/com.zendesk.belvedere2/belvedere.svg" alt="Belvedere version" /> <img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/com.zendesk.belvedere2/belvedere.svg" />
 </p>
 
 A file picker for Android.
