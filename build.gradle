@@ -18,7 +18,7 @@ ext {
 buildscript {
 
     ext {
-        kotlinVersion = "1.2.0"
+        kotlinVersion = "1.2.10"
     }
 
     repositories {
