@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.util.ArrayList;
@@ -44,10 +45,12 @@ class ImageStreamService {
                     final long height = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT));
                     final String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
 
-                    final int index = name.lastIndexOf(".");
                     String mimeType = "image/jpeg";
-                    if(index != -1) {
-                        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(index + 1));
+                    if (!TextUtils.isEmpty(name)) {
+                        final int index = name.lastIndexOf(".");
+                        if (index != -1) {
+                            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(index + 1));
+                        }
                     }
 
                     mediaResults.add(new MediaResult(null, uri, uri, name, mimeType, size, width, height));
