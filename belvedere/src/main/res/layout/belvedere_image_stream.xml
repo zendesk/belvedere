@@ -46,6 +46,30 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <include layout="@layout/belvedere_image_stream_toolbar"/>
+    <LinearLayout
+        android:id="@+id/image_stream_toolbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/image_stream_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            android:elevation="4dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            />
+
+        <View
+            android:id="@+id/image_stream_compat_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:visibility="invisible"
+            android:background="@drawable/belvedere_toolbar_shadow" />
+
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
