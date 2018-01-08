@@ -48,7 +48,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     private KeyboardHelper keyboardHelper;
 
-    private View bottomSheet, dismissArea, toolbarContainer;
+    private View bottomSheet, dismissArea, toolbarContainer, toolbarCompatShadow;
     private FloatingActionMenu floatingActionMenu;
     private RecyclerView imageList;
     private Toolbar toolbar;
@@ -148,6 +148,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         this.imageList = view.findViewById(R.id.image_list);
         this.toolbar = view.findViewById(R.id.image_stream_toolbar);
         this.toolbarContainer = view.findViewById(R.id.image_stream_toolbar_container);
+        this.toolbarCompatShadow = view.findViewById(R.id.image_stream_compat_shadow);
         this.floatingActionMenu = view.findViewById(R.id.floating_action_menu);
     }
 
@@ -165,12 +166,12 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
             }
         });
 
-        CoordinatorLayout.LayoutParams layoutParams = null;
-        if(toolbar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
-            layoutParams = (CoordinatorLayout.LayoutParams) toolbar.getLayoutParams();
-        } else if(toolbarContainer.getLayoutParams() instanceof CoordinatorLayout.LayoutParams){
-            layoutParams = (CoordinatorLayout.LayoutParams) toolbarContainer.getLayoutParams();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            toolbarCompatShadow.setVisibility(View.VISIBLE);
         }
+
+        CoordinatorLayout.LayoutParams layoutParams =
+                (CoordinatorLayout.LayoutParams) toolbarContainer.getLayoutParams();
 
         if(layoutParams != null) {
             layoutParams.setBehavior(new ToolbarBehavior());
