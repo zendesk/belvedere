@@ -6,13 +6,13 @@
     <ImageView
         android:id="@+id/belvedere_dialog_row_image"
         style="@style/BelvedereListRowIcon"
-        />
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/belvedere_dialog_row_text"
         style="@style/BelvedereListRowText"
         tools:text="Test"
         android:layout_toRightOf="@id/belvedere_dialog_row_image"
-        />
+        tools:ignore="RtlHardcoded" />
 
 </RelativeLayout>

@@ -26,6 +26,8 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
     private View child;
     private View checkbox;
 
+    private String descSelected, descUnselected;
+
     public SelectableView(@NonNull Context context) {
         super(context);
         init();
@@ -49,6 +51,12 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         final int colorPrimary = Utils.getThemeColor(getContext(), R.attr.colorPrimary);
         checkbox = getCheckBox(colorPrimary);
         addView(checkbox);
+    }
+
+    public void setContentDescriptionStrings(String selected, String unselected) {
+        descSelected = selected;
+        descUnselected = unselected;
+        setContentDesc(isSelected());
     }
 
     @Override
@@ -100,14 +108,18 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
+
         if(selected) {
             scale(SELECTED_SCALE);
             alpha(SELECTED_ALPHA);
             checkbox(true);
+            setContentDesc(true);
+
         } else {
             scale(1.0F);
             alpha(1.0F);
             checkbox(false);
+            setContentDesc(false);
         }
     }
 
@@ -168,6 +180,14 @@ public class SelectableView extends FrameLayout implements View.OnClickListener 
         }
 
         return child;
+    }
+
+    private void setContentDesc(boolean selected) {
+        if (selected) {
+            setContentDescription(descSelected);
+        } else {
+            setContentDescription(descUnselected);
+        }
     }
 
     interface SelectionListener {

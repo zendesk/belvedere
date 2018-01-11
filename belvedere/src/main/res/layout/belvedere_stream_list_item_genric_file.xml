@@ -2,6 +2,7 @@
 <zendesk.belvedere.SelectableView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_file_holder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,6 +16,7 @@
         app:cardBackgroundColor="#ebebeb"
         app:cardCornerRadius="4dp"
         android:layout_gravity="center"
+        android:importantForAccessibility="noHideDescendants"
         app:cardElevation="2dp">
 
         <RelativeLayout
@@ -43,13 +45,15 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/list_item_file_icon"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@android:drawable/sym_def_app_icon" />
+                    android:src="@android:drawable/sym_def_app_icon"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/list_item_file_label"

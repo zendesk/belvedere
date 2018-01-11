@@ -232,7 +232,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             } else if (belvedereIntent.getTarget() == MediaIntent.TARGET_DOCUMENT) {
                 return new AttachmentSource(R.drawable.belvedere_ic_image, context.getString(R.string.belvedere_dialog_gallery));
             } else {
-                return new AttachmentSource(-1, context.getString(R.string.belvedere_dialog_unknown));
+                return new AttachmentSource(-1, "");
             }
         }
 
