@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import zendesk.belvedere.ui.R;
+
 /**
  * Main entry-point for interacting the UI components of Belvedere.
  *
@@ -172,7 +174,7 @@ public class BelvedereUi {
                 public void onPermissionsDenied() {
                     Activity appCompatActivity = popupBackend.getActivity();
                     if(appCompatActivity != null) {
-                        Toast.makeText(appCompatActivity, "Permissions denied", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(appCompatActivity, R.string.belvedere_permissions_denied, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

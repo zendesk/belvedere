@@ -44,7 +44,8 @@
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        android:accessibilityTraversalBefore="@id/image_list"/>
 
     <LinearLayout
         android:id="@+id/image_stream_toolbar_container"
@@ -61,7 +62,7 @@
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             android:elevation="4dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            />
+            tools:ignore="UnusedAttribute" />
 
         <View
             android:id="@+id/image_stream_compat_shadow"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -13,14 +14,17 @@
         android:background="@drawable/belvedere_round_corner_background"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:foreground="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/belvedere_stream_item_camera_tile_desc"
+        tools:ignore="UselessParent">
 
         <ImageView
             android:id="@+id/list_item_static_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/belvedere_ic_camera_black"/>
+            android:src="@drawable/belvedere_ic_camera_black"
+            tools:ignore="ContentDescription" />
 
     </FrameLayout>
 

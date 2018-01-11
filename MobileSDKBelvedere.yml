@@ -1,0 +1,78 @@
+title: "MobileSDKBelvedere"
+packages:
+  - MobileSDKBelvedere
+  - enduser
+  - enduser_sdk
+
+parts:
+# Dialog
+  - translation:
+      key: "bsdk_belvedere_dialog_gallery"
+      title: "Label of a button that allows the user to select an image from the image gallery"
+      value: "Gallery"
+  - translation:
+      key: "bsdk_belvedere_dialog_camera"
+      title: "Label of a button that allows the user to select an image from the image gallery"
+      value: "Camera"
+# Image stream
+  - translation:
+      key: "bsdk_belvedere_image_stream_title"
+      title: "Title, presented at the top of the screen to indicate the title of the screen being shown"
+      screenshot: "https://zendesk.box.com/s/xul0f82agfhf756q8bzm9pi02i0dlm0w"
+      value: "Photo library"
+  - translation:
+      key: "bsdk_belvedere_image_stream_unknown_app"
+      title: "Fallback app label, shown to the user if there's no application on the phone that can handle the file"
+      screenshot: "https://zendesk.box.com/s/hnr1woe4ewrirxvm3d33edrohnvnmham"
+      value: "Unknown"
+  - translation:
+      key: "bsdk_belvedere_image_stream_file_too_large"
+      title: "Error toast, shown if the user selects a file that is too large."
+      screenshot: "https://zendesk.box.com/s/uidxae5w6sxp2andunved2exmtazx2dx"
+      value: "File too large"
+  - translation:
+      key: "bsdk_belvedere_permissions_denied"
+      title: "Error toast, shown if the user hasn't granted the needed system permissions for showing the image picker."
+      screenshot: "https://zendesk.box.com/s/a8j83m0grw5yol3fhp6qodxqbi2a0wkw"
+      value: "Permissions denied"
+# Image stream - talk back
+  - translation:
+      key: "bsdk_belvedere_fam_desc_expand_fam"
+      title: "Accessibility, talk back. Gets read out when the user selects the collapsed floating action menu button"
+      value: "Expand Floating Action Menu"
+  - translation:
+      key: "bsdk_belvedere_fam_desc_collapse_fam"
+      title: "Accessibility, talk back. Gets read out when the user selects the expanded floating action menu button"
+      value: "Collapse Floating Action Menu"
+  - translation:
+      key: "bsdk_belvedere_fam_desc_open_gallery"
+      title: "Accessibility, talk back. Gets read out when the user selects the floating action button for importing an image from the gallery"
+      value: "Import file from gallery"
+  - translation:
+      key: "bsdk_belvedere_fam_desc_open_google_photos"
+      title: "Accessibility, talk back. Gets read out when the user selects the floating action button for importing an image from google photos"
+      value: "Import image from Google Photos"
+  - translation:
+      key: "bsdk_belvedere_toolbar_desc_collapse"
+      title: "Accessibility, talk back. Gets read out when the user selects the close button for hiding the image picker"
+      value: "Close image picker"
+  - translation:
+      key: "bsdk_belvedere_stream_item_camera_tile_desc"
+      title: "Accessibility, talk back. Gets read out when the user selects the tile for importing an image from the camera"
+      value: "Import image from camera"
+  - translation:
+      key: "bsdk_belvedere_stream_item_select_file_desc"
+      title: "Accessibility, talk back. Gets read out when the user selects an unselected file from the list. %s gets replaced with the file name"
+      value: "Select file %s"
+  - translation:
+      key: "bsdk_belvedere_stream_item_unselect_file_desc"
+      title: "Accessibility, talk back. Gets read out when the user selects a selected file from the list. %s gets replaced with the file name"
+      value: "Unselect file %s"
+  - translation:
+      key: "bsdk_belvedere_stream_item_select_image_desc"
+      title: "Accessibility, talk back. Gets read out when the user selects an unselected image from the list. %s gets replaced with the image name"
+      value: "Select image %s"
+  - translation:
+      key: "bsdk_belvedere_stream_item_unselect_image_desc"
+      title: "Accessibility, talk back. Gets read out when the user selects a selected image from the list. %s gets replaced with the image name"
+      value: "Unselect image %s"

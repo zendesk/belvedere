@@ -103,6 +103,10 @@ class ImageStreamItems {
             final TextView label = view.findViewById(R.id.list_item_file_label);
             final SelectableView holder = view.findViewById(R.id.list_item_file_holder);
 
+            final String select = context.getString(R.string.belvedere_stream_item_select_file_desc, mediaResult.getName());
+            final String unselect = context.getString(R.string.belvedere_stream_item_unselect_file_desc, mediaResult.getName());
+            holder.setContentDescriptionStrings(unselect, select);
+
             title.setText(mediaResult.getName());
 
             if(resolveInfo != null) {
@@ -163,6 +167,10 @@ class ImageStreamItems {
             final Context context = view.getContext();
             final FixedWidthImageView imageView = view.findViewById(R.id.list_item_image);
             final SelectableView container = view.findViewById(R.id.list_item_selectable);
+
+            final String select = context.getString(R.string.belvedere_stream_item_select_image_desc, mediaResult.getName());
+            final String unselect = context.getString(R.string.belvedere_stream_item_unselect_image_desc, mediaResult.getName());
+            container.setContentDescriptionStrings(unselect, select);
 
             if(dimensions != null) {
                 imageView.showImage(Picasso.with(context), mediaResult.getOriginalUri(), dimensions);

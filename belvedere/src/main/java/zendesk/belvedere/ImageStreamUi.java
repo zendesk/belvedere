@@ -1,8 +1,11 @@
 package zendesk.belvedere;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -10,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
@@ -23,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -111,14 +116,22 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     @Override
     public void showDocumentMenuItem(View.OnClickListener onClickListener) {
         if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_file, R.id.belvedere_fam_item_documents, onClickListener);
+            floatingActionMenu.addMenuItem(
+                    R.drawable.belvedere_ic_file,
+                    R.id.belvedere_fam_item_documents,
+                    R.string.belvedere_fam_desc_open_gallery,
+                    onClickListener);
         }
     }
 
     @Override
     public void showGooglePhotosMenuItem(View.OnClickListener onClickListener) {
         if (floatingActionMenu != null) {
-            floatingActionMenu.addMenuItem(R.drawable.belvedere_ic_collections, R.id.belvedere_fam_item_google_photos, onClickListener);
+            floatingActionMenu.addMenuItem(
+                    R.drawable.belvedere_ic_collections,
+                    R.id.belvedere_fam_item_google_photos,
+                    R.string.belvedere_fam_desc_open_google_photos,
+                    onClickListener);
         }
     }
 
@@ -128,7 +141,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     }
 
     @Override
-    public void showToast(int textId) {
+    public void showToast(@StringRes int textId) {
         Toast.makeText(activity, textId, Toast.LENGTH_SHORT).show();
     }
 
@@ -154,6 +167,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     private void initToolbar() {
         toolbar.setNavigationIcon(R.drawable.belvedere_ic_close);
+        toolbar.setNavigationContentDescription(R.string.belvedere_toolbar_desc_collapse);
         toolbar.setBackgroundColor(Color.WHITE);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,11 +270,22 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         final boolean hasHardwareKeyboard =
                 activity.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
 
-        return isInExoticWindowMode || hasHardwareKeyboard;
+        final boolean hasAccessibilityEnabled;
+        final AccessibilityManager manager = (AccessibilityManager) activity.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (manager != null) {
+            final List<AccessibilityServiceInfo> enabledAccessibilityServiceList
+                    = manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+            hasAccessibilityEnabled = enabledAccessibilityServiceList != null && enabledAccessibilityServiceList.size() > 0;
+        } else {
+            hasAccessibilityEnabled = false;
+        }
+
+        return isInExoticWindowMode || hasHardwareKeyboard || hasAccessibilityEnabled;
     }
 
     private void initGesturePassThrough(final Activity activity, final List<Integer> touchableIds) {
         dismissArea.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
                 boolean dismiss = true;
