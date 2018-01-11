@@ -85,6 +85,7 @@ public class KeyboardHelper extends FrameLayout {
         inputTrap.setFocusableInTouchMode(true);
         inputTrap.setVisibility(View.VISIBLE);
         inputTrap.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        inputTrap.setInputType(EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
         addView(inputTrap);
 
