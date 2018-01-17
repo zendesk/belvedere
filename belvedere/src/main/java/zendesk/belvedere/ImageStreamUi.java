@@ -273,8 +273,10 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         final boolean hasAccessibilityEnabled;
         final AccessibilityManager manager = (AccessibilityManager) activity.getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (manager != null) {
-            final List<AccessibilityServiceInfo> enabledAccessibilityServiceList
-                    = manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+            int flags = AccessibilityServiceInfo.FEEDBACK_AUDIBLE | AccessibilityServiceInfo.FEEDBACK_SPOKEN
+                    | AccessibilityServiceInfo.FEEDBACK_VISUAL | AccessibilityServiceInfo.FEEDBACK_BRAILLE
+                    | AccessibilityServiceInfo.FEEDBACK_HAPTIC;
+            final List<AccessibilityServiceInfo> enabledAccessibilityServiceList = manager.getEnabledAccessibilityServiceList(flags);
             hasAccessibilityEnabled = enabledAccessibilityServiceList != null && enabledAccessibilityServiceList.size() > 0;
         } else {
             hasAccessibilityEnabled = false;
