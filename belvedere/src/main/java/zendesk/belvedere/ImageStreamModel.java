@@ -19,6 +19,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     private final List<MediaResult> selectedMediaResults;
     private final List<MediaResult> additionalMediaResults;
     private final long maxFileSize;
+    private final boolean fullScreenOnly;
 
     ImageStreamModel(Context context, BelvedereUi.UiConfig startConfig) {
         this.imageStreamService = new ImageStreamService(context);
@@ -26,6 +27,7 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         this.selectedMediaResults = startConfig.getSelectedItems();
         this.additionalMediaResults = startConfig.getExtraItems();
         this.maxFileSize = startConfig.getMaxFileSize();
+        this.fullScreenOnly = startConfig.showFullScreenOnly();
     }
 
     @VisibleForTesting
@@ -33,12 +35,14 @@ class ImageStreamModel implements ImageStreamMvp.Model {
                      long maxFileSize,
                      List<MediaIntent> intents,
                      List<MediaResult> selectedMediaResults,
-                     List<MediaResult> additionalMediaResults) {
+                     List<MediaResult> additionalMediaResults,
+                     boolean fullScreenOnly) {
         this.imageStreamService = imageStreamService;
         this.maxFileSize = maxFileSize;
         this.mediaIntents = intents;
         this.selectedMediaResults = selectedMediaResults;
         this.additionalMediaResults = additionalMediaResults;
+        this.fullScreenOnly = fullScreenOnly;
     }
 
     @Override
@@ -107,6 +111,11 @@ class ImageStreamModel implements ImageStreamMvp.Model {
     @Override
     public long getMaxFileSize() {
         return maxFileSize;
+    }
+
+    @Override
+    public boolean showFullScreenOnly() {
+        return fullScreenOnly;
     }
 
     private List<MediaResult> mergeMediaResultLists(List<MediaResult> images, List<MediaResult> toMerge) {

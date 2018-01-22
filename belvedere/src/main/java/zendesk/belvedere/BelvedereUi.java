@@ -73,6 +73,7 @@ public class BelvedereUi {
         private List<MediaResult> extraItems = new ArrayList<>();
         private List<Integer> touchableItems = new ArrayList<>();
         private long maxFileSize = -1L;
+        private boolean fullScreenOnly = false;
 
         private ImageStreamBuilder(Context context){
             this.context = context;
@@ -143,6 +144,17 @@ public class BelvedereUi {
         }
 
         /**
+         * Always show the image picker in full screen.
+         *
+         * @param enabled {@code true} if the picker should be shown full screen to the user, {@code false}
+         *                 if the picker should be drawn above the keyboard
+         */
+        public ImageStreamBuilder withFullScreenOnly(boolean enabled) {
+            this.fullScreenOnly = enabled;
+            return this;
+        }
+
+        /**
          * Show the ImageStream to the user.
          */
         public void showPopup(AppCompatActivity activity) {
@@ -158,7 +170,7 @@ public class BelvedereUi {
                         decorView.post(new Runnable() {
                             @Override
                             public void run() {
-                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems, maxFileSize);
+                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems, maxFileSize, fullScreenOnly);
                                 final ImageStreamUi show = ImageStreamUi.show(
                                         appCompatActivity,
                                         decorView,
@@ -211,7 +223,9 @@ public class BelvedereUi {
         showDialog(fm, Arrays.asList(mediaIntent));
     }
 
-    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems, List<MediaResult> extraItems, boolean resolveMedia, List<Integer> touchableIds) {
+    private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems,
+                                    List<MediaResult> extraItems, boolean resolveMedia,
+                                    List<Integer> touchableIds) {
 
         final List<MediaIntent> intents = new ArrayList<>();
         final List<MediaResult> selected = new ArrayList<>();
@@ -229,7 +243,7 @@ public class BelvedereUi {
             extra.addAll(extraItems);
         }
 
-        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds, -1L);
+        final UiConfig uiConfig = new UiConfig(intents, selected, extra, resolveMedia, touchableIds, -1L, false);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(EXTRA_MEDIA_INTENT, uiConfig);
 
@@ -254,6 +268,7 @@ public class BelvedereUi {
         private final List<Integer> touchableElements;
         private final boolean resolveMedia;
         private final long maxFileSize;
+        private final boolean fullScreenOnly;
 
         UiConfig() {
             this.intents = new ArrayList<>();
@@ -262,17 +277,20 @@ public class BelvedereUi {
             this.touchableElements = new ArrayList<>();
             this.resolveMedia = true;
             this.maxFileSize = -1L;
+            this.fullScreenOnly = false;
         }
 
         UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
-                        List<MediaResult> extraItems, boolean resolveMedia,
-                        List<Integer> touchableElements, long maxFileSize) {
+                 List<MediaResult> extraItems, boolean resolveMedia,
+                 List<Integer> touchableElements, long maxFileSize,
+                 boolean fullScreenOnly) {
             this.intents = intents;
             this.selectedItems = selectedItems;
             this.extraItems = extraItems;
             this.resolveMedia = resolveMedia;
             this.touchableElements = touchableElements;
             this.maxFileSize = maxFileSize;
+            this.fullScreenOnly = fullScreenOnly;
         }
 
         UiConfig(Parcel in) {
@@ -283,6 +301,7 @@ public class BelvedereUi {
             in.readList(touchableElements, Integer.class.getClassLoader());
             this.resolveMedia = in.readInt() == 1;
             this.maxFileSize = in.readLong();
+            this.fullScreenOnly = in.readInt() == 1;
         }
 
         List<MediaIntent> getIntents() {
@@ -303,6 +322,10 @@ public class BelvedereUi {
 
         long getMaxFileSize() {
             return maxFileSize;
+        }
+
+        boolean showFullScreenOnly() {
+            return fullScreenOnly;
         }
 
         public static final Creator<UiConfig> CREATOR = new Creator<UiConfig>() {
@@ -330,6 +353,7 @@ public class BelvedereUi {
             dest.writeList(touchableElements);
             dest.writeInt(resolveMedia ? 1 : 0);
             dest.writeLong(maxFileSize);
+            dest.writeInt(fullScreenOnly ? 1 : 0);
         }
     }
 
