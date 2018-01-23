@@ -81,16 +81,17 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
     }
 
     @Override
-    public void initViews() {
+    public void initViews(boolean fullScreenOnly) {
         initRecycler(adapter);
-        initToolbar();
-        initBottomSheet();
+        initToolbar(fullScreenOnly);
+        initBottomSheet(fullScreenOnly);
         initGesturePassThrough(activity, touchableItemIds);
     }
 
     @Override
-    public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener) {
-        if(!showFullScreen()) {
+    public void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages,
+                                boolean fullScreenOnly, boolean showCamera, ImageStreamAdapter.Listener listener) {
+        if (!fullScreenOnly) {
             KeyboardHelper.showKeyboard(keyboardHelper.getInputTrap());
         }
 
@@ -99,7 +100,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         bottomSheet.setLayoutParams(layoutParams);
 
         // Add camera item
-        if(showCamera){
+        if (showCamera){
             adapter.addStaticItem(ImageStreamItems.forCameraSquare(listener));
         }
 
@@ -155,6 +156,40 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         }
     }
 
+    @Override
+    public boolean shouldShowFullScreen() {
+
+        // Show full screen image stream if the app is in multi window or picture in picture mode
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (activity.isInMultiWindowMode() || activity.isInPictureInPictureMode()) {
+                return true;
+            }
+        }
+
+        // If there's a hardware keyboard attached show the picker in full screen mode
+        final boolean hasHardwareKeyboard =
+                activity.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
+        if (hasHardwareKeyboard) {
+            return true;
+        }
+
+        // If there's an accessibility service enabled, show in full screen mode
+        // Exclude AccessibilityServiceInfo.FEEDBACK_GENRICE this is used by password mangers.
+        final AccessibilityManager manager = (AccessibilityManager) activity.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (manager != null) {
+            int flags = AccessibilityServiceInfo.FEEDBACK_AUDIBLE | AccessibilityServiceInfo.FEEDBACK_SPOKEN
+                    | AccessibilityServiceInfo.FEEDBACK_VISUAL | AccessibilityServiceInfo.FEEDBACK_BRAILLE
+                    | AccessibilityServiceInfo.FEEDBACK_HAPTIC;
+            final List<AccessibilityServiceInfo> enabledAccessibilityServiceList = manager.getEnabledAccessibilityServiceList(flags);
+
+            if (enabledAccessibilityServiceList != null && enabledAccessibilityServiceList.size() > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void bindViews(View view) {
         this.bottomSheet = view.findViewById(R.id.bottom_sheet);
         this.dismissArea = view.findViewById(R.id.dismiss_area);
@@ -165,14 +200,14 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         this.floatingActionMenu = view.findViewById(R.id.floating_action_menu);
     }
 
-    private void initToolbar() {
+    private void initToolbar(final boolean fullScreenOnly) {
         toolbar.setNavigationIcon(R.drawable.belvedere_ic_close);
         toolbar.setNavigationContentDescription(R.string.belvedere_toolbar_desc_collapse);
         toolbar.setBackgroundColor(Color.WHITE);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!showFullScreen()) {
+                if(!fullScreenOnly) {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 } else {
                     dismiss();
@@ -188,7 +223,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
                 (CoordinatorLayout.LayoutParams) toolbarContainer.getLayoutParams();
 
         if(layoutParams != null) {
-            layoutParams.setBehavior(new ToolbarBehavior());
+            layoutParams.setBehavior(new ToolbarBehavior(!fullScreenOnly));
         }
     }
 
@@ -209,7 +244,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         imageList.setAdapter(adapter);
     }
 
-    private void initBottomSheet() {
+    private void initBottomSheet(boolean fullScreenOnly) {
         ViewCompat.setElevation(imageList, bottomSheet.getContext().getResources().getDimensionPixelSize(R.dimen.belvedere_bottom_sheet_elevation));
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -231,7 +266,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
         Utils.showToolbar(getContentView(), false);
 
-        if (!showFullScreen()) {
+        if (!fullScreenOnly) {
             bottomSheetBehavior.setPeekHeight(bottomSheet.getPaddingTop() + keyboardHelper.getKeyboardHeight());
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             keyboardHelper.setKeyboardHeightListener(new KeyboardHelper.SizeListener() {
@@ -257,32 +292,6 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         super.dismiss();
         tintStatusBar(0);
         presenter.dismiss();
-    }
-
-    private boolean showFullScreen() {
-        final boolean isInExoticWindowMode;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            isInExoticWindowMode = activity.isInMultiWindowMode() || activity.isInPictureInPictureMode();
-        } else {
-            isInExoticWindowMode = false;
-        }
-
-        final boolean hasHardwareKeyboard =
-                activity.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
-
-        final boolean hasAccessibilityEnabled;
-        final AccessibilityManager manager = (AccessibilityManager) activity.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (manager != null) {
-            int flags = AccessibilityServiceInfo.FEEDBACK_AUDIBLE | AccessibilityServiceInfo.FEEDBACK_SPOKEN
-                    | AccessibilityServiceInfo.FEEDBACK_VISUAL | AccessibilityServiceInfo.FEEDBACK_BRAILLE
-                    | AccessibilityServiceInfo.FEEDBACK_HAPTIC;
-            final List<AccessibilityServiceInfo> enabledAccessibilityServiceList = manager.getEnabledAccessibilityServiceList(flags);
-            hasAccessibilityEnabled = enabledAccessibilityServiceList != null && enabledAccessibilityServiceList.size() > 0;
-        } else {
-            hasAccessibilityEnabled = false;
-        }
-
-        return isInExoticWindowMode || hasHardwareKeyboard || hasAccessibilityEnabled;
     }
 
     private void initGesturePassThrough(final Activity activity, final List<Integer> touchableIds) {
@@ -362,6 +371,12 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
     private class ToolbarBehavior extends CoordinatorLayout.Behavior<View> {
 
+        private final boolean notifyScrollListener;
+
+        private ToolbarBehavior(boolean notifyScrollListener) {
+            this.notifyScrollListener = notifyScrollListener;
+        }
+
         @Override
         public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
             return dependency.getId() == R.id.bottom_sheet;
@@ -374,7 +389,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
             animateToolbarShiftIn(scrollArea, scrollPosition, ViewCompat.getMinimumHeight(toolbar), child);
 
-            if(!showFullScreen()) {
+            if(notifyScrollListener) {
                 presenter.onImageStreamScrolled(parent.getHeight(), scrollArea, scrollPosition);
             }
 

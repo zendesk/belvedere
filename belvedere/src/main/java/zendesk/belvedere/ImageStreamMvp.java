@@ -30,13 +30,15 @@ interface ImageStreamMvp {
 
         long getMaxFileSize();
 
+        boolean showFullScreenOnly();
+
     }
 
     interface View {
 
-        void initViews();
+        void initViews(boolean fullScreenOnly);
 
-        void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean showCamera, ImageStreamAdapter.Listener listener);
+        void showImageStream(List<MediaResult> images, List<MediaResult> selectedImages, boolean fullScreenOnly, boolean showCamera, ImageStreamAdapter.Listener listener);
 
         void showDocumentMenuItem(OnClickListener onClickListener);
 
@@ -47,6 +49,8 @@ interface ImageStreamMvp {
         void showToast(int textId);
 
         void updateToolbarTitle(int selectedImages);
+
+        boolean shouldShowFullScreen();
 
     }
 

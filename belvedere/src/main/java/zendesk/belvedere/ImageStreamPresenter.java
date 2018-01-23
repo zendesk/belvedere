@@ -83,8 +83,12 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
     }
 
     private void presentStream() {
+
+        // Check if we can show the picker above the keyboard
+        final boolean fullScreenOnly = model.showFullScreenOnly() || view.shouldShowFullScreen();
+
         // Init the ui
-        view.initViews();
+        view.initViews(fullScreenOnly);
 
         // Load recent images
         final List<MediaResult> latestImages = model.getLatestImages();
@@ -93,7 +97,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         final List<MediaResult> selectedImages = model.getSelectedMediaResults();
 
         // Populate image stream
-        view.showImageStream(latestImages, selectedImages, model.hasCameraIntent(), imageStreamListener);
+        view.showImageStream(latestImages, selectedImages, fullScreenOnly, model.hasCameraIntent(), imageStreamListener);
 
         // Notify observers
         imageStreamBackend.notifyVisible();

@@ -84,11 +84,12 @@ class ImageStreamPresenterTest : TestHelper {
         `when`(model.latestImages).thenReturn(latestImages)
         `when`(model.selectedMediaResults).thenReturn(selectedImages)
         `when`(model.hasCameraIntent()).thenReturn(true)
+        `when`(model.showFullScreenOnly()).thenReturn(true)
 
         presenter.init()
 
-        verify(view, times(1)).initViews()
-        verify(view, times(1)).showImageStream(eq(latestImages), eq(selectedImages), eq(true), any())
+        verify(view, times(1)).initViews(eq(true))
+        verify(view, times(1)).showImageStream(eq(latestImages), eq(selectedImages), eq(true), eq(true), any())
         verify(imageStreamBackend, times(1)).notifyVisible()
     }
 
@@ -193,7 +194,7 @@ class ImageStreamPresenterTest : TestHelper {
     private fun listener(): ImageStreamAdapter.Listener {
         val captor = ArgumentCaptor.forClass(ImageStreamAdapter.Listener::class.java)
         presenter.init()
-        verify(view, times(1)).showImageStream(anyList(), anyList(), anyBoolean(), captor.capture())
+        verify(view, times(1)).showImageStream(anyList(), anyList(), anyBoolean(), anyBoolean(), captor.capture())
         return captor.value
     }
 

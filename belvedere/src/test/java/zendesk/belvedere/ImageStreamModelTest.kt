@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class ImageStreamModelTest : TestHelper {
 
     private val maxFileSize = 100L
+    private val fullScreen = true
 
     @Mock
     private lateinit var service: ImageStreamService
@@ -32,7 +33,7 @@ class ImageStreamModelTest : TestHelper {
 
     @Before
     fun setup() {
-        model = ImageStreamModel(service, maxFileSize, mediaIntent, selectedItems, additionalItems)
+        model = ImageStreamModel(service, maxFileSize, mediaIntent, selectedItems, additionalItems, fullScreen)
     }
 
     @After
@@ -186,6 +187,11 @@ class ImageStreamModelTest : TestHelper {
 
         verify(intent, times(1)).`package` = "com.google.android.apps.photos"
         verify(intent, times(1)).action = Intent.ACTION_GET_CONTENT
+    }
+
+    @Test
+    fun `get show fullscreen`() {
+        assertThat(model.showFullScreenOnly()).isEqualTo(fullScreen)
     }
 
 }
