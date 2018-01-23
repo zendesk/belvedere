@@ -4,13 +4,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/request_activity_background</item>
+        <item name="android:windowBackground">@color/activity_background</item>
     </style>
 
-    <color name="request_activity_background">#efefef</color>
+    <color name="activity_background">#ffefefef</color>
 
     <style name="AppTheme.Base.Toolbar" parent="AppTheme.Base">
-        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorPrimary">#ffffffff</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base"/>
