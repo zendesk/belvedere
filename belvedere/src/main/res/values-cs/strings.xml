@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Fotoaparát</string>
+	<string name="belvedere_dialog_gallery">Galerie</string>
+	<string name="belvedere_fam_desc_collapse_fam">Sbalit plovoucí nabídku akcí</string>
+	<string name="belvedere_fam_desc_expand_fam">Rozbalit plovoucí nabídku akcí</string>
+	<string name="belvedere_fam_desc_open_gallery">Importovat soubor z galerie</string>
+	<string name="belvedere_fam_desc_open_google_photos">Importovat obrázek z Fotky Google</string>
+	<string name="belvedere_image_stream_file_too_large">Soubor je příliš velký</string>
+	<string name="belvedere_image_stream_title">Knihovna fotek</string>
+	<string name="belvedere_image_stream_unknown_app">Neznámá</string>
+	<string name="belvedere_permissions_denied">Oprávnění odepřena</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Importovat obrázek z fotoaparátu</string>
+	<string name="belvedere_stream_item_select_file_desc">Vybrat soubor %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Vybrat obrázek %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Zrušit výběr souboru %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Zrušit výběr obrázku %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Zavřít výběr obrázků</string>
+</resources>
