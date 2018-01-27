@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Камера</string>
+	<string name="belvedere_dialog_gallery">Галерея</string>
+	<string name="belvedere_fam_desc_collapse_fam">Свернуть плавающее меню действий</string>
+	<string name="belvedere_fam_desc_expand_fam">Развернуть плавающее меню действий</string>
+	<string name="belvedere_fam_desc_open_gallery">Импортировать файл из галереи</string>
+	<string name="belvedere_fam_desc_open_google_photos">Импортировать изображение из Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">Слишком большой файл</string>
+	<string name="belvedere_image_stream_title">Библиотека фото</string>
+	<string name="belvedere_image_stream_unknown_app">Неизвестно</string>
+	<string name="belvedere_permissions_denied">В доступе отказано</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Импортировать изображение из камеры</string>
+	<string name="belvedere_stream_item_select_file_desc">Выбрать файл %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Выбрать изображение %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Отменить выбор файла %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Отменить выбор изображения %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Закрыть окно выбора изображения</string>
+</resources>

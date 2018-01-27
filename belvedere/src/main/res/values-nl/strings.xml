@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Camera</string>
+	<string name="belvedere_dialog_gallery">Galerie</string>
+	<string name="belvedere_fam_desc_collapse_fam">Zwevend actiemenu samenvouwen</string>
+	<string name="belvedere_fam_desc_expand_fam">Zwevend actiemenu uitvouwen</string>
+	<string name="belvedere_fam_desc_open_gallery">Bestand importeren vanuit galerie</string>
+	<string name="belvedere_fam_desc_open_google_photos">Afbeelding importeren vanuit Google Foto\'s</string>
+	<string name="belvedere_image_stream_file_too_large">Bestand te groot</string>
+	<string name="belvedere_image_stream_title">Fotoverzameling</string>
+	<string name="belvedere_image_stream_unknown_app">Onbekend</string>
+	<string name="belvedere_permissions_denied">Machtigingen geweigerd</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Afbeelding importeren vanaf camera</string>
+	<string name="belvedere_stream_item_select_file_desc">Selecteer bestand %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Selecteer afbeelding %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Deselecteer bestand %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Deselecteer afbeelding %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Afbeeldingenkiezer sluiten</string>
+</resources>
