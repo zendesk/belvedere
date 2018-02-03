@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">カメラ</string>
+	<string name="belvedere_dialog_gallery">ギャラリー</string>
+	<string name="belvedere_fam_desc_collapse_fam">「アクション」フローティングメニューを閉じる</string>
+	<string name="belvedere_fam_desc_expand_fam">「アクション」フローティングメニューを開く</string>
+	<string name="belvedere_fam_desc_open_gallery">ギャラリーからファイルをインポートします</string>
+	<string name="belvedere_fam_desc_open_google_photos">Googleフォトから画像をインポートします</string>
+	<string name="belvedere_image_stream_file_too_large">ファイルが大きすぎます</string>
+	<string name="belvedere_image_stream_title">写真ライブラリ</string>
+	<string name="belvedere_image_stream_unknown_app">不明</string>
+	<string name="belvedere_permissions_denied">権限がありません</string>
+	<string name="belvedere_stream_item_camera_tile_desc">カメラから画像をインポートします</string>
+	<string name="belvedere_stream_item_select_file_desc">ファイル%sを選択します</string>
+	<string name="belvedere_stream_item_select_image_desc">画像%sを選択します</string>
+	<string name="belvedere_stream_item_unselect_file_desc">ファイル%sの選択を解除します</string>
+	<string name="belvedere_stream_item_unselect_image_desc">画像%sの選択を解除します</string>
+	<string name="belvedere_toolbar_desc_collapse">画像ピッカーを閉じます</string>
+</resources>

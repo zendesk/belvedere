@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">相機</string>
+	<string name="belvedere_dialog_gallery">圖庫</string>
+	<string name="belvedere_fam_desc_collapse_fam">摺疊浮動執行功能表</string>
+	<string name="belvedere_fam_desc_expand_fam">展開浮動執行功能表</string>
+	<string name="belvedere_fam_desc_open_gallery">從圖庫匯入檔案</string>
+	<string name="belvedere_fam_desc_open_google_photos">從 Google Photos 匯入影像</string>
+	<string name="belvedere_image_stream_file_too_large">檔案過大</string>
+	<string name="belvedere_image_stream_title">相片媒體櫃</string>
+	<string name="belvedere_image_stream_unknown_app">未知</string>
+	<string name="belvedere_permissions_denied">權限被拒</string>
+	<string name="belvedere_stream_item_camera_tile_desc">從相機匯入影像</string>
+	<string name="belvedere_stream_item_select_file_desc">選取檔案 %s</string>
+	<string name="belvedere_stream_item_select_image_desc">選取影像 %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">取消選取檔案 %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">取消選取影像 %s</string>
+	<string name="belvedere_toolbar_desc_collapse">關閉影像選擇器</string>
+</resources>

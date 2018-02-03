@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Камера</string>
+	<string name="belvedere_dialog_gallery">Галерия</string>
+	<string name="belvedere_fam_desc_collapse_fam">Свиване на плаващото меню „Действие“</string>
+	<string name="belvedere_fam_desc_expand_fam">Разгъване на плаващото меню „Действие“</string>
+	<string name="belvedere_fam_desc_open_gallery">Импортиране на файл от галерията</string>
+	<string name="belvedere_fam_desc_open_google_photos">Импортиране на снимки от Google Снимки</string>
+	<string name="belvedere_image_stream_file_too_large">Файлът е твърде голям</string>
+	<string name="belvedere_image_stream_title">Библиотека със снимки</string>
+	<string name="belvedere_image_stream_unknown_app">Непознат тип файл</string>
+	<string name="belvedere_permissions_denied">Отказани разрешения</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Импорт на изображение от камерата</string>
+	<string name="belvedere_stream_item_select_file_desc">Избиране на файл %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Избиране на изображение %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Премахване на избора на файл %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Премахване на избора на изображение %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Затваряне на избирача на изображения</string>
+</resources>

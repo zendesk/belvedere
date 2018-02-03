@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Cameră</string>
+	<string name="belvedere_dialog_gallery">Galerie</string>
+	<string name="belvedere_fam_desc_collapse_fam">Restrângere meniu de acțiuni mobil</string>
+	<string name="belvedere_fam_desc_expand_fam">Extindere meniu de acțiuni mobil</string>
+	<string name="belvedere_fam_desc_open_gallery">Import fișier din galerie</string>
+	<string name="belvedere_fam_desc_open_google_photos">Import imagine din Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">Fișier prea mare</string>
+	<string name="belvedere_image_stream_title">Bibliotecă fotografii</string>
+	<string name="belvedere_image_stream_unknown_app">Necunoscut</string>
+	<string name="belvedere_permissions_denied">Permisiuni refuzate</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Import imagine din cameră</string>
+	<string name="belvedere_stream_item_select_file_desc">Selectare fișier %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Selectare imagine %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Deselectare fișier %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Deselectare imagine %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Închidere selector imagini</string>
+</resources>
