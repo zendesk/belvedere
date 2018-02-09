@@ -31,7 +31,9 @@ import java.util.List;
 
 import zendesk.belvedere.ui.R;
 
-
+/**
+ * For internal use only.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class FloatingActionMenu extends LinearLayout implements View.OnClickListener {
 

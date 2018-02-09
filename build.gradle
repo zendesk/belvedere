@@ -1,5 +1,6 @@
 apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/zendesk-repos.gradle'
+apply from: 'scripts/gradle/zendesk-aggregate-javadocs.gradle'
 
 ext {
     compileSdkVersion = 27
@@ -18,7 +19,7 @@ ext {
 buildscript {
 
     ext {
-        kotlinVersion = "1.2.10"
+        kotlinVersion = "1.2.21"
     }
 
     repositories {

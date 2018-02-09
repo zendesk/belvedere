@@ -1,0 +1,35 @@
+/**
+ * Generate aggregated Javadocs for all library project by calling
+ *
+ *  ./gradlew aggregateJavadocs
+ *
+ */
+task aggregateJavadocs(type: Javadoc) {
+    destinationDir = file("${projectDir}/docs/")
+}
+
+subprojects {
+    afterEvaluate {
+        if (plugins.hasPlugin(JavaPlugin)) {
+            rootProject.tasks.aggregateJavadocs {
+                source += javadoc.source
+                classpath += files(javadoc.classpath)
+            }
+        }
+
+        if (plugins.hasPlugin("com.android.library")) {
+            rootProject.tasks.aggregateJavadocs {
+                source += files(android.sourceSets.main.java.srcDirs)
+                classpath += files(project.files(android.getBootClasspath().join(File.pathSeparator)))
+            }
+        }
+    }
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
