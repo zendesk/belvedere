@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">מצלמה</string>
+	<string name="belvedere_dialog_gallery">גלריה</string>
+	<string name="belvedere_fam_desc_collapse_fam">כווץ תפריט פעולות צף</string>
+	<string name="belvedere_fam_desc_expand_fam">הרחב תפריט פעולות צף</string>
+	<string name="belvedere_fam_desc_open_gallery">יבא קובץ מהגלריה</string>
+	<string name="belvedere_fam_desc_open_google_photos">יבא תמונה מ-Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">הקובץ גדול מדי</string>
+	<string name="belvedere_image_stream_title">ספריית תמונות</string>
+	<string name="belvedere_image_stream_unknown_app">לא ידוע</string>
+	<string name="belvedere_permissions_denied">אין הרשאה</string>
+	<string name="belvedere_stream_item_camera_tile_desc">יבא תמונה מהמצלמה</string>
+	<string name="belvedere_stream_item_select_file_desc">בחר את הקובץ %s</string>
+	<string name="belvedere_stream_item_select_image_desc">בחר את התמונה %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">בטל את הבחירה בקובץ %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">בטל את הבחירה בתמונה %s</string>
+	<string name="belvedere_toolbar_desc_collapse">סגור את בוחר התמונות</string>
+</resources>

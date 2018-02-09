@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Κάμερα</string>
+	<string name="belvedere_dialog_gallery">Συλλογή εικόνων</string>
+	<string name="belvedere_fam_desc_collapse_fam">Σύμπτυξη κινούμενου μενού ενεργειών</string>
+	<string name="belvedere_fam_desc_expand_fam">Επέκταση κινούμενου μενού ενεργειών</string>
+	<string name="belvedere_fam_desc_open_gallery">Εισαγωγή αρχείου από τη συλλογή εικόνων</string>
+	<string name="belvedere_fam_desc_open_google_photos">Εισαγωγή εικόνας από τις Φωτογραφίες Google</string>
+	<string name="belvedere_image_stream_file_too_large">Το αρχείο είναι πολύ μεγάλο</string>
+	<string name="belvedere_image_stream_title">Βιβλιοθήκη φωτογραφιών</string>
+	<string name="belvedere_image_stream_unknown_app">Άγνωστος</string>
+	<string name="belvedere_permissions_denied">Δεν έχει δοθεί άδεια</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Εισαγωγή εικόνας από την κάμερα</string>
+	<string name="belvedere_stream_item_select_file_desc">Επιλογή αρχείου %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Επιλογή εικόνας %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Κατάργηση επιλογής αρχείου %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Κατάργηση επιλογής εικόνας%s</string>
+	<string name="belvedere_toolbar_desc_collapse">Κλείσιμο εργαλείου επιλογής εικόνας</string>
+</resources>

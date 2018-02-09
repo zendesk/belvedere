@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Kamera</string>
+	<string name="belvedere_dialog_gallery">Galleri</string>
+	<string name="belvedere_fam_desc_collapse_fam">Dölj flytande åtgärdsmeny</string>
+	<string name="belvedere_fam_desc_expand_fam">Visa flytande åtgärdsmeny</string>
+	<string name="belvedere_fam_desc_open_gallery">Importera fil från galleriet</string>
+	<string name="belvedere_fam_desc_open_google_photos">Importera fil från Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">Filen är för stor</string>
+	<string name="belvedere_image_stream_title">Bildbibliotek</string>
+	<string name="belvedere_image_stream_unknown_app">Okänd</string>
+	<string name="belvedere_permissions_denied">Behörighet nekades</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Importera bild från kameran</string>
+	<string name="belvedere_stream_item_select_file_desc">Markera filen %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Markera bilden %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Avmarkera filen %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Avmarkera bilden %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Stäng bildväljaren</string>
+</resources>

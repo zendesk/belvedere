@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Kamera</string>
+	<string name="belvedere_dialog_gallery">Galleri</string>
+	<string name="belvedere_fam_desc_collapse_fam">Skjul flydende handlingsmenu</string>
+	<string name="belvedere_fam_desc_expand_fam">Vis flydende handlingsmenu</string>
+	<string name="belvedere_fam_desc_open_gallery">Importér fil fra galleri</string>
+	<string name="belvedere_fam_desc_open_google_photos">Importér billede fra Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">Filen er for stor</string>
+	<string name="belvedere_image_stream_title">Fotobibliotek</string>
+	<string name="belvedere_image_stream_unknown_app">Ukendt</string>
+	<string name="belvedere_permissions_denied">Tilladelser nægtet</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Importér billede fra kamera</string>
+	<string name="belvedere_stream_item_select_file_desc">Vælg filen %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Vælg billedet %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Fravælg filen %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Fravælg billedet %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Luk billedvælger</string>
+</resources>

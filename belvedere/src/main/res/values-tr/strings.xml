@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Fotoğraf makinesi</string>
+	<string name="belvedere_dialog_gallery">Galeri</string>
+	<string name="belvedere_fam_desc_collapse_fam">Hareketli Eylem Menüsünü Daralt</string>
+	<string name="belvedere_fam_desc_expand_fam">Hareketli Eylem Menüsünü Genişlet</string>
+	<string name="belvedere_fam_desc_open_gallery">Galeriden içe dosya aktarın</string>
+	<string name="belvedere_fam_desc_open_google_photos">Google Fotoğraflar\'dan içe resim aktarın</string>
+	<string name="belvedere_image_stream_file_too_large">Dosya çok büyük</string>
+	<string name="belvedere_image_stream_title">Fotoğraf kitaplığı</string>
+	<string name="belvedere_image_stream_unknown_app">Bilinmiyor</string>
+	<string name="belvedere_permissions_denied">İzinler reddedildi</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Fotoğraf makinesinden içe resim aktarın</string>
+	<string name="belvedere_stream_item_select_file_desc">%s adlı dosyayı seçin</string>
+	<string name="belvedere_stream_item_select_image_desc">%s adlı resmi seçin</string>
+	<string name="belvedere_stream_item_unselect_file_desc">%s adlı dosyanın seçimini kaldırın</string>
+	<string name="belvedere_stream_item_unselect_image_desc">%s adlı resmin seçimini kaldırın</string>
+	<string name="belvedere_toolbar_desc_collapse">Resim seçiciyi kapatın</string>
+</resources>

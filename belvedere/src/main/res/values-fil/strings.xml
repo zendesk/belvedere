@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Camera</string>
+	<string name="belvedere_dialog_gallery">Gallery</string>
+	<string name="belvedere_fam_desc_collapse_fam">I-collapse ang Floating na Menu ng Pagkilos</string>
+	<string name="belvedere_fam_desc_expand_fam">I-expand ang Floating na Menu ng Pagkilos</string>
+	<string name="belvedere_fam_desc_open_gallery">Mag-import ng file mula sa gallery</string>
+	<string name="belvedere_fam_desc_open_google_photos">Mag-import ng larawan mula sa Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">Masyadong malaki ang file</string>
+	<string name="belvedere_image_stream_title">Library ng larawan</string>
+	<string name="belvedere_image_stream_unknown_app">Hindi kilala</string>
+	<string name="belvedere_permissions_denied">Tinanggihan ang mga pahintulot</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Mag-import ng larawan mula sa camera</string>
+	<string name="belvedere_stream_item_select_file_desc">Piliin ang file na %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Piliin ang larawan na %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">I-unselect ang file na %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">I-unselect ang larawan na %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Isara ang picker ng larawan</string>
+</resources>
