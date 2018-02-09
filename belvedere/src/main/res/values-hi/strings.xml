@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">कैमरा</string>
+	<string name="belvedere_dialog_gallery">गैलरी</string>
+	<string name="belvedere_fam_desc_collapse_fam">फ़्लोटिंग क्रियाएं संक्षिप्त करें मेनू</string>
+	<string name="belvedere_fam_desc_expand_fam">फ़्लोटिंग क्रियाएं विस्तारित करें मेनू</string>
+	<string name="belvedere_fam_desc_open_gallery">गैलरी से फ़ाइल आयात करें</string>
+	<string name="belvedere_fam_desc_open_google_photos">छवि को Google फ़ोटो से आयात करें</string>
+	<string name="belvedere_image_stream_file_too_large">फ़ाइल बहुत बड़ी है</string>
+	<string name="belvedere_image_stream_title">फ़ोटो लाइब्रेरी</string>
+	<string name="belvedere_image_stream_unknown_app">अज्ञात</string>
+	<string name="belvedere_permissions_denied">अनुमतियां अस्वीकृत</string>
+	<string name="belvedere_stream_item_camera_tile_desc">कैमरा से छवि आयात करें</string>
+	<string name="belvedere_stream_item_select_file_desc">फ़ाइल %s चुनें</string>
+	<string name="belvedere_stream_item_select_image_desc">छवि %s चुनें</string>
+	<string name="belvedere_stream_item_unselect_file_desc">फ़ाइल %s का चयन रद्द करेंं</string>
+	<string name="belvedere_stream_item_unselect_image_desc">छवि %s का चयन रद्द करेंं</string>
+	<string name="belvedere_toolbar_desc_collapse">छवि पिकर बंद करें</string>
+</resources>

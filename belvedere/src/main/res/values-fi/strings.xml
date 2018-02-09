@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Kamera</string>
+	<string name="belvedere_dialog_gallery">Galleria</string>
+	<string name="belvedere_fam_desc_collapse_fam">Sulje irrallinen toimintovalikko</string>
+	<string name="belvedere_fam_desc_expand_fam">Laajenna irrallinen toimintovalikko</string>
+	<string name="belvedere_fam_desc_open_gallery">Tuo tiedosto galleriasta</string>
+	<string name="belvedere_fam_desc_open_google_photos">Tuo kuva Google Photos -sovelluksesta</string>
+	<string name="belvedere_image_stream_file_too_large">Tiedosto on liian suuri</string>
+	<string name="belvedere_image_stream_title">Valokuvakirjasto</string>
+	<string name="belvedere_image_stream_unknown_app">Tuntematon</string>
+	<string name="belvedere_permissions_denied">Käyttöoikeudet estetty</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Tuo kuva kamerasta</string>
+	<string name="belvedere_stream_item_select_file_desc">Valitse tiedosto %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Valitse kuva %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Poista valinta tiedostosta %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Poista valinta kuvasta %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Sulje kuvan valintatyökalu</string>
+</resources>

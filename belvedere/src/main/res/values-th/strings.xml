@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">กล้อง</string>
+	<string name="belvedere_dialog_gallery">แกลเลอรี</string>
+	<string name="belvedere_fam_desc_collapse_fam">ยุบเมนูการดำเนินการแบบลอย</string>
+	<string name="belvedere_fam_desc_expand_fam">ขยายเมนูการดำเนินการแบบลอย</string>
+	<string name="belvedere_fam_desc_open_gallery">อิมพอร์ตไฟล์จากแกลเลอรี</string>
+	<string name="belvedere_fam_desc_open_google_photos">อิมพอร์ตภาพจาก Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">ไฟล์ใหญ่เกินไป</string>
+	<string name="belvedere_image_stream_title">คลังภาพ</string>
+	<string name="belvedere_image_stream_unknown_app">ไม่ทราบ</string>
+	<string name="belvedere_permissions_denied">สิทธิ์การอนุญาตถูกปฏิเสธ</string>
+	<string name="belvedere_stream_item_camera_tile_desc">อิมพอร์ตภาพจากกล้อง</string>
+	<string name="belvedere_stream_item_select_file_desc">เลือกไฟล์ %s</string>
+	<string name="belvedere_stream_item_select_image_desc">เลือกภาพ %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">ยกเลิกเลือกไฟล์ %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">ยกเลิกเลือกภาพ %s</string>
+	<string name="belvedere_toolbar_desc_collapse">ปิดตัวเลือกภาพ</string>
+</resources>
