@@ -17,6 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import zendesk.belvedere.ui.R;
 
+/**
+ * For internal use only.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class FixedWidthImageView extends AppCompatImageView implements Target {
 

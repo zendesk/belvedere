@@ -15,6 +15,9 @@ import android.widget.ImageView;
 
 import zendesk.belvedere.ui.R;
 
+/**
+ * For internal use only.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class SelectableView extends FrameLayout implements View.OnClickListener {
 

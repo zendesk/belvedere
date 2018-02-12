@@ -2,9 +2,9 @@
 
 # Belvedere
 <p align="left">
-<a href="https://travis-ci.org/zendesk/Suas-Android"><img src="https://travis-ci.org/zendesk/belvedere.svg?branch=master" alt="Build Status" /></a>
+<a href="https://travis-ci.org/zendesk/belvedere"><img src="https://travis-ci.org/zendesk/belvedere.svg?branch=master" alt="Build Status" /></a> <a href="http://zendesk.github.io/belvedere"><img src="https://img.shields.io/readthedocs/pip.svg" /></a>
+<a href="https://mvnrepository.com/artifact/com.zendesk.belvedere2/belvedere"><img src="https://img.shields.io/maven-central/v/com.zendesk.belvedere2/belvedere.svg" alt="Belvedere version" /></a><a href="https://oss.sonatype.org/content/repositories/snapshots/com/zendesk/belvedere2/belvedere/"> <img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/com.zendesk.belvedere2/belvedere.svg" /></a>
 <a href="https://raw.githubusercontent.com/zendesk/belvedere/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
-<img src="https://img.shields.io/maven-central/v/com.zendesk.belvedere2/belvedere.svg" alt="Belvedere version" /> <img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/com.zendesk.belvedere2/belvedere.svg" />
 </p>
 
 A file picker for Android.
@@ -202,10 +202,6 @@ If you’re submitting a bug report, please try to follow these steps:
  - Describe the issue as detailed as possible. Try to describe the expected and the actual outcome.
  - Add reproduction steps. If possible provide sample code that showcases the issue.
  - Provide a failing test.
-
-### Documentation
-
-[View](http://zdmobilesdkdocdev.herokuapp.com/belvedere/) | [Download](https://zendesk.artifactoryonline.com/zendesk/repo/com/zendesk/belvedere/1.2.0.1/belvedere-1.2.0.1-javadoc.jar)
 
 ### License
 ```
