@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-	<string name="belvedere_dialog_camera">Camera</string>
-	<string name="belvedere_dialog_gallery">Gallery</string>
-	<string name="belvedere_fam_desc_collapse_fam">Collapse Floating Action Menu</string>
-	<string name="belvedere_fam_desc_expand_fam">Expand Floating Action Menu</string>
-	<string name="belvedere_fam_desc_open_gallery">Import file from gallery</string>
-	<string name="belvedere_fam_desc_open_google_photos">Import image from Google Photos</string>
-	<string name="belvedere_image_stream_file_too_large">File too large</string>
-	<string name="belvedere_image_stream_title">Photo library</string>
-	<string name="belvedere_image_stream_unknown_app">Unknown</string>
-	<string name="belvedere_permissions_denied">Permissions denied</string>
-	<string name="belvedere_stream_item_camera_tile_desc">Import image from camera</string>
-	<string name="belvedere_stream_item_select_file_desc">Select file %s</string>
-	<string name="belvedere_stream_item_select_image_desc">Select image %s</string>
-	<string name="belvedere_stream_item_unselect_file_desc">Unselect file %s</string>
-	<string name="belvedere_stream_item_unselect_image_desc">Unselect image %s</string>
-	<string name="belvedere_toolbar_desc_collapse">Close image picker</string>
+	<string name="belvedere_dialog_camera">Kamera</string>
+	<string name="belvedere_dialog_gallery">Galéria</string>
+	<string name="belvedere_fam_desc_collapse_fam">A lebegő műveleti menü összecsukása</string>
+	<string name="belvedere_fam_desc_expand_fam">A lebegő műveleti menü kibontása</string>
+	<string name="belvedere_fam_desc_open_gallery">Fájl importálása a galériából</string>
+	<string name="belvedere_fam_desc_open_google_photos">Kép importálása a Google Fotókból</string>
+	<string name="belvedere_image_stream_file_too_large">Túl nagy a fájl</string>
+	<string name="belvedere_image_stream_title">Fotóalbum</string>
+	<string name="belvedere_image_stream_unknown_app">Ismeretlen</string>
+	<string name="belvedere_permissions_denied">Engedélyek megtagadva</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Kép importálása a kamerából</string>
+	<string name="belvedere_stream_item_select_file_desc">%s nevű fájl kiválasztása</string>
+	<string name="belvedere_stream_item_select_image_desc">%s nevű kép kiválasztása</string>
+	<string name="belvedere_stream_item_unselect_file_desc">%s nevű fájl kiválasztásának megszüntetése</string>
+	<string name="belvedere_stream_item_unselect_image_desc">%s nevű kép kiválasztásának megszüntetése</string>
+	<string name="belvedere_toolbar_desc_collapse">A képválasztó bezárása</string>
 </resources>
