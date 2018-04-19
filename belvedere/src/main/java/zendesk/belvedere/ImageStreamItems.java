@@ -173,9 +173,9 @@ class ImageStreamItems {
             container.setContentDescriptionStrings(unselect, select);
 
             if(dimensions != null) {
-                imageView.showImage(Picasso.with(context), mediaResult.getOriginalUri(), dimensions);
+                imageView.showImage(Picasso.get(), mediaResult.getOriginalUri(), dimensions);
             } else {
-                imageView.showImage(Picasso.with(context), mediaResult.getOriginalUri(), mediaResult.getWidth(), mediaResult.getHeight(), new FixedWidthImageView.DimensionsCallback() {
+                imageView.showImage(Picasso.get(), mediaResult.getOriginalUri(), mediaResult.getWidth(), mediaResult.getHeight(), new FixedWidthImageView.DimensionsCallback() {
                     @Override
                     public void onImageDimensionsFound(FixedWidthImageView.CalculatedDimensions dimensions) {
                         StreamItemImage.this.dimensions = dimensions;
