@@ -9,7 +9,7 @@ ext {
     minSdkVersionUi = 16
 
     supportLibVersion = "27.1.0"
-    versionName = "2.2.0-SNAPSHOT"
+    versionName = "2.1.0-PCOMP"
 
     buildSettings = [
             localBuild : true,
