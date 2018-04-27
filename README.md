@@ -189,6 +189,14 @@ Intent shareIntent = Belvedere.from(this).getShareIntent(mediaResult.getUri(), m
 startActivity(shareIntent);
 ```
 
+### Picasso Compatibility
+Belvedere uses [Picasso 2.5.2](https://github.com/square/picasso). The latest release of Picasso, 
+2.71828, is incompatible with 2.5.2. In order to support users who have upgraded to 2.71828, we have 
+published Belvedere `2.1.0-PCOMP`, which uses 2.71828. Picasso 3.0.0 [is expected to use a new package 
+name and group ID](https://github.com/square/picasso/issues/1809), which will avoid conflicts. Until 
+then, we may be required to maintain a compatibility build like 2.1.0-PCOMP.
+- If you use Picasso 2.5.2, use Belvedere 2.1.0.
+- If you use Picasso 2.71828, use Belvedere 2.1.0-PCOMP. 
 
 ### Contributing
 
