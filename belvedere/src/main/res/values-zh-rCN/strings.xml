@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<string name="belvedere_dialog_camera">相机</string>
-	<string name="belvedere_dialog_gallery">库</string>
+	<string name="belvedere_dialog_gallery">图库</string>
 	<string name="belvedere_fam_desc_collapse_fam">折叠浮动操作菜单</string>
 	<string name="belvedere_fam_desc_expand_fam">展开浮动操作菜单</string>
-	<string name="belvedere_fam_desc_open_gallery">从库中导入文件</string>
+	<string name="belvedere_fam_desc_open_gallery">从图库中导入文件</string>
 	<string name="belvedere_fam_desc_open_google_photos">从 Google Photos 导入图像</string>
 	<string name="belvedere_image_stream_file_too_large">文件过大</string>
 	<string name="belvedere_image_stream_title">照片库</string>
