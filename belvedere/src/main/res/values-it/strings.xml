@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<string name="belvedere_dialog_camera">Fotocamera</string>
-	<string name="belvedere_dialog_gallery">Galleria</string>
+	<string name="belvedere_dialog_gallery">Raccolta</string>
 	<string name="belvedere_fam_desc_collapse_fam">Comprimi menu di azioni mobile</string>
 	<string name="belvedere_fam_desc_expand_fam">Espandi menu di azioni mobile</string>
-	<string name="belvedere_fam_desc_open_gallery">Importa file da galleria</string>
+	<string name="belvedere_fam_desc_open_gallery">Importa file da raccolta</string>
 	<string name="belvedere_fam_desc_open_google_photos">Importa immagine da Google Foto</string>
 	<string name="belvedere_image_stream_file_too_large">File troppo grande</string>
 	<string name="belvedere_image_stream_title">Libreria foto</string>
