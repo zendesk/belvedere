@@ -35,7 +35,9 @@ dependencies {
     implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
     implementation group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
     implementation group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
-    implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.71828'
+
+    // noinspection GradleDependency: Breaking changes after Picasso 2.5.2 can cause crashes/compile errors in apps
+    implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
 
     // Unit tests
     testImplementation group: 'junit', name: 'junit', version: '4.12'

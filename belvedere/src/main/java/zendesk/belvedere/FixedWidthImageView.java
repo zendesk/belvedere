@@ -185,7 +185,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
     }
 
     @Override
-    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+    public void onBitmapFailed(Drawable errorDrawable) {
         // intentionally empty
     }
 
