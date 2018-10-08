@@ -3,8 +3,8 @@ apply from: 'scripts/gradle/zendesk-repos.gradle'
 apply from: 'scripts/gradle/zendesk-aggregate-javadocs.gradle'
 
 ext {
-    compileSdkVersion = 27
-    targetSdkVersion = 27
+    compileSdkVersion = 28
+    targetSdkVersion = 28
     minSdkVersionCore = 16
     minSdkVersionUi = 16
 
@@ -19,7 +19,7 @@ ext {
 buildscript {
 
     ext {
-        kotlinVersion = "1.2.51"
+        kotlinVersion = "1.2.71"
     }
 
     repositories {
@@ -28,7 +28,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlinVersion}"
     }
 }

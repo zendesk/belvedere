@@ -18,7 +18,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName rootProject.ext.versionName
-
         consumerProguardFiles 'consumer-proguard.pro'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -35,13 +34,11 @@ dependencies {
     implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
     implementation group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
     implementation group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
-
-    // noinspection GradleDependency: Breaking changes after Picasso 2.5.2 can cause crashes/compile errors in apps
-    implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
+    implementation group: 'com.sebchlan.picassocompat', name: 'picassocompat', version: '1.1.0'
 
     // Unit tests
     testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.19.1'
     testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: rootProject.ext.kotlinVersion
-    testImplementation group: 'com.google.truth', name: 'truth', version: '0.36'
+    testImplementation group: 'com.google.truth', name: 'truth', version: '0.39'
 }

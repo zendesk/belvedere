@@ -10,8 +10,8 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.sebchlan.picassocompat.PicassoCompat;
+import com.sebchlan.picassocompat.TargetCompat;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,7 +21,7 @@ import zendesk.belvedere.ui.R;
  * For internal use only.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-public class FixedWidthImageView extends AppCompatImageView implements Target {
+public class FixedWidthImageView extends AppCompatImageView implements TargetCompat {
 
     private static final String LOG_TAG = "FixedWidthImageView";
 
@@ -32,7 +32,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
     private int rawImageHeight;
 
     private Uri uri = null;
-    private Picasso picasso;
+    private PicassoCompat picasso;
 
     private final AtomicBoolean imageWaiting = new AtomicBoolean(false);
     private DimensionsCallback dimensionsCallback;
@@ -56,7 +56,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
         viewHeight = getResources().getDimensionPixelOffset(R.dimen.belvedere_image_stream_image_height);
     }
 
-    public void showImage(final Picasso picasso, final Uri uri, CalculatedDimensions dimensions) {
+    public void showImage(final PicassoCompat picasso, final Uri uri, CalculatedDimensions dimensions) {
 
         if(uri == null || uri.equals(this.uri)) {
             L.d(LOG_TAG, "Image already loaded. " + uri);
@@ -65,7 +65,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
 
         // cancel running picasso operations
         if(this.picasso != null) {
-            this.picasso.cancelRequest((Target) this);
+            this.picasso.cancelRequest((TargetCompat) this);
             this.picasso.cancelRequest((ImageView) this);
         }
 
@@ -79,7 +79,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
         startImageLoading(picasso, uri, viewWidth, rawImageWidth, rawImageHeight);
     }
 
-    public void showImage(final Picasso picasso, final Uri uri, long rawImageWidth, long rawImageHeight,
+    public void showImage(final PicassoCompat picasso, final Uri uri, long rawImageWidth, long rawImageHeight,
                           DimensionsCallback dimensionsCallback) {
 
         if(uri == null || uri.equals(this.uri)) {
@@ -89,7 +89,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
 
         // cancel running picasso operations
         if(this.picasso != null) {
-            this.picasso.cancelRequest((Target) this);
+            this.picasso.cancelRequest((TargetCompat) this);
             this.picasso.cancelRequest((ImageView) this);
         }
 
@@ -140,18 +140,18 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
         return Pair.create(width, (int)(imageHeight * scaleFactor));
     }
 
-    private void startImageLoading(Picasso picasso, Uri uri, int viewWidth, int rawImageWidth, int rawImageHeight) {
+    private void startImageLoading(PicassoCompat picasso, Uri uri, int viewWidth, int rawImageWidth, int rawImageHeight) {
         L.d(LOG_TAG, "Start loading image: " + viewWidth + " " + rawImageWidth + " " + rawImageHeight);
         if(rawImageWidth > 0 && rawImageHeight > 0) {
             final Pair<Integer, Integer> scaledDimensions =
                     scale(viewWidth, rawImageWidth, rawImageHeight);
             loadImage(picasso, scaledDimensions.first, scaledDimensions.second, uri);
         } else {
-            picasso.load(uri).into((Target) this);
+            picasso.load(uri).into((TargetCompat) this);
         }
     }
 
-    private void loadImage(Picasso picasso, int scaledImageWidth, int scaledImageHeight, Uri uri) {
+    private void loadImage(PicassoCompat picasso, int scaledImageWidth, int scaledImageHeight, Uri uri) {
         // the image height is known. update the view
         this.viewHeight = scaledImageHeight;
 
@@ -176,7 +176,7 @@ public class FixedWidthImageView extends AppCompatImageView implements Target {
     }
 
     @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+    public void onBitmapLoaded(Bitmap bitmap, PicassoCompat.LoadedFrom from) {
         this.rawImageHeight = bitmap.getHeight();
         this.rawImageWidth = bitmap.getWidth();
 

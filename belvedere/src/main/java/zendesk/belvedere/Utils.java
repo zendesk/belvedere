@@ -17,7 +17,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Transformation;
+import com.sebchlan.picassocompat.TransformationCompat;
 
 import java.util.Locale;
 
@@ -82,12 +82,12 @@ class Utils {
         }
     }
 
-    static Transformation roundTransformation(Context context, int radiusResId) {
+    static TransformationCompat roundTransformation(Context context, int radiusResId) {
         final int radius = context.getResources().getDimensionPixelOffset(radiusResId);
         return new RoundedTransformation(radius, 0);
     }
 
-    private static class RoundedTransformation implements Transformation {
+    private static class RoundedTransformation implements TransformationCompat {
 
         private final int radius, margin;
 
