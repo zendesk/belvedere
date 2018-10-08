@@ -34,9 +34,10 @@ dependencies {
     implementation group: 'com.android.support', name: 'palette-v7', version: rootProject.ext.supportLibVersion
     implementation group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
 
-    implementation group: 'com.jakewharton', name: 'butterknife', version: '8.5.1'
-    annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.5.1'
+    implementation group: 'com.jakewharton', name: 'butterknife', version: '8.8.1'
+    annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.8.1'
 
+    // noinspection GradleDependency: Breaking changes after Picasso 2.5.2 can cause crashes/compile errors in apps
     implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
 
     if (useLocalDependency()) {
