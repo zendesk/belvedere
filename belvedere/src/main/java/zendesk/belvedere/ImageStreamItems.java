@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.sebchlan.picassocompat.PicassoBridge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,9 +173,9 @@ class ImageStreamItems {
             container.setContentDescriptionStrings(unselect, select);
 
             if(dimensions != null) {
-                imageView.showImage(Picasso.with(context), mediaResult.getOriginalUri(), dimensions);
+                imageView.showImage(PicassoBridge.init(context), mediaResult.getOriginalUri(), dimensions);
             } else {
-                imageView.showImage(Picasso.with(context), mediaResult.getOriginalUri(), mediaResult.getWidth(), mediaResult.getHeight(), new FixedWidthImageView.DimensionsCallback() {
+                imageView.showImage(PicassoBridge.init(context), mediaResult.getOriginalUri(), mediaResult.getWidth(), mediaResult.getHeight(), new FixedWidthImageView.DimensionsCallback() {
                     @Override
                     public void onImageDimensionsFound(FixedWidthImageView.CalculatedDimensions dimensions) {
                         StreamItemImage.this.dimensions = dimensions;
