@@ -3,7 +3,7 @@ package zendesk.belvedere;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -28,11 +28,11 @@ android {
 }
 
 dependencies {
-    implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
-    implementation group: 'com.android.support', name: 'cardview-v7', version: rootProject.ext.supportLibVersion
-    implementation group: 'com.android.support', name: 'gridlayout-v7', version: rootProject.ext.supportLibVersion
-    implementation group: 'com.android.support', name: 'palette-v7', version: rootProject.ext.supportLibVersion
-    implementation group: 'com.android.support', name: 'design', version: rootProject.ext.supportLibVersion
+    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.0.0'
+    implementation group: 'androidx.cardview', name: 'cardview', version: '1.0.0'
+    implementation group: 'androidx.gridlayout', name: 'gridlayout', version: '1.0.0'
+    implementation group: 'androidx.palette', name: 'palette', version: '1.0.0'
+    implementation group: 'com.google.android.material', name: 'material', version: '1.0.0'
 
     implementation group: 'com.jakewharton', name: 'butterknife', version: '8.8.1'
     annotationProcessor group: 'com.jakewharton', name: 'butterknife-compiler', version: '8.8.1'

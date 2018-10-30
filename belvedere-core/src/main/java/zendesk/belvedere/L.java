@@ -1,7 +1,7 @@
 package zendesk.belvedere;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 class L {
