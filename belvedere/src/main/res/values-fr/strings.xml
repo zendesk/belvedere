@@ -9,7 +9,7 @@
 	<string name="belvedere_image_stream_file_too_large">Fichier trop volumineux</string>
 	<string name="belvedere_image_stream_title">Bibliothèque de photos</string>
 	<string name="belvedere_image_stream_unknown_app">Inconnu</string>
-	<string name="belvedere_permissions_denied">Autorisations refusées</string>
+	<string name="belvedere_permissions_denied">Permissions refusées</string>
 	<string name="belvedere_stream_item_camera_tile_desc">Importer l’image à partir de l’appareil photo</string>
 	<string name="belvedere_stream_item_select_file_desc">Sélectionner le fichier %s</string>
 	<string name="belvedere_stream_item_select_image_desc">Sélectionner l’image %s</string>
