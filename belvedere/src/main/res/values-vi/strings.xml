@@ -4,7 +4,7 @@
 	<string name="belvedere_dialog_gallery">Thư viện</string>
 	<string name="belvedere_fam_desc_collapse_fam">Thu gọn menu thao tác động</string>
 	<string name="belvedere_fam_desc_expand_fam">Mở rộng menu thao tác động</string>
-	<string name="belvedere_fam_desc_open_gallery">Nhập tập tin từ thư viện</string>
+	<string name="belvedere_fam_desc_open_gallery">Nhập tập tin từ thư viện ảnh</string>
 	<string name="belvedere_fam_desc_open_google_photos">Nhập ảnh từ Google Photos</string>
 	<string name="belvedere_image_stream_file_too_large">Tập tin quá lớn</string>
 	<string name="belvedere_image_stream_title">Thư viện ảnh</string>
