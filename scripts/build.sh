@@ -20,7 +20,7 @@ boxOut(){
 
 acceptLicenses() {
     mkdir -p ${ANDROID_HOME}licenses
-    echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" > ${ANDROID_HOME}licenses/android-sdk-license
+    echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > ${ANDROID_HOME}licenses/android-sdk-license
 }
 
 buildBelvedere() {
