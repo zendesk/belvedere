@@ -54,6 +54,7 @@ class Storage {
             String packageName = resolveInfo.activityInfo.packageName;
             context.grantUriPermission(packageName, uri, permission);
         }
+        intent.addFlags(permission);
     }
 
     /**

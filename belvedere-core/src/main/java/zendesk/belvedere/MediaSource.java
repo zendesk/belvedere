@@ -167,8 +167,8 @@ class MediaSource {
                 // path in registry
                 L.d(Belvedere.LOG_TAG, String.format(Locale.US, "Parsing activity result - Camera - Ok: %s", (resultCode == Activity.RESULT_OK)));
 
-                storage.revokePermissionsFromUri(context, belvedereResult.getUri(),
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                int permission = Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                storage.revokePermissionsFromUri(context, belvedereResult.getUri(), permission);
 
                 if(resultCode == Activity.RESULT_OK){
                     final MediaResult r = Storage.getMediaResultForUri(context, belvedereResult.getUri());
@@ -265,8 +265,8 @@ class MediaSource {
 
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-        storage.grantPermissionsForUri(context, intent, uriForFile,
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        int permission = Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION;
+        storage.grantPermissionsForUri(context, intent, uriForFile, permission);
 
         /*
             https://code.google.com/p/android/issues/detail?id=188073&q=label%3APriority-Medium&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars&start=100
