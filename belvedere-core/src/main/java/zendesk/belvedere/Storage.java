@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -49,12 +50,15 @@ class Storage {
      * @param permission Permission that should be granted to the Apps, opened by the provided Intent
      */
     void grantPermissionsForUri(Context context, Intent intent, Uri uri, int permission) {
-        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        for (ResolveInfo resolveInfo : resInfoList) {
-            String packageName = resolveInfo.activityInfo.packageName;
-            context.grantUriPermission(packageName, uri, permission);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            intent.addFlags(permission);
+        } else {
+            List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo resolveInfo : resInfoList) {
+                String packageName = resolveInfo.activityInfo.packageName;
+                context.grantUriPermission(packageName, uri, permission);
+            }
         }
-        intent.addFlags(permission);
     }
 
     /**

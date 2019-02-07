@@ -249,14 +249,14 @@ class MediaSource {
 
         final File imagePath = storage.getFileForCamera(context);
 
-        if(imagePath == null){
+        if (imagePath == null){
             L.w(Belvedere.LOG_TAG, "Camera Intent: Image path is null. There's something wrong with the storage.");
             return null;
         }
 
         final Uri uriForFile = storage.getFileProviderUri(context, imagePath);
 
-        if(uriForFile == null) {
+        if (uriForFile == null) {
             L.w(Belvedere.LOG_TAG, "Camera Intent: Uri to file is null. There's something wrong with the storage or FileProvider configuration.");
             return null;
         }
