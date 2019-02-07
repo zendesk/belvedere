@@ -50,7 +50,7 @@ class Storage {
      * @param permission Permission that should be granted to the Apps, opened by the provided Intent
      */
     void grantPermissionsForUri(Context context, Intent intent, Uri uri, int permission) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             intent.addFlags(permission);
         } else {
             List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
