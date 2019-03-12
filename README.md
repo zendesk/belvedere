@@ -22,7 +22,7 @@ Belvedere gives you the power to easily integrate file selection from third part
 Add Belvedere as a dependency:
 
 ```
-compile ‘com.zendesk.belvedere2:belvedere:2.2.0’
+compile ‘com.zendesk.belvedere2:belvedere:2.2.2’
 ```
 
 ### How to use Belvedere
