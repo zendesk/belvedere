@@ -8,6 +8,7 @@
     <dimen name="belvedere_image_stream_item_radius">2dp</dimen>
     <dimen name="belvedere_image_stream_image_height">220dp</dimen>
     <dimen name="belvedere_fam_item_margin">8dp</dimen>
+    <dimen name="belvedere_dummy_edit_text_size">0dp</dimen>
 
     <!-- Colors -->
     <color name="belvedere_image_stream_status_bar_color">#fff5f5f5</color>
