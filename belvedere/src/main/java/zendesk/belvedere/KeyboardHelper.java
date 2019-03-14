@@ -78,7 +78,9 @@ public class KeyboardHelper extends FrameLayout {
     private KeyboardHelper(@NonNull Activity activity) {
         super(activity);
         this.statusBarHeight = getStatusBarHeight();
-        setLayoutParams(new ViewGroup.LayoutParams(0, 0));
+        int sizeForDummyView = activity.getResources()
+                .getDimensionPixelSize(zendesk.belvedere.ui.R.dimen.belvedere_dummy_edit_text_size);
+        setLayoutParams(new ViewGroup.LayoutParams(sizeForDummyView, sizeForDummyView));
 
         inputTrap = new EditText(activity);
         inputTrap.setFocusable(true);
