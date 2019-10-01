@@ -1,7 +1,5 @@
-sudo: required
-dist: trusty
 language: android
-group: deprecated-2017Q3
+dist: trusty
 jdk:
 - oraclejdk8
 before_cache:
@@ -13,9 +11,9 @@ cache:
 android:
   components:
   - tools
-  - android-27
+  - android-29
   - platform-tools
-  - build-tools-26.0.2
+  - build-tools-29.0.2
   - extra-android-m2repository
   licenses:
   - android-sdk-license-[0-9a-f]{8}

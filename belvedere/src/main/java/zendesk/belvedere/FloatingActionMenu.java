@@ -112,7 +112,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
                 Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.belvedere_show_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
                 a.setStartOffset(startOffset);
-                menuItem.first.setVisibility(VISIBLE);
+                changeVisibility(menuItem.first, VISIBLE);
                 menuItem.first.startAnimation(a);
 
                 startOffset += animationDelaySubsequentItem;
@@ -129,7 +129,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
                 a.setAnimationListener(new AnimationListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        menuItem.first.setVisibility(INVISIBLE);
+                        changeVisibility(menuItem.first, INVISIBLE);
                     }
                 });
                 menuItem.first.startAnimation(a);
@@ -179,7 +179,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         @Override
         public void onAnimationEnd(Animation animation) {
             for (Pair<FloatingActionButton, OnClickListener> menuItem : menuItems) {
-                menuItem.first.setVisibility(GONE);
+                changeVisibility(menuItem.first, GONE);
             }
         }
     };
@@ -190,6 +190,12 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
         DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(context, colorRes));
         return wrappedDrawable;
+    }
+
+    private void changeVisibility(@Nullable View view, int visibility) {
+        if (view != null) {
+            view.setVisibility(visibility);
+        }
     }
 
     private abstract class AnimationListenerAdapter implements Animation.AnimationListener {
