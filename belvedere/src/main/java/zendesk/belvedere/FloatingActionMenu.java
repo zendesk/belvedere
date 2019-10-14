@@ -76,6 +76,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             setOrientation(LinearLayout.VERTICAL);
             setOnClickListener(this);
             fab = findViewById(R.id.floating_action_menu_fab);
+            fab.setOnClickListener(this);
             layoutInflater = LayoutInflater.from(context);
             menuItems = new ArrayList<>();
 
