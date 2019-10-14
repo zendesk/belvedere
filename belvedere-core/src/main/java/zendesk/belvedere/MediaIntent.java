@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Model for representing a
  */
@@ -70,8 +73,6 @@ public class MediaIntent implements Parcelable {
      * Get the target of the intent.
      * <br />
      * Either {@link #TARGET_CAMERA} or {@link #TARGET_DOCUMENT}
-     *
-     * @return
      */
     public int getTarget() {
         return target;
@@ -87,12 +88,14 @@ public class MediaIntent implements Parcelable {
         private final int requestCode;
 
         String contentType;
+        List<String> additionalTypes;
         boolean allowMultiple;
 
         DocumentIntentBuilder(int requestCode, MediaSource mediaSource) {
             this.mediaSource = mediaSource;
             this.requestCode = requestCode;
             this.contentType = "*/*";
+            this.additionalTypes = new ArrayList<>();
             this.allowMultiple = false;
         }
 
@@ -100,14 +103,37 @@ public class MediaIntent implements Parcelable {
          * Create the {@link MediaIntent}
          */
         public MediaIntent build() {
-            return mediaSource.getGalleryIntent(requestCode, contentType, allowMultiple);
+            return mediaSource.getGalleryIntent(requestCode, contentType, allowMultiple, additionalTypes);
         }
 
         /**
-         * Restrict the selection to a content type
+         * Restrict the selection to a content type. Only one of the following should be called as
+         * they are mutually exclusive:
+         *
+         * <li>{@link DocumentIntentBuilder#contentType(String)}</li>
+         * <li>{@link DocumentIntentBuilder#contentTypes(List)}</li>
          */
         public DocumentIntentBuilder contentType(String contentType) {
             this.contentType = contentType;
+            this.additionalTypes = new ArrayList<>();
+            return this;
+        }
+
+        /**
+         * Restrict the selection to the specified content types. This can be used when allowing the
+         * selection of files from a disjoint set (e.g. "image&#47;*" and "text&#47;*"), in which
+         * case the content type is set to "*&#47;*".
+         * Only one of the following should be called as they are mutually exclusive:
+         *
+         * <li>{@link DocumentIntentBuilder#contentType(String)}</li>
+         * <li>{@link DocumentIntentBuilder#contentTypes(List)}</li>
+         *
+         * @param contentTypes the allowed content types
+         */
+        public DocumentIntentBuilder contentTypes(List<String> contentTypes) {
+            this.contentType = "*/*";
+            this.additionalTypes = new ArrayList<>();
+            this.additionalTypes.addAll(contentTypes);
             return this;
         }
 

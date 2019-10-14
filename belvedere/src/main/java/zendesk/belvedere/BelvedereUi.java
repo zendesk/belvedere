@@ -89,9 +89,13 @@ public class BelvedereUi {
         }
 
         /**
-         * Allow the user to select files from the system.
+         * Allow the user to select files of the specified content type from the system. Only one
+         * of the following should be called as they are mutually exclusive:
          *
-         * @param contentType restrict the files to a content type.
+         * <li>{@link ImageStreamBuilder#withDocumentIntent(String, boolean)}</li>
+         * <li>{@link ImageStreamBuilder#withDocumentIntent(List, boolean)}</li>
+         *
+         * @param contentType restrict the files to a content type
          * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file picker
          */
         public ImageStreamBuilder withDocumentIntent(@NonNull String contentType, boolean allowMultiple) {
@@ -99,6 +103,27 @@ public class BelvedereUi {
                     .document()
                     .allowMultiple(allowMultiple)
                     .contentType(contentType)
+                    .build();
+            this.mediaIntents.add(mediaIntent);
+            return this;
+        }
+
+        /**
+         * Allow the user to select files of any specified content type from the system. This can
+         * be used when allowing the selection of files from a disjoint set (e.g. "image&#47;*" and
+         * "text&#47;*"). Only one of the following should be called as they are mutually exclusive:
+         *
+         * <li>{@link ImageStreamBuilder#withDocumentIntent(String, boolean)}</li>
+         * <li>{@link ImageStreamBuilder#withDocumentIntent(List, boolean)}</li>
+         *
+         * @param contentTypes restrict the files to the content types
+         * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file picker
+         */
+        public ImageStreamBuilder withDocumentIntent(@NonNull List<String> contentTypes, boolean allowMultiple) {
+            final MediaIntent mediaIntent = Belvedere.from(context)
+                    .document()
+                    .allowMultiple(allowMultiple)
+                    .contentTypes(contentTypes)
                     .build();
             this.mediaIntents.add(mediaIntent);
             return this;

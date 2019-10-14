@@ -39,11 +39,19 @@ class MediaSource {
      * an installed gallery..
      *
      * @return An {@link MediaIntent} or null if this action isn't supported by
-     *      the system.
+     * the system.
      */
-    MediaIntent getGalleryIntent(int requestCode, String contentType, boolean allowMultiple){
-        if(hasDocumentApp(context)) {
-            return new MediaIntent(requestCode, getDocumentAndroidIntent(contentType, allowMultiple), null, true, MediaIntent.TARGET_DOCUMENT);
+    MediaIntent getGalleryIntent(int requestCode,
+                                 String contentType,
+                                 boolean allowMultiple,
+                                 List<String> additionalTypes) {
+        if (hasDocumentApp(context)) {
+            return new MediaIntent(
+                    requestCode,
+                    getDocumentAndroidIntent(contentType, allowMultiple, additionalTypes),
+                    null,
+                    true,
+                    MediaIntent.TARGET_DOCUMENT);
         }
         return MediaIntent.notAvailable();
     }
@@ -121,7 +129,7 @@ class MediaSource {
      * @return True if we have permissions to get a picture from a gallery, false if not allowed
      */
     private boolean hasDocumentApp(Context context){
-        return isIntentResolvable(getDocumentAndroidIntent("*/*", false), context);
+        return isIntentResolvable(getDocumentAndroidIntent("*/*", false, new ArrayList<String>()), context);
     }
 
     /**
@@ -296,10 +304,10 @@ class MediaSource {
      * @return An {@link MediaIntent}
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    private Intent getDocumentAndroidIntent(String contentType, boolean allowMultiple){
+    private Intent getDocumentAndroidIntent(String contentType, boolean allowMultiple, List<String> additionalTypes) {
         final Intent intent;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             L.d(Belvedere.LOG_TAG, "Gallery Intent, using 'ACTION_OPEN_DOCUMENT'");
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         } else {
@@ -310,9 +318,13 @@ class MediaSource {
         intent.setType(contentType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             // if possible, allow the user to pick multiple images
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        }
+
+        if (additionalTypes != null && !additionalTypes.isEmpty()) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, additionalTypes.toArray(new String[0]));
         }
 
         return intent;
