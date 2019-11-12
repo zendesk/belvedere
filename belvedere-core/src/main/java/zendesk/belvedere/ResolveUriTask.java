@@ -39,7 +39,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
         resolveUriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, uris);
     }
 
-    private final WeakReference<Callback<List<MediaResult>>> callback;
+    private Callback<List<MediaResult>> callback;
     private final Context context;
     private final Storage storage;
     private final String subDirectory;
@@ -49,7 +49,7 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
         this.context = context;
         this.storage = storage;
         this.subDirectory = subDirectory;
-        this.callback = new WeakReference<>(callback);
+        this.callback = callback;
     }
 
     @Override
@@ -119,9 +119,10 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
     @Override
     protected void onPostExecute(List<MediaResult> resolvedUris) {
         super.onPostExecute(resolvedUris);
-        final Callback<List<MediaResult>> callback = this.callback.get();
+
         if (callback != null) {
             callback.internalSuccess(resolvedUris);
+            callback = null;
         } else {
             L.w(Belvedere.LOG_TAG, "Callback null");
         }
