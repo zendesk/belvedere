@@ -86,6 +86,10 @@ public class TestActivity extends AppCompatActivity {
 
     private ImageStream imageStream;
     private Button selectAttachment;
+    
+    // Make sure to manage a strong reference to the callback because Belvedere uses
+    // a WeakReference to avoid memory leaks
+    private Callback<List<MediaResult>> callback; 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,12 +111,15 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
+        
+        callback = new Callback<List<MediaResult>> () {
             @Override
             public void success(List<MediaResult> result) {
-                // Handle Selected files
+                // Handle selected files                
             }
-        });
+        };
+        
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, callback);
     }
 }
 ```
@@ -127,6 +134,10 @@ public class TestActivity extends AppCompatActivity {
     private ImageStream imageStream;
     private Button selectAttachmentFromCamera;
     private Button selectAttachmentFromDocuments;
+    
+    // Make sure to manage a strong reference to the callback because Belvedere uses
+    // a WeakReference to avoid memory leaks
+    private Callback<List<MediaResult>> callback; 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -155,12 +166,15 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
+        
+        callback = new Callback<List<MediaResult>> () {
             @Override
             public void success(List<MediaResult> result) {
-                // Handle Selected files
+                // Handle selected files                
             }
-        });
+        };
+        
+        Belvedere.from(this).getFilesFromActivityOnResult(requestCode, resultCode, data, callback);
     }
 }
 ```
