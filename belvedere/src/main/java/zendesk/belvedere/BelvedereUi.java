@@ -57,7 +57,7 @@ public class BelvedereUi {
             supportFragmentManager
                     .beginTransaction()
                     .add(popupBackend, FRAGMENT_TAG_POPUP)
-                    .commit();
+                    .commitNow();
         }
 
         popupBackend.setKeyboardHelper(KeyboardHelper.inject(activity));
