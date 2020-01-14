@@ -77,8 +77,6 @@ public class ImageStream extends Fragment {
                 }
 
                 notifyImageSelected(filteredMediaResult);
-
-                cancel();
             }
         };
 
