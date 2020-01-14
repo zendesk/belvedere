@@ -30,6 +30,8 @@ public class ImageStream extends Fragment {
 
     private PermissionManager permissionManager;
 
+    private Callback<List<MediaResult>> callback;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +61,8 @@ public class ImageStream extends Fragment {
     @Override
     public void onActivityResult(int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Belvedere.from(this.getContext()).getFilesFromActivityOnResult(requestCode, resultCode, data, new Callback<List<MediaResult>>() {
+
+        callback = new Callback<List<MediaResult>>() {
             @Override
             public void success(List<MediaResult> result) {
                 List<MediaResult> filteredMediaResult = new ArrayList<>(result.size());
@@ -75,7 +78,9 @@ public class ImageStream extends Fragment {
 
                 notifyImageSelected(filteredMediaResult);
             }
-        }, false);
+        };
+
+        Belvedere.from(this.getContext()).getFilesFromActivityOnResult(requestCode, resultCode, data, callback, false);
     }
 
     void setKeyboardHelper(KeyboardHelper keyboardHelper) {
@@ -117,6 +122,8 @@ public class ImageStream extends Fragment {
     }
 
     void notifyDismissed() {
+        callback = null; // Prevent memory leak of Callback
+
         for(WeakReference<Listener> ref : imageStreamListener) {
             final Listener listener = ref.get();
             if(listener != null) {
