@@ -3,7 +3,8 @@ package zendesk.belvedere;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Set of helpers around Android-M permissions.

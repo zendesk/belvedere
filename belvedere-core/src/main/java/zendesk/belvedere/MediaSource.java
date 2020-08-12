@@ -11,7 +11,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.v4.util.Pair;
+
+import androidx.core.util.Pair;
 
 import java.io.File;
 import java.util.ArrayList;

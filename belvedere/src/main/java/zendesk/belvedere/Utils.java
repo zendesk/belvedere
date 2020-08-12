@@ -11,13 +11,14 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.sebchlan.picassocompat.TransformationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
+import com.squareup.picasso.Transformation;
 
 import java.util.Locale;
 
@@ -55,14 +56,12 @@ class Utils {
     }
 
     static void internalSetTint(ImageView imageView, int color) {
-        if(imageView == null) {
+        if(imageView == null || imageView.getDrawable() == null) {
             return;
         }
 
         Drawable d = DrawableCompat.wrap(imageView.getDrawable());
-        if(d != null) {
-            DrawableCompat.setTint(d.mutate(), color);
-        }
+        DrawableCompat.setTint(d.mutate(), color);
 
         imageView.invalidate();
     }
@@ -82,12 +81,12 @@ class Utils {
         }
     }
 
-    static TransformationCompat roundTransformation(Context context, int radiusResId) {
+    static Transformation roundTransformation(Context context, int radiusResId) {
         final int radius = context.getResources().getDimensionPixelOffset(radiusResId);
         return new RoundedTransformation(radius, 0);
     }
 
-    private static class RoundedTransformation implements TransformationCompat {
+    private static class RoundedTransformation implements Transformation {
 
         private final int radius, margin;
 

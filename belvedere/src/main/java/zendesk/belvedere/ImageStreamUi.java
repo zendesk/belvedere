@@ -11,16 +11,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.StringRes;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,6 +20,18 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.List;
 import java.util.Locale;
@@ -378,12 +380,12 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         }
 
         @Override
-        public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+        public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull View child, View dependency) {
             return dependency.getId() == R.id.bottom_sheet;
         }
 
         @Override
-        public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
+        public boolean onDependentViewChanged(CoordinatorLayout parent, @NonNull View child, View dependency) {
             int scrollArea = parent.getHeight() - bottomSheetBehavior.getPeekHeight();
             float scrollPosition = (parent.getHeight() - dependency.getY() - bottomSheetBehavior.getPeekHeight()) / scrollArea;
 
