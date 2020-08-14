@@ -3,23 +3,19 @@ package zendesk.belvedere;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.RequiresApi;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 class ImageStreamService {
 
-    private final static String[] PROJECTION = new String[]{
-            MediaStore.Images.ImageColumns._ID,
-            MediaStore.MediaColumns.DISPLAY_NAME,
-            MediaStore.MediaColumns.SIZE,
-            MediaStore.MediaColumns.WIDTH,
-            MediaStore.MediaColumns.HEIGHT
-    };
+
 
     private final Context context;
 
@@ -27,12 +23,13 @@ class ImageStreamService {
         this.context = context.getApplicationContext();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     List<MediaResult> queryRecentImages(int count) {
         final List<MediaResult> mediaResults = new ArrayList<>();
 
-        final String order = String.format(Locale.US, "%s DESC LIMIT %s", MediaStore.Images.ImageColumns.DATE_TAKEN, count);
-        final Cursor cursor = context.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PROJECTION, null, null, order);
+        final Cursor cursor = new ImageStreamCursorProvider(
+                context,
+                new DefaultBuildVersionProvider()).getCursor(count);
 
         try {
             if (cursor != null) {
@@ -68,5 +65,6 @@ class ImageStreamService {
     boolean isAppAvailable(String packageName) {
         return Utils.isAppAvailable(packageName, context);
     }
+
 
 }
