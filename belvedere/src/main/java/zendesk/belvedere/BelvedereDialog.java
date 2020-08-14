@@ -3,13 +3,6 @@ package zendesk.belvedere;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +12,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = new PermissionStorage(getContext());
+        preferences = new PermissionStorage(requireContext());
         if (savedInstanceState != null) {
             waitingForPermission = savedInstanceState.getParcelable(STATE_WAITING_FOR_PERMISSION);
         }
@@ -109,7 +110,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(STATE_WAITING_FOR_PERMISSION, waitingForPermission);
     }
@@ -147,7 +148,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             }, intents);
 
         } else {
-            if (getFragmentManager() != null) {
+            if (isAdded()) {
                 dismiss();
             }
         }
@@ -182,7 +183,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     }
 
     private List<MediaIntent> getMediaIntents() {
-        List<MediaIntent> intents = BelvedereUi.getUiConfig(getArguments()).getIntents();
+        List<MediaIntent> intents = BelvedereUi.getUiConfig(requireArguments()).getIntents();
         List<MediaIntent> filter = new ArrayList<>();
         for (MediaIntent belvedereIntent : intents) {
             if (TextUtils.isEmpty(belvedereIntent.getPermission())
@@ -204,6 +205,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
             this.context = context;
         }
 
+        @NonNull
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             View row = convertView;

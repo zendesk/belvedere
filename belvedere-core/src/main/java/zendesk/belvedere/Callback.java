@@ -3,7 +3,8 @@ package zendesk.belvedere;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * Simple Callback used to deliver results asynchronously.

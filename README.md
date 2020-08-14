@@ -204,9 +204,7 @@ startActivity(shareIntent);
 ```
 
 ### Picasso Compatibility
-Belvedere uses [Picasso Compat](https://github.com/schlan/picassocompat) which provides compatibility
-between Picasso 2.5.2 and Picasso 2.71828. This allows us to support both versions with needing to release
-a `-PCOMP` version to support users of differing versions.
+Since version 3.0.0 Belvedere requires Picasso 2.8 or higher because of the migration to AndroidX.
 
 
 ### Contributing
@@ -233,4 +231,3 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 ```
-
