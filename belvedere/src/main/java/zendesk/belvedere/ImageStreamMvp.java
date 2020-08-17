@@ -8,13 +8,6 @@ interface ImageStreamMvp {
 
     interface Model {
 
-        /**
-         * Gets a list of the latest images. This API targets Android Q because of a difference
-         * in how media queries are handled in newer Android versions. It will work on all API
-         * levels.
-         *
-         * @return A list of the latest images
-         */
         List<MediaResult> getLatestImages();
 
         boolean hasCameraIntent();
