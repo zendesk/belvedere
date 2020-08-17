@@ -3,9 +3,7 @@ package zendesk.belvedere;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
@@ -48,7 +46,6 @@ class ImageStreamModel implements ImageStreamMvp.Model {
         this.fullScreenOnly = fullScreenOnly;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public List<MediaResult> getLatestImages() {
         final List<MediaResult> mediaResults = imageStreamService.queryRecentImages(MAX_IMAGES);

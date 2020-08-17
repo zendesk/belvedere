@@ -24,15 +24,9 @@ class ImageStreamCursorProviderTests {
 
     private lateinit var cursorProvider: ImageStreamCursorProvider
 
-    private val versionProvider = TestBuildVersionProvider()
-
     @Before
     fun setUp() {
-        versionProvider.versionCode = 0;
-
         `when`(context.contentResolver).thenReturn(contentResolver)
-
-        cursorProvider = ImageStreamCursorProvider(context, versionProvider)
     }
 
     @Test
@@ -57,51 +51,50 @@ class ImageStreamCursorProviderTests {
 
     @Test
     fun `order column is DATE_MODIFIED for android P (API 28)`() {
-        versionProvider.versionCode = 28;
+        cursorProvider = ImageStreamCursorProvider(context, 28)
         assertThat(cursorProvider.orderColumn).isEqualTo(MediaStore.Images.ImageColumns.DATE_MODIFIED)
     }
 
     @Test
     fun `order column is DATE_TAKEN for android Q (API 29)`() {
-        versionProvider.versionCode = 29;
+        cursorProvider = ImageStreamCursorProvider(context, 29)
         assertThat(cursorProvider.orderColumn).isEqualTo(MediaStore.Images.ImageColumns.DATE_TAKEN)
     }
 
     @Test
     fun `order column is DATE_TAKEN for android R (API 30)`() {
-        versionProvider.versionCode = 30;
+        cursorProvider = ImageStreamCursorProvider(context, 30)
         assertThat(cursorProvider.orderColumn).isEqualTo(MediaStore.Images.ImageColumns.DATE_TAKEN)
     }
 
     @Test
     fun `order argument excludes LIMIT clause for android N (API 24 and 25)`() {
-        versionProvider.versionCode = 24
+        cursorProvider = ImageStreamCursorProvider(context, 24)
         assertThat(cursorProvider.getOrderArgument(10, "magic"))
                 .isEqualTo("magic DESC LIMIT 10")
 
-        versionProvider.versionCode = 25
+        cursorProvider = ImageStreamCursorProvider(context, 25)
         assertThat(cursorProvider.getOrderArgument(42, "random"))
                 .isEqualTo("random DESC LIMIT 42")
     }
 
     @Test
     fun `order argument excludes LIMIT clause for android O (API 26)`() {
-        versionProvider.versionCode = 26
+        cursorProvider = ImageStreamCursorProvider(context, 26)
         assertThat(cursorProvider.getOrderArgument(10, "quantum_flux"))
                 .isEqualTo("quantum_flux DESC")
     }
 
     @Test
     fun `order argument excludes LIMIT clause for android R (API 30)`() {
-        versionProvider.versionCode = 30
+        cursorProvider = ImageStreamCursorProvider(context, 30)
         assertThat(cursorProvider.getOrderArgument(10, "capriciousness"))
                 .isEqualTo("capriciousness DESC")
     }
 
     @Test
     fun `content provider is queried with a bundle for android 0 (API 26)`() {
-        versionProvider.versionCode = 26
-
+        cursorProvider = ImageStreamCursorProvider(context, 26)
         cursorProvider.getCursor(5)
 
         verify(context.contentResolver, times(1)).query(
@@ -113,8 +106,7 @@ class ImageStreamCursorProviderTests {
 
     @Test
     fun `content provider is queried without a bundle for android N (API 24 and 25)`() {
-        versionProvider.versionCode = 24
-
+        cursorProvider = ImageStreamCursorProvider(context, 24)
         cursorProvider.getCursor(11)
 
         verify(context.contentResolver, times(1)).query(
@@ -124,8 +116,7 @@ class ImageStreamCursorProviderTests {
                 eq(null),
                 eq("date_modified DESC LIMIT 11"))
 
-        versionProvider.versionCode = 25
-
+        cursorProvider = ImageStreamCursorProvider(context, 25)
         cursorProvider.getCursor(9)
 
         verify(context.contentResolver, times(1)).query(

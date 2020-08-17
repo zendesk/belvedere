@@ -8,14 +8,10 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.List;
 
 class ImageStreamService {
-
-
 
     private final Context context;
 
@@ -23,13 +19,11 @@ class ImageStreamService {
         this.context = context.getApplicationContext();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     List<MediaResult> queryRecentImages(int count) {
         final List<MediaResult> mediaResults = new ArrayList<>();
 
-        final Cursor cursor = new ImageStreamCursorProvider(
-                context,
-                new DefaultBuildVersionProvider()).getCursor(count);
+        final Cursor cursor = new ImageStreamCursorProvider(context, Build.VERSION.SDK_INT)
+                .getCursor(count);
 
         try {
             if (cursor != null) {
@@ -65,6 +59,4 @@ class ImageStreamService {
     boolean isAppAvailable(String packageName) {
         return Utils.isAppAvailable(packageName, context);
     }
-
-
 }

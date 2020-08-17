@@ -42,6 +42,8 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.activity_request_toolbar));
         imageStream = BelvedereUi.install(this);
 
+
+
         listener = new Listener();
         scrollListener = new ScrollListener();
         imageStream.addListener(listener);

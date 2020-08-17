@@ -1,5 +1,6 @@
 package zendesk.belvedere;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -23,17 +24,27 @@ public class ImageStreamCursorProvider {
     };
 
     private final Context context;
-    private final BuildVersionProvider buildVersionProvider;
+    private final int currentApiLevel;
 
-    ImageStreamCursorProvider(Context context, BuildVersionProvider buildVersionProvider) {
+    /**
+     * Constructs an ImageStreamCursorProvider
+     *
+     * @param context A valid context
+     * @param currentApiLevel The API level of the device running this software
+     */
+    ImageStreamCursorProvider(Context context, int currentApiLevel) {
         this.context = context;
-        this.buildVersionProvider = buildVersionProvider;
+        this.currentApiLevel = currentApiLevel;
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+    /**
+     * Gets a cursor containing the maximum number of images to request. Can return null.
+     *
+     * @param count The maximum number of images to request
+     * @return A Cursor containing the images, or null
+     */
+    @SuppressLint("NewApi")
     @Nullable Cursor getCursor(int count) {
-
         if (context == null) {
             return null;
         }
@@ -43,7 +54,7 @@ public class ImageStreamCursorProvider {
 
         Cursor cursor;
 
-        if (buildVersionProvider.currentVersion() >= Build.VERSION_CODES.O) {
+        if (currentApiLevel >= Build.VERSION_CODES.O) {
             Bundle queryArgs = new Bundle();
             queryArgs.putInt(ContentResolver.QUERY_ARG_LIMIT, count);
 
@@ -52,7 +63,6 @@ public class ImageStreamCursorProvider {
                     PROJECTION,
                     queryArgs,
                     null);
-
         } else {
             cursor = context.getContentResolver().query(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -65,17 +75,15 @@ public class ImageStreamCursorProvider {
         return cursor;
     }
 
-
-
     String getOrderArgument(int count, String orderColumn) {
-        return buildVersionProvider.currentVersion() >= Build.VERSION_CODES.O
+        return currentApiLevel >= Build.VERSION_CODES.O
                 ? String.format(Locale.US, "%s DESC", orderColumn)
                 : String.format(Locale.US, "%s DESC LIMIT %s", orderColumn, count);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     String getOrderColumn() {
-        return buildVersionProvider.currentVersion() >= Build.VERSION_CODES.Q
+        return currentApiLevel >= Build.VERSION_CODES.Q
                 ? MediaStore.Images.ImageColumns.DATE_TAKEN
                 : MediaStore.Images.ImageColumns.DATE_MODIFIED;
     }
