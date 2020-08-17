@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
+import static android.content.ContentResolver.QUERY_SORT_DIRECTION_DESCENDING;
+
 public class ImageStreamCursorProvider {
 
     final static String[] PROJECTION = new String[]{
@@ -49,13 +51,15 @@ public class ImageStreamCursorProvider {
         }
 
         final String orderColumn = getOrderColumn();
-        final String order = getOrderArgument(count, orderColumn);
 
         Cursor cursor;
 
         if (currentApiLevel >= Build.VERSION_CODES.O) {
             Bundle queryArgs = new Bundle();
+
             queryArgs.putInt(ContentResolver.QUERY_ARG_LIMIT, count);
+            queryArgs.putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, new String[]{orderColumn});
+            queryArgs.putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, QUERY_SORT_DIRECTION_DESCENDING);
 
             cursor = context.getContentResolver().query(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -63,6 +67,9 @@ public class ImageStreamCursorProvider {
                     queryArgs,
                     null);
         } else {
+            final String order =
+                    String.format(Locale.US, "%s DESC LIMIT %s", orderColumn, count);
+
             cursor = context.getContentResolver().query(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     PROJECTION,
@@ -72,12 +79,6 @@ public class ImageStreamCursorProvider {
         }
 
         return cursor;
-    }
-
-    String getOrderArgument(int count, String orderColumn) {
-        return currentApiLevel >= Build.VERSION_CODES.O
-                ? String.format(Locale.US, "%s DESC", orderColumn)
-                : String.format(Locale.US, "%s DESC LIMIT %s", orderColumn, count);
     }
 
     @SuppressLint("InlinedApi")

@@ -68,31 +68,6 @@ class ImageStreamCursorProviderTests {
     }
 
     @Test
-    fun `order argument excludes LIMIT clause for android N (API 24 and 25)`() {
-        cursorProvider = ImageStreamCursorProvider(context, 24)
-        assertThat(cursorProvider.getOrderArgument(10, "magic"))
-                .isEqualTo("magic DESC LIMIT 10")
-
-        cursorProvider = ImageStreamCursorProvider(context, 25)
-        assertThat(cursorProvider.getOrderArgument(42, "random"))
-                .isEqualTo("random DESC LIMIT 42")
-    }
-
-    @Test
-    fun `order argument excludes LIMIT clause for android O (API 26)`() {
-        cursorProvider = ImageStreamCursorProvider(context, 26)
-        assertThat(cursorProvider.getOrderArgument(10, "quantum_flux"))
-                .isEqualTo("quantum_flux DESC")
-    }
-
-    @Test
-    fun `order argument excludes LIMIT clause for android R (API 30)`() {
-        cursorProvider = ImageStreamCursorProvider(context, 30)
-        assertThat(cursorProvider.getOrderArgument(10, "capriciousness"))
-                .isEqualTo("capriciousness DESC")
-    }
-
-    @Test
     fun `content provider is queried with a bundle for android 0 (API 26)`() {
         cursorProvider = ImageStreamCursorProvider(context, 26)
         cursorProvider.getCursor(5)
