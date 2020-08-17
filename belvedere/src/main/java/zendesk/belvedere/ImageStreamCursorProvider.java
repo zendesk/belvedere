@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.util.Locale;
 
@@ -81,7 +80,7 @@ public class ImageStreamCursorProvider {
                 : String.format(Locale.US, "%s DESC LIMIT %s", orderColumn, count);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @SuppressLint("InlinedApi")
     String getOrderColumn() {
         return currentApiLevel >= Build.VERSION_CODES.Q
                 ? MediaStore.Images.ImageColumns.DATE_TAKEN
