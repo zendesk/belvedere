@@ -14,16 +14,17 @@ import java.util.List;
 class ImageStreamService {
 
     private final Context context;
+    private final ImageStreamCursorProvider imageStreamCursorProvider;
 
     ImageStreamService(Context context) {
         this.context = context.getApplicationContext();
+        this.imageStreamCursorProvider = new ImageStreamCursorProvider(context, Build.VERSION.SDK_INT);
     }
 
     List<MediaResult> queryRecentImages(int count) {
         final List<MediaResult> mediaResults = new ArrayList<>();
 
-        final Cursor cursor = new ImageStreamCursorProvider(context, Build.VERSION.SDK_INT)
-                .getCursor(count);
+        final Cursor cursor = imageStreamCursorProvider.getCursor(count);
 
         try {
             if (cursor != null) {
