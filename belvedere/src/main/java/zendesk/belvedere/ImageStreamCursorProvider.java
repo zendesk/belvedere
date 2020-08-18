@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import static android.content.ContentResolver.QUERY_SORT_DIRECTION_DESCENDING;
 
-public class ImageStreamCursorProvider {
+class ImageStreamCursorProvider {
 
     final static String[] PROJECTION = new String[]{
             MediaStore.Images.ImageColumns._ID,
