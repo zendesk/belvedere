@@ -36,10 +36,10 @@ testBelvedere() {
 uploadSnapshotSdk() {
     export LOCAL_BUILD="false"
 
-    ./gradlew --settings-file scripts/gradle/build-belvedere-core.gradle clean :belvedere-core:uploadArchive
+    ./gradlew --settings-file scripts/gradle/build-belvedere-core.gradle -Pandroid.useAndroidX=true clean :belvedere-core:uploadArchive
     exitOnFailedBuild
 
-    ./gradlew --settings-file scripts/gradle/build-belvedere.gradle clean :belvedere:uploadArchive
+    ./gradlew --settings-file scripts/gradle/build-belvedere.gradle -Pandroid.useAndroidX=true clean :belvedere:uploadArchive
     exitOnFailedBuild
 
     buildSampleApp
