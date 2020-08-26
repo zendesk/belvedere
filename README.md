@@ -21,8 +21,10 @@ Belvedere gives you the power to easily integrate file selection from third part
 
 Add Belvedere as a dependency:
 
+Belvedere 3.0.0-RC uses AndroidX and is recommended for use with Android 11.
+
 ```
-implementation ‘com.zendesk.belvedere2:belvedere:2.3.0’
+implementation ‘com.zendesk.belvedere2:belvedere:3.0.0-RC’
 ```
 
 ### How to use Belvedere
