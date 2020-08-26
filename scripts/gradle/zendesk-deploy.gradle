@@ -13,8 +13,8 @@ ext {
     POM_DEVELOPER_ID = 'zendesk'
     POM_DEVELOPER_NAME = 'Zendesk, Inc.'
 
-    repoUsername = getConfigurationParameter("zenSonatypeUsername")
-    repoPassword = getConfigurationParameter("zenSonatypePassword")
+    repoUsername = getConfigurationParameter("zdOssRepoUsername")
+    repoPassword = getConfigurationParameter("zdOssRepoPassword")
 }
 
 afterEvaluate { project ->
@@ -22,11 +22,11 @@ afterEvaluate { project ->
         repositories {
             mavenDeployer {
 
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                snapshotRepository(url: "https://zendesk.jfrog.io/zendesk/oss-snapshots-local") {
                     authentication(userName: repoUsername, password: repoPassword)
                 }
 
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                repository(url: "https://zendesk.jfrog.io/zendesk/oss-releases-local") {
                     authentication(userName: repoUsername, password: repoPassword)
                 }
 

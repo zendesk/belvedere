@@ -3,7 +3,6 @@
 # Belvedere
 <p align="left">
 <a href="https://travis-ci.org/zendesk/belvedere"><img src="https://travis-ci.org/zendesk/belvedere.svg?branch=master" alt="Build Status" /></a> <a href="http://zendesk.github.io/belvedere"><img src="https://img.shields.io/readthedocs/pip.svg" /></a>
-<a href="https://mvnrepository.com/artifact/com.zendesk.belvedere2/belvedere"><img src="https://img.shields.io/maven-central/v/com.zendesk.belvedere2/belvedere.svg" alt="Belvedere version" /></a><a href="https://oss.sonatype.org/content/repositories/snapshots/com/zendesk/belvedere2/belvedere/"> <img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/com.zendesk.belvedere2/belvedere.svg" /></a>
 <a href="https://raw.githubusercontent.com/zendesk/belvedere/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
 </p>
 
@@ -19,13 +18,21 @@ Belvedere gives you the power to easily integrate file selection from third part
 
 ### Download
 
-Add Belvedere as a dependency:
+First add the Zendesk maven repository. This is a new step for versions 3.0.0-RC and newer.
 
-Belvedere 3.0.0-RC uses AndroidX and is recommended for use with Android 11.
+```
+maven {
+    url 'https://zendesk.jfrog.io/zendesk/oss-releases-local'
+}
+```
+
+Secondly, add Belvedere as a dependency:
 
 ```
 implementation ‘com.zendesk.belvedere2:belvedere:3.0.0-RC’
 ```
+
+Belvedere 3.0.0-RC and newer uses AndroidX and is recommended for use with Android 11.
 
 ### How to use Belvedere
 
