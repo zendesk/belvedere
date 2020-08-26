@@ -16,7 +16,7 @@ ext {
     versionName = "3.0.0-RC"
 
     buildSettings = [
-            localBuild : true,
+            localBuild : false,
     ]
 }
 
