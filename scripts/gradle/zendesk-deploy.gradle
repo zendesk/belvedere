@@ -1,5 +1,4 @@
 apply plugin: 'maven'
-apply plugin: 'signing'
 apply from: '../scripts/gradle/gradle-commons.gradle'
 
 ext {
@@ -22,7 +21,6 @@ afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
                     authentication(userName: repoUsername, password: repoPassword)
@@ -63,11 +61,6 @@ afterEvaluate { project ->
                 }
             }
         }
-    }
-
-    signing {
-        required { isReleaseBuild() }
-        sign configurations.archives
     }
 
     task androidJavadocs(type: Javadoc) {
