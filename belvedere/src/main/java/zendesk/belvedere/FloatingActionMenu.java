@@ -1,8 +1,12 @@
 package zendesk.belvedere;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -22,9 +26,11 @@ import androidx.annotation.RestrictTo;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -40,11 +46,14 @@ import zendesk.belvedere.ui.R;
 public class FloatingActionMenu extends LinearLayout implements View.OnClickListener {
 
     private static final float ANIMATION_ROTATION_INITIAL_ANGLE = 0f;
+    private static final int ANIMATION_DURATION = 150;
 
     private FloatingActionButton fab;
     private LayoutInflater layoutInflater;
     private List<Pair<FloatingActionButton, View.OnClickListener>> menuItems;
+    private OnClickListener onSendClickListener;
     private boolean isExpanded;
+    private boolean isShowingSend;
     private int animationDuration;
     private int animationRotationAngle;
     private int animationDelaySubsequentItem;
@@ -91,20 +100,58 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        if (isShowingSend && onSendClickListener != null) {
+            onSendClickListener.onClick(this);
+            return;
+        }
+
         if (menuItems.size() == 1) {
             final Pair<FloatingActionButton, View.OnClickListener> menuItem = menuItems.get(0);
             menuItem.second.onClick(menuItem.first);
         } else {
-            isExpanded = !isExpanded;
-            showMenuItems(isExpanded);
-            rotate(isExpanded);
-
-            if (isExpanded) {
-                fab.setContentDescription(getResources().getString(R.string.belvedere_fam_desc_collapse_fam));
-            } else {
-                fab.setContentDescription(getResources().getString(R.string.belvedere_fam_desc_expand_fam));
-            }
+            toggleMenu();
         }
+    }
+
+    public void showSendButton() {
+        isShowingSend = true;
+        if (isExpanded) {
+            hideMenu();
+        }
+        crossFadeFabIcons(R.drawable.belvedere_fam_icon_add, R.drawable.belvedere_fam_icon_send);
+
+    }
+
+    public void hideSendButton() {
+        if(isShowingSend) {
+            crossFadeFabIcons(R.drawable.belvedere_fam_icon_send, R.drawable.belvedere_fam_icon_add);
+        }
+        isShowingSend = false;
+    }
+
+    public void setOnSendClickListener(View.OnClickListener onSendClickListener) {
+        this.onSendClickListener = onSendClickListener;
+    }
+
+    private void toggleMenu() {
+        isExpanded = !isExpanded;
+        if (isExpanded) {
+            showMenu();
+        } else {
+            hideMenu();
+        }
+    }
+
+    private void showMenu() {
+        rotate(true);
+        showMenuItems(true);
+        fab.setContentDescription(getResources().getString(R.string.belvedere_fam_desc_expand_fam));
+    }
+
+    private void hideMenu() {
+        rotate(false);
+        showMenuItems(false);
+        fab.setContentDescription(getResources().getString(R.string.belvedere_fam_desc_collapse_fam));
     }
 
     private void showMenuItems(boolean isExpanded) {
@@ -178,7 +225,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         setVisibility(VISIBLE);
     }
 
-    private AnimationListenerAdapter setGone = new AnimationListenerAdapter() {
+    private final AnimationListenerAdapter setGone = new AnimationListenerAdapter() {
         @Override
         public void onAnimationEnd(Animation animation) {
             for (Pair<FloatingActionButton, OnClickListener> menuItem : menuItems) {
@@ -195,13 +242,41 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         return wrappedDrawable;
     }
 
+    private void crossFadeFabIcons(@DrawableRes final int fromDrawable, @DrawableRes final int toDrawable) {
+        final Drawable fromVector = ResourcesCompat.getDrawable(getResources(),
+                fromDrawable, getContext().getTheme());
+        final Drawable toVector = ResourcesCompat.getDrawable(getResources(),
+                toDrawable, getContext().getTheme());
+        fromVector.setAlpha(255);
+        toVector.setAlpha(0);
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{fromVector, toVector});
+        fab.setImageDrawable(layerDrawable);
+        ValueAnimator fadeAnimator = ValueAnimator.ofInt(0, 255);
+        fadeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int alpha = Integer.parseInt(animation.getAnimatedValue().toString());
+                toVector.setAlpha(alpha); //fade add icon in
+                fromVector.setAlpha(255 - alpha); //fade send icon out
+            }
+        });
+        fadeAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fab.setImageResource(toDrawable);
+            }
+        });
+        fadeAnimator.setDuration(ANIMATION_DURATION);
+        fadeAnimator.start();
+    }
+
     private void changeVisibility(@Nullable View view, int visibility) {
         if (view != null) {
             view.setVisibility(visibility);
         }
     }
 
-    private abstract class AnimationListenerAdapter implements Animation.AnimationListener {
+    private abstract static class AnimationListenerAdapter implements Animation.AnimationListener {
 
         @Override
         public void onAnimationStart(Animation animation) {

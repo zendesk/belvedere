@@ -34,6 +34,7 @@ public class ChatActivity extends AppCompatActivity {
 
     static List<MediaResult> mediaResults = new ArrayList<>();
     static Collection<MediaResult> extraResults = new LinkedHashSet<>();
+    private FakeAdapter adapter = new FakeAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class ChatActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.activity_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new FakeAdapter());
+        recyclerView.setAdapter(adapter);
         init();
     }
 
@@ -116,10 +117,16 @@ public class ChatActivity extends AppCompatActivity {
             refreshUi();
         }
 
+        @Override
+        public void onMediaSent(List<MediaResult> mediaResults) {
+
+        }
+
         private void refreshUi() {
             if(!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -139,13 +146,10 @@ public class ChatActivity extends AppCompatActivity {
         BelvedereUi.imageStream(ChatActivity.this)
                 .withCameraIntent()
                 .withDocumentIntent("*/*", true)
-                .withSelectedItems(new ArrayList<>(mediaResults))
-                .withExtraItems(new ArrayList<>(extraResults))
-                .withTouchableItems(R.id.attachment, R.id.send)
                 .showPopup(ChatActivity.this);
     }
 
-    class FakeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static class FakeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -156,12 +160,20 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("Belvedere Demo");
+            if (mediaResults.isEmpty()) {
+                ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("No items selected");
+            } else {
+                ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText(mediaResults.get(position).getName());
+            }
         }
 
         @Override
         public int getItemCount() {
-            return 1;
+            if (mediaResults.isEmpty()) {
+                return 1;
+            } else {
+                return mediaResults.size();
+            }
         }
     }
 }

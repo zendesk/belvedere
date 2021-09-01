@@ -122,6 +122,15 @@ public class ImageStream extends Fragment {
         }
     }
 
+    void notifyImagesSent(List<MediaResult> mediaResults) {
+        for(WeakReference<Listener> ref : imageStreamListener) {
+            final Listener listener = ref.get();
+            if(listener != null) {
+                listener.onMediaSent(mediaResults);
+            }
+        }
+    }
+
     void notifyDismissed() {
         callback = null; // Prevent memory leak of Callback
 
@@ -217,6 +226,11 @@ public class ImageStream extends Fragment {
          * The user deselected one or multiple attachments.
          */
         void onMediaDeselected(List<MediaResult> mediaResults);
+
+        /**
+         * The user used the send images button
+         */
+        void onMediaSent(List<MediaResult> mediaResults);
     }
 
     /**

@@ -88,6 +88,7 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         initToolbar(fullScreenOnly);
         initBottomSheet(fullScreenOnly);
         initGesturePassThrough(activity, touchableItemIds);
+        initFloatingActionButton(floatingActionMenu);
     }
 
     @Override
@@ -192,6 +193,15 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
         return false;
     }
 
+    @Override
+    public void updateFloatingActionButton(int selectedImages) {
+        if (selectedImages == 0) {
+            floatingActionMenu.hideSendButton();
+        } else {
+            floatingActionMenu.showSendButton();
+        }
+    }
+
     private void bindViews(View view) {
         this.bottomSheet = view.findViewById(R.id.bottom_sheet);
         this.dismissArea = view.findViewById(R.id.dismiss_area);
@@ -287,6 +297,16 @@ class ImageStreamUi extends PopupWindow implements ImageStreamMvp.View {
 
         imageList.setClickable(true);
         bottomSheet.setVisibility(View.VISIBLE);
+    }
+
+    private void initFloatingActionButton(FloatingActionMenu floatingActionMenu) {
+        floatingActionMenu.setOnSendClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.sendSelectedImages();
+                dismiss();
+            }
+        });
     }
 
     @Override
