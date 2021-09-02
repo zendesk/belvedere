@@ -90,6 +90,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             final Resources resource = getResources();
             animationDuration = resource.getInteger(R.integer.belvedere_fam_animation_duration);
             animationDelaySubsequentItem = getResources().getInteger(R.integer.belvedere_fam_animation_delay_subsequent_item);
+            fab.setImageResource(R.drawable.belvedere_fam_icon_add_file);
         }
     }
 
