@@ -45,9 +45,6 @@ import zendesk.belvedere.ui.R;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class FloatingActionMenu extends LinearLayout implements View.OnClickListener {
 
-    private static final float ANIMATION_ROTATION_INITIAL_ANGLE = 0f;
-    private static final int ANIMATION_DURATION = 150;
-
     private FloatingActionButton fab;
     private LayoutInflater layoutInflater;
     private List<Pair<FloatingActionButton, View.OnClickListener>> menuItems;
@@ -55,7 +52,6 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     private boolean isExpanded;
     private boolean isShowingSend;
     private int animationDuration;
-    private int animationRotationAngle;
     private int animationDelaySubsequentItem;
 
 
@@ -93,7 +89,6 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
 
             final Resources resource = getResources();
             animationDuration = resource.getInteger(R.integer.belvedere_fam_animation_duration);
-            animationRotationAngle = resource.getInteger(R.integer.belvedere_fam_animation_rotation_angle);
             animationDelaySubsequentItem = getResources().getInteger(R.integer.belvedere_fam_animation_delay_subsequent_item);
         }
     }
@@ -118,13 +113,13 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         if (isExpanded) {
             hideMenu();
         }
-        crossFadeFabIcons(R.drawable.belvedere_fam_icon_add, R.drawable.belvedere_fam_icon_send);
+        crossFadeFabIcons(R.drawable.belvedere_fam_icon_add_file, R.drawable.belvedere_fam_icon_send);
 
     }
 
     public void hideSendButton() {
         if(isShowingSend) {
-            crossFadeFabIcons(R.drawable.belvedere_fam_icon_send, R.drawable.belvedere_fam_icon_add);
+            crossFadeFabIcons(R.drawable.belvedere_fam_icon_send, R.drawable.belvedere_fam_icon_add_file);
         }
         isShowingSend = false;
     }
@@ -196,8 +191,12 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
     }
 
     private void rotate(boolean isExpanded) {
-        float angle = isExpanded ? animationRotationAngle : ANIMATION_ROTATION_INITIAL_ANGLE;
-        ViewCompat.animate(fab).rotation(angle).setDuration(animationDuration).start();
+        if (isExpanded) {
+            crossFadeFabIcons(R.drawable.belvedere_fam_icon_add_file, R.drawable.belvedere_fam_icon_close);
+        } else {
+            crossFadeFabIcons(R.drawable.belvedere_fam_icon_close, R.drawable.belvedere_fam_icon_add_file);
+        }
+
     }
 
     public void addMenuItem(@DrawableRes int iconRes, @IdRes int id, @StringRes int contentDescription, @NonNull View.OnClickListener clickListener) {
@@ -217,7 +216,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
             addView(menuItems.get(0).first, 0);
             addView(menuItem, 0);
 
-            fab.setImageDrawable(getTintedDrawable(R.drawable.belvedere_fam_icon_add, R.color.belvedere_floating_action_menu_icon_color));
+            fab.setImageDrawable(getTintedDrawable(R.drawable.belvedere_fam_icon_add_file, R.color.belvedere_floating_action_menu_icon_color));
             fab.setContentDescription(getResources().getString(R.string.belvedere_fam_desc_expand_fam));
         } else {
             addView(menuItem, 0);
@@ -266,7 +265,7 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
                 fab.setImageResource(toDrawable);
             }
         });
-        fadeAnimator.setDuration(ANIMATION_DURATION);
+        fadeAnimator.setDuration(animationDuration);
         fadeAnimator.start();
     }
 
