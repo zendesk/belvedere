@@ -146,6 +146,9 @@ public class ChatActivity extends AppCompatActivity {
         BelvedereUi.imageStream(ChatActivity.this)
                 .withCameraIntent()
                 .withDocumentIntent("*/*", true)
+                .withSelectedItems(new ArrayList<>(mediaResults))
+                .withExtraItems(new ArrayList<>(extraResults))
+                .withTouchableItems(R.id.attachment, R.id.send)
                 .showPopup(ChatActivity.this);
     }
 
