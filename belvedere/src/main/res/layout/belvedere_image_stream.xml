@@ -43,8 +43,6 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:accessibilityTraversalBefore="@id/image_list"/>
 
     <LinearLayout

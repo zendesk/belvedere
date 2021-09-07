@@ -159,20 +159,39 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
                 Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.belvedere_show_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
                 a.setStartOffset(startOffset);
-                menuItem.first.startAnimation(a);
+                if (menuItem.first != null) {
+                    changeVisibility(menuItem.first, VISIBLE);
+                    menuItem.first.startAnimation(a);
+                }
 
                 startOffset += animationDelaySubsequentItem;
             }
         } else {
+            Animation lastAnimation = null;
+
             for (int i = menuItems.size() - 1; i >= 0; i--) {
                 final Pair<FloatingActionButton, View.OnClickListener> menuItem = menuItems.get(i);
 
                 Animation a = AnimationUtils.loadAnimation(getContext(), R.anim.belvedere_hide_menu_item);
                 a.setRepeatMode(Animation.REVERSE);
                 a.setStartOffset(startOffset);
-                menuItem.first.startAnimation(a);
+                a.setAnimationListener(new AnimationListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        changeVisibility(menuItem.first, INVISIBLE);
+                    }
+                });
+                if (menuItem.first != null) {
+                    menuItem.first.startAnimation(a);
+                }
 
                 startOffset += animationDelaySubsequentItem;
+
+                lastAnimation = a;
+            }
+
+            if (lastAnimation != null) {
+                lastAnimation.setAnimationListener(setGone);
             }
         }
     }
@@ -220,5 +239,38 @@ public class FloatingActionMenu extends LinearLayout implements View.OnClickList
         final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
         DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(context, colorRes));
         return wrappedDrawable;
+    }
+
+    private void changeVisibility(@Nullable View view, int visibility) {
+        if (view != null) {
+            view.setVisibility(visibility);
+        }
+    }
+
+    private final AnimationListenerAdapter setGone = new AnimationListenerAdapter() {
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            for (Pair<FloatingActionButton, OnClickListener> menuItem : menuItems) {
+                changeVisibility(menuItem.first, GONE);
+            }
+        }
+    };
+
+    private abstract static class AnimationListenerAdapter implements Animation.AnimationListener {
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+            // Intentionally empty
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            // Intentionally empty
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+            // Intentionally empty
+        }
     }
 }
