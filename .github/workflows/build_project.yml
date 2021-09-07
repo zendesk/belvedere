@@ -11,8 +11,7 @@ on:
 jobs:
   build:
     name: "Build"
-    # The following runner uses the Zendesk hosted runners
-    runs-on: zendesk-stable
+    runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
       ARTIFACTORY_RELEASE_USERNAME: ${{ secrets.ARTIFACTORY_RELEASE_USERNAME }}
