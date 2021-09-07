@@ -23,6 +23,10 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }
