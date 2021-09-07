@@ -15,8 +15,8 @@ jobs:
     runs-on: zendesk-stable
     timeout-minutes: 40
     env:
-      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_RELEASE_USERNAME }}
-      ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_RELEASE_API_KEY }}
+      ARTIFACTORY_RELEASE_USERNAME: ${{ secrets.ARTIFACTORY_RELEASE_USERNAME }}
+      ARTIFACTORY_RELEASE_API_KEY: ${{ secrets.ARTIFACTORY_RELEASE_API_KEY }}
 
     steps:
       - name: "Checkout"
