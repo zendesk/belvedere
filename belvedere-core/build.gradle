@@ -11,7 +11,6 @@ apply from: '../scripts/gradle/zendesk-deploy.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersionCore
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -23,6 +22,10 @@ android {
         manifestPlaceholders = [belvedereFileProviderAuthoritySuffix:project.ext.belvedereFileProviderAuthoritySuffix]
         // Add project.ext.belvedereFileProviderAuthoritySuffix as a string resource to the SDK
         resValue "string", "belvedere_sdk_fpa_suffix_v2", project.ext.belvedereFileProviderAuthoritySuffix
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 

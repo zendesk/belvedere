@@ -13,8 +13,8 @@ ext {
     POM_DEVELOPER_ID = 'zendesk'
     POM_DEVELOPER_NAME = 'Zendesk, Inc.'
 
-    repoUsername = getConfigurationParameter("zdOssRepoUsername")
-    repoPassword = getConfigurationParameter("zdOssRepoPassword")
+    repoUsername = getConfigurationParameter("ARTIFACTORY_RELEASE_USERNAME")
+    repoPassword = getConfigurationParameter("ARTIFACTORY_RELEASE_API_KEY")
 }
 
 afterEvaluate { project ->

@@ -2,7 +2,7 @@
 
 # common stuff
 isPullRequest() {
-    [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && return 1 || return 0
+    [[ "$GITHUB_EVENT_NAME" == "pull_request" ]] && return 1 || return 0
 }
 
 exitOnFailedBuild() {
