@@ -23,6 +23,7 @@ public class ImageStream extends Fragment {
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
 
     private List<WeakReference<Listener>> imageStreamListener = new ArrayList<>();
+    private List<WeakReference<SendListener>> imageStreamSendListener = new ArrayList<>();
     private List<WeakReference<ScrollListener>> imageStreamScrollListener = new ArrayList<>();
 
     private ImageStreamUi imageStreamPopup = null;
@@ -123,8 +124,8 @@ public class ImageStream extends Fragment {
     }
 
     void notifyImagesSent(List<MediaResult> mediaResults) {
-        for(WeakReference<Listener> ref : imageStreamListener) {
-            final Listener listener = ref.get();
+        for(WeakReference<SendListener> ref : imageStreamSendListener) {
+            final SendListener listener = ref.get();
             if(listener != null) {
                 listener.onMediaSent(mediaResults);
             }
@@ -178,6 +179,13 @@ public class ImageStream extends Fragment {
     }
 
     /**
+     * Add a {@link ScrollListener} to get informed when the ImageStream gets dragged by the user.
+     */
+    public void addSendListener(SendListener listener) {
+        imageStreamSendListener.add(new WeakReference<>(listener));
+    }
+
+    /**
      * Hide the ImageStream if visible
      */
     public void dismiss() {
@@ -226,11 +234,6 @@ public class ImageStream extends Fragment {
          * The user deselected one or multiple attachments.
          */
         void onMediaDeselected(List<MediaResult> mediaResults);
-
-        /**
-         * The user used the send images button
-         */
-        void onMediaSent(List<MediaResult> mediaResults);
     }
 
     /**
@@ -246,5 +249,16 @@ public class ImageStream extends Fragment {
          * @param scrollPosition
          */
         void onScroll(int height, int scrollArea, float scrollPosition);
+    }
+
+    /**
+     * Informs about the scroll position of the ImageStream BottomSheet.
+     */
+    public interface SendListener {
+
+        /**
+         * The user used the send images button
+         */
+        void onMediaSent(List<MediaResult> mediaResults);
     }
 }

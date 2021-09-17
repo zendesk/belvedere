@@ -31,6 +31,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private Listener listener;
     private ImageStream.ScrollListener scrollListener;
+    private ImageStream.SendListener sendListener = new SendListener();
 
     static List<MediaResult> mediaResults = new ArrayList<>();
     static Collection<MediaResult> extraResults = new LinkedHashSet<>();
@@ -46,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         scrollListener = new ScrollListener();
         imageStream.addListener(listener);
         imageStream.addScrollListener(scrollListener);
+        imageStream.addSendListener(sendListener);
         input = findViewById(R.id.input);
 
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
@@ -117,11 +119,6 @@ public class ChatActivity extends AppCompatActivity {
             refreshUi();
         }
 
-        @Override
-        public void onMediaSent(List<MediaResult> mediaResults) {
-
-        }
-
         private void refreshUi() {
             if(!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
@@ -139,6 +136,17 @@ public class ChatActivity extends AppCompatActivity {
             final int bottomPadding = (int) (-1f * interpolation * scrollArea);
             findViewById(R.id.activity_input).setTranslationY(bottomPadding);
             findViewById(R.id.activity_recyclerview).setTranslationY(bottomPadding);
+        }
+    }
+
+    private static class SendListener implements ImageStream.SendListener {
+
+        @Override
+        public void onMediaSent(List<MediaResult> mediaResults) {
+            extraResults.clear();
+            extraResults.addAll(mediaResults);
+            ChatActivity.mediaResults.clear();
+            ChatActivity.mediaResults.addAll(mediaResults);
         }
     }
 
