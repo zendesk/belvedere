@@ -127,7 +127,7 @@ public class ImageStream extends Fragment {
         for(WeakReference<SendListener> ref : imageStreamSendListener) {
             final SendListener listener = ref.get();
             if(listener != null) {
-                listener.onMediaSent(mediaResults);
+                listener.onSend(mediaResults);
             }
         }
     }
@@ -252,7 +252,7 @@ public class ImageStream extends Fragment {
     }
 
     /**
-     * Informs about the scroll position of the ImageStream BottomSheet.
+     * Informs about the selected attachments to be sent.
      */
     public interface SendListener {
 

@@ -142,7 +142,7 @@ public class ChatActivity extends AppCompatActivity {
     private static class SendListener implements ImageStream.SendListener {
 
         @Override
-        public void onMediaSent(List<MediaResult> mediaResults) {
+        public void onSend(List<MediaResult> mediaResults) {
             extraResults.clear();
             extraResults.addAll(mediaResults);
             ChatActivity.mediaResults.clear();
