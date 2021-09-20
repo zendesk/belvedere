@@ -257,8 +257,9 @@ public class ImageStream extends Fragment {
     public interface SendListener {
 
         /**
-         * The user used the send images button
+         * Called with the selected attachments when the send button is clicked
+         * @params mediaFiles the selected attachments to be sent
          */
-        void onMediaSent(List<MediaResult> mediaResults);
+        void onSend(List<MediaResult> mediaResults);
     }
 }
