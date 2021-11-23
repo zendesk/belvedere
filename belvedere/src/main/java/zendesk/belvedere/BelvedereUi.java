@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -22,10 +23,8 @@ import zendesk.belvedere.ui.R;
 
 /**
  * Main entry-point for interacting the UI components of Belvedere.
- *
- * There are two different UIs available:
- *  - Dialog (from 1.x)
- *  - ImageStream (BottomSheet)
+ * <p>
+ * There are two different UIs available: - Dialog (from 1.x) - ImageStream (BottomSheet)
  */
 public class BelvedereUi {
 
@@ -51,7 +50,7 @@ public class BelvedereUi {
         final Fragment fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_POPUP);
 
         final ImageStream popupBackend;
-        if(fragment instanceof ImageStream) {
+        if (fragment instanceof ImageStream) {
             popupBackend = (ImageStream) fragment;
         } else {
             popupBackend = new ImageStream();
@@ -68,15 +67,16 @@ public class BelvedereUi {
     public static class ImageStreamBuilder {
 
         private final Context context;
-        private boolean resolveMedia = true;
-        private List<MediaIntent> mediaIntents = new ArrayList<>();
+        private BelvederePermissionCallback belvederePermissionCallback;
+        private final boolean resolveMedia = true;
+        private final List<MediaIntent> mediaIntents = new ArrayList<>();
         private List<MediaResult> selectedItems = new ArrayList<>();
         private List<MediaResult> extraItems = new ArrayList<>();
         private List<Integer> touchableItems = new ArrayList<>();
         private long maxFileSize = -1L;
         private boolean fullScreenOnly = false;
 
-        private ImageStreamBuilder(Context context){
+        private ImageStreamBuilder(Context context) {
             this.context = context;
         }
 
@@ -90,14 +90,15 @@ public class BelvedereUi {
         }
 
         /**
-         * Allow the user to select files of the specified content type from the system. Only one
-         * of the following should be called as they are mutually exclusive:
+         * Allow the user to select files of the specified content type from the system. Only one of the following
+         * should be called as they are mutually exclusive:
          *
          * <li>{@link ImageStreamBuilder#withDocumentIntent(String, boolean)}</li>
          * <li>{@link ImageStreamBuilder#withDocumentIntent(List, boolean)}</li>
          *
-         * @param contentType restrict the files to a content type
-         * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file picker
+         * @param contentType   restrict the files to a content type
+         * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file
+         *                      picker
          */
         public ImageStreamBuilder withDocumentIntent(@NonNull String contentType, boolean allowMultiple) {
             final MediaIntent mediaIntent = Belvedere.from(context)
@@ -110,15 +111,16 @@ public class BelvedereUi {
         }
 
         /**
-         * Allow the user to select files of any specified content type from the system. This can
-         * be used when allowing the selection of files from a disjoint set (e.g. "image&#47;*" and
-         * "text&#47;*"). Only one of the following should be called as they are mutually exclusive:
+         * Allow the user to select files of any specified content type from the system. This can be used when allowing
+         * the selection of files from a disjoint set (e.g. "image&#47;*" and "text&#47;*"). Only one of the following
+         * should be called as they are mutually exclusive:
          *
          * <li>{@link ImageStreamBuilder#withDocumentIntent(String, boolean)}</li>
          * <li>{@link ImageStreamBuilder#withDocumentIntent(List, boolean)}</li>
          *
-         * @param contentTypes restrict the files to the content types
-         * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file picker
+         * @param contentTypes  restrict the files to the content types
+         * @param allowMultiple allow the user to select multiple attachments in a third party app or the system file
+         *                      picker
          */
         public ImageStreamBuilder withDocumentIntent(@NonNull List<String> contentTypes, boolean allowMultiple) {
             final MediaIntent mediaIntent = Belvedere.from(context)
@@ -147,12 +149,11 @@ public class BelvedereUi {
         }
 
         /**
-         * Specify a list of ids from your activity that should be clickable
-         * although the ImageStream is visible.
+         * Specify a list of ids from your activity that should be clickable although the ImageStream is visible.
          */
         public ImageStreamBuilder withTouchableItems(@IdRes int... ids) {
             final List<Integer> objects = new ArrayList<>(ids.length);
-            for(int id : ids) {
+            for (int id : ids) {
                 objects.add(id);
             }
             this.touchableItems = objects;
@@ -172,11 +173,25 @@ public class BelvedereUi {
         /**
          * Always show the image picker in full screen.
          *
-         * @param enabled {@code true} if the picker should be shown full screen to the user, {@code false}
-         *                 if the picker should be drawn above the keyboard
+         * @param enabled {@code true} if the picker should be shown full screen to the user, {@code false} if the
+         *                picker should be drawn above the keyboard
          */
         public ImageStreamBuilder withFullScreenOnly(boolean enabled) {
             this.fullScreenOnly = enabled;
+            return this;
+        }
+
+        /**
+         * Implement the {@link BelvederePermissionCallback} in case of the integrators wants to build custom logic that
+         * depends on the granted and the denied runtime permissions.
+         *
+         * @param belvederePermissionCallback The callback that the integrator should implement to trigger the granted
+         *                                    and denied permissions.
+         * @return
+         */
+        public ImageStreamBuilder withBelvederePermissionCallback(
+                BelvederePermissionCallback belvederePermissionCallback) {
+            this.belvederePermissionCallback = belvederePermissionCallback;
             return this;
         }
 
@@ -191,12 +206,13 @@ public class BelvedereUi {
                 public void onPermissionsGranted(final List<MediaIntent> mediaIntents) {
                     final Activity appCompatActivity = popupBackend.getActivity();
 
-                    if(appCompatActivity != null && !appCompatActivity.isChangingConfigurations()) {
+                    if (appCompatActivity != null && !appCompatActivity.isChangingConfigurations()) {
                         final ViewGroup decorView = (ViewGroup) appCompatActivity.getWindow().getDecorView();
                         decorView.post(new Runnable() {
                             @Override
                             public void run() {
-                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems, resolveMedia, touchableItems, maxFileSize, fullScreenOnly);
+                                final UiConfig uiConfig = new UiConfig(mediaIntents, selectedItems, extraItems,
+                                        resolveMedia, touchableItems, maxFileSize, fullScreenOnly);
                                 final ImageStreamUi show = ImageStreamUi.show(
                                         appCompatActivity,
                                         decorView,
@@ -205,14 +221,16 @@ public class BelvedereUi {
                                 popupBackend.setImageStreamUi(show, uiConfig);
                             }
                         });
+                        belvederePermissionCallback.onPermissionsGranted(mediaIntents);
                     }
                 }
 
                 @Override
-                public void onPermissionsDenied() {
+                public void onPermissionsDenied(boolean isMoreThanOnce) {
                     Activity appCompatActivity = popupBackend.getActivity();
-                    if(appCompatActivity != null) {
-                        Toast.makeText(appCompatActivity, R.string.belvedere_permissions_denied, Toast.LENGTH_SHORT).show();
+                    if (appCompatActivity != null) {
+                        Log.d(Belvedere.LOG_TAG, appCompatActivity.getString(R.string.belvedere_permissions_denied));
+                        belvederePermissionCallback.onPermissionsDenied(isMoreThanOnce);
                     }
                 }
             });
@@ -222,7 +240,7 @@ public class BelvedereUi {
     /**
      * Show the Belvedere dialog to the user
      *
-     * @param fm a valid {@link FragmentManager}
+     * @param fm          a valid {@link FragmentManager}
      * @param mediaIntent a list of {@link MediaIntent}
      */
     public static void showDialog(FragmentManager fm, List<MediaIntent> mediaIntent) {
@@ -231,14 +249,15 @@ public class BelvedereUi {
         }
 
         final BelvedereDialog dialog = new BelvedereDialog();
-        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(0), new ArrayList<MediaResult>(0), true, new ArrayList<Integer>(0)));
+        dialog.setArguments(getBundle(mediaIntent, new ArrayList<MediaResult>(0), new ArrayList<MediaResult>(0), true,
+                new ArrayList<Integer>(0)));
         dialog.show(fm, FRAGMENT_TAG);
     }
 
     /**
      * Show the Belvedere dialog to the user
      *
-     * @param fm a valid {@link FragmentManager}
+     * @param fm          a valid {@link FragmentManager}
      * @param mediaIntent a list of {@link MediaIntent}
      */
     public static void showDialog(FragmentManager fm, MediaIntent... mediaIntent) {
@@ -250,22 +269,22 @@ public class BelvedereUi {
     }
 
     private static Bundle getBundle(List<MediaIntent> mediaIntent, List<MediaResult> selectedItems,
-                                    List<MediaResult> extraItems, boolean resolveMedia,
-                                    List<Integer> touchableIds) {
+            List<MediaResult> extraItems, boolean resolveMedia,
+            List<Integer> touchableIds) {
 
         final List<MediaIntent> intents = new ArrayList<>();
         final List<MediaResult> selected = new ArrayList<>();
         final List<MediaResult> extra = new ArrayList<>();
 
-        if(mediaIntent != null) {
+        if (mediaIntent != null) {
             intents.addAll(mediaIntent);
         }
 
-        if(selectedItems != null) {
+        if (selectedItems != null) {
             selected.addAll(selectedItems);
         }
 
-        if(extraItems != null) {
+        if (extraItems != null) {
             extra.addAll(extraItems);
         }
 
@@ -307,9 +326,9 @@ public class BelvedereUi {
         }
 
         UiConfig(List<MediaIntent> intents, List<MediaResult> selectedItems,
-                 List<MediaResult> extraItems, boolean resolveMedia,
-                 List<Integer> touchableElements, long maxFileSize,
-                 boolean fullScreenOnly) {
+                List<MediaResult> extraItems, boolean resolveMedia,
+                List<Integer> touchableElements, long maxFileSize,
+                boolean fullScreenOnly) {
             this.intents = intents;
             this.selectedItems = selectedItems;
             this.extraItems = extraItems;

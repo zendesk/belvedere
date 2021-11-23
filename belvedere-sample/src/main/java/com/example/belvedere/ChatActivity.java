@@ -1,26 +1,34 @@
 package com.example.belvedere;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import zendesk.belvedere.BelvederePermissionCallback;
 import zendesk.belvedere.BelvedereUi;
 import zendesk.belvedere.ImageStream;
+import zendesk.belvedere.MediaIntent;
 import zendesk.belvedere.MediaResult;
 
 public class ChatActivity extends AppCompatActivity {
@@ -50,12 +58,12 @@ public class ChatActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(imageStream.isAttachmentsPopupVisible()){
+                if (imageStream.isAttachmentsPopupVisible()) {
                     imageStream.dismiss();
                 }
                 mediaResults.clear();
                 extraResults.clear();
-                ((EditText)findViewById(R.id.input)).setText("");
+                ((EditText) findViewById(R.id.input)).setText("");
             }
         });
 
@@ -66,11 +74,11 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void init() {
-        if(imageStream.getKeyboardHelper().getInputTrap().hasFocus()) {
+        if (imageStream.getKeyboardHelper().getInputTrap().hasFocus()) {
             input.requestFocus();
         }
 
-        if(imageStream.wasOpen()) {
+        if (imageStream.wasOpen()) {
             input.post(new Runnable() {
                 @Override
                 public void run() {
@@ -82,7 +90,7 @@ public class ChatActivity extends AppCompatActivity {
         findViewById(R.id.attachment).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!imageStream.isAttachmentsPopupVisible()) {
+                if (!imageStream.isAttachmentsPopupVisible()) {
                     showImageStream();
                 } else {
                     imageStream.dismiss();
@@ -117,7 +125,7 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         private void refreshUi() {
-            if(!imageStream.isAttachmentsPopupVisible()) {
+            if (!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
         }
@@ -127,7 +135,7 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onScroll(int height, int scrollArea, float scrollPosition) {
-            final Interpolator interpolator = PathInterpolatorCompat.create(.19f,0f,.2f,1f);
+            final Interpolator interpolator = PathInterpolatorCompat.create(.19f, 0f, .2f, 1f);
             final float interpolation = interpolator.getInterpolation((scrollPosition * .30f));
             final int bottomPadding = (int) (-1f * interpolation * scrollArea);
             findViewById(R.id.activity_input).setTranslationY(bottomPadding);
@@ -142,6 +150,35 @@ public class ChatActivity extends AppCompatActivity {
                 .withSelectedItems(new ArrayList<>(mediaResults))
                 .withExtraItems(new ArrayList<>(extraResults))
                 .withTouchableItems(R.id.attachment, R.id.send)
+                .withBelvederePermissionCallback(new BelvederePermissionCallback() {
+                    @Override
+                    public void onPermissionsGranted(List<MediaIntent> mediaIntents) {
+
+                    }
+
+                    @Override
+                    public void onPermissionsDenied(boolean isMoreThanOnce) {
+                        if (isMoreThanOnce) {
+                            Snackbar snackbar = Snackbar
+                                    .make(findViewById(android.R.id.content),
+                                            "To send attachments, you must grant permissions in your settings",
+                                            Snackbar.LENGTH_LONG);
+                            snackbar.setAction("Settings", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent();
+                                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    intent.setData(Uri.fromParts("package", ChatActivity.this.getPackageName(), null));
+                                    ChatActivity.this.startActivity(intent);
+                                }
+                            });
+                            snackbar.show();
+                        } else {
+                            Toast.makeText(ChatActivity.this, R.string.belvedere_permissions_denied, Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+                })
                 .showPopup(ChatActivity.this);
     }
 
@@ -151,12 +188,13 @@ public class ChatActivity extends AppCompatActivity {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(android.R.layout.simple_list_item_1, parent, false);
-            return new RecyclerView.ViewHolder(v) {};
+            return new RecyclerView.ViewHolder(v) {
+            };
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("Belvedere Demo");
+            ((TextView) holder.itemView.findViewById(android.R.id.text1)).setText("Belvedere Demo");
         }
 
         @Override
@@ -164,4 +202,5 @@ public class ChatActivity extends AppCompatActivity {
             return 1;
         }
     }
+
 }
