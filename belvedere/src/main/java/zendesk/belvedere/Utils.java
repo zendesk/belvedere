@@ -14,14 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Transformation;
-
 import java.util.Locale;
-
 import zendesk.belvedere.ui.R;
 
 /**
@@ -34,12 +31,19 @@ class Utils {
         toolbar.setVisibility(show ? View.VISIBLE : View.GONE);
 
         View toolbarContainer = view.findViewById(R.id.image_stream_toolbar_container);
-        if(toolbarContainer != null) {
+        if (toolbarContainer != null) {
             toolbarContainer.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
 
-    static int getThemeColor(Context context, int attr){
+    static void showSnackBar(View view, String message, int length, CharSequence actionMessage,
+            View.OnClickListener onActionClickListener) {
+        final Snackbar snackbar = Snackbar.make(view, message, length);
+        snackbar.setAction(actionMessage, onActionClickListener);
+        snackbar.show();
+    }
+
+    static int getThemeColor(Context context, int attr) {
 
         final TypedValue outValue = new TypedValue();
         final Resources.Theme theme = context.getTheme();
@@ -56,7 +60,7 @@ class Utils {
     }
 
     static void internalSetTint(ImageView imageView, int color) {
-        if(imageView == null || imageView.getDrawable() == null) {
+        if (imageView == null || imageView.getDrawable() == null) {
             return;
         }
 
@@ -70,7 +74,7 @@ class Utils {
      * Checks whether an app is installed and enabled.
      *
      * @param packageName The package name of an app.
-     * @param context The context.
+     * @param context     The context.
      * @return true if app is installed and enabled, false otherwise.
      */
     static boolean isAppAvailable(String packageName, Context context) {
@@ -103,7 +107,8 @@ class Utils {
 
             Bitmap output = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(output);
-            canvas.drawRoundRect(new RectF(margin, margin, source.getWidth() - margin, source.getHeight() - margin), radius, radius, paint);
+            canvas.drawRoundRect(new RectF(margin, margin, source.getWidth() - margin, source.getHeight() - margin),
+                    radius, radius, paint);
 
             if (source != output) {
                 source.recycle();
