@@ -32,6 +32,7 @@ public class BelvedereUi {
     private final static String FRAGMENT_TAG = "BelvedereDialog";
     private final static String EXTRA_MEDIA_INTENT = "extra_intent";
     private final static String FRAGMENT_TAG_POPUP = "belvedere_image_stream";
+    private final static String INTENT_URI_SCHEMA = "package";
 
     /**
      * Gets the builder for showing the ImageStream.
@@ -227,7 +228,7 @@ public class BelvedereUi {
                                         settingsIntent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                                         settingsIntent.setData(
                                                 Uri.fromParts(
-                                                        "package",
+                                                        INTENT_URI_SCHEMA,
                                                         appCompatActivity.getPackageName(),
                                                         null
                                                 )
