@@ -36,7 +36,7 @@ parts:
       screenshot: "https://drive.google.com/file/d/1o8ajJQJOTULydtKaT_yIBGTuJrf3ZrAK/view?usp=sharing"
       value: "To send attachments, you must grant permissions in your settings."
   - translation:
-      key: "belvedere_navigate_to_settings"
+      key: "bsdk_belvedere_navigate_to_settings"
       title: "Navigate the end-user to the settings of the integrated app to grantee the permissions manually."
       screenshot: "https://drive.google.com/file/d/1o8ajJQJOTULydtKaT_yIBGTuJrf3ZrAK/view?usp=sharing"
       value: "Settings"
