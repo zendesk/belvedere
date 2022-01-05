@@ -5,7 +5,7 @@ packages:
   - enduser_sdk
 
 parts:
-# Dialog
+  # Dialog
   - translation:
       key: "bsdk_belvedere_dialog_gallery"
       title: "Label of a button that allows the user to select an image from the image gallery"
@@ -14,7 +14,7 @@ parts:
       key: "bsdk_belvedere_dialog_camera"
       title: "Label of a button that allows the user to select an image from the image gallery"
       value: "Camera"
-# Image stream
+  # Image stream
   - translation:
       key: "bsdk_belvedere_image_stream_title"
       title: "Title, presented at the top of the screen to indicate the title of the screen being shown"
@@ -35,7 +35,17 @@ parts:
       title: "Error toast, shown if the user hasn't granted the needed system permissions for showing the image picker."
       screenshot: "https://zendesk.box.com/s/a8j83m0grw5yol3fhp6qodxqbi2a0wkw"
       value: "Permissions denied"
-# Image stream - talk back
+  - translation:
+      key: "bsdk_belvedere_permissions_snack_bar_error"
+      title: "Error snack bar, shown if the user hasn't granted the needed system permissions for showing the image picker."
+      screenshot: "https://drive.google.com/file/d/1o8ajJQJOTULydtKaT_yIBGTuJrf3ZrAK/view?usp=sharing"
+      value: "To send attachments, you must grant permissions in your settings."
+  - translation:
+      key: "bsdk_belvedere_navigate_to_settings"
+      title: "Navigate the end-user to the settings of the integrated app to grantee the permissions manually."
+      screenshot: "https://drive.google.com/file/d/1o8ajJQJOTULydtKaT_yIBGTuJrf3ZrAK/view?usp=sharing"
+      value: "Settings"
+  # Image stream - talk back
   - translation:
       key: "bsdk_belvedere_fam_desc_expand_fam"
       title: "Accessibility, talk back. Gets read out when the user selects the collapsed floating action menu button"
