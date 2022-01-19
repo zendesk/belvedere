@@ -52,6 +52,7 @@ interface ImageStreamMvp {
 
         boolean shouldShowFullScreen();
 
+        void updateFloatingActionButton(int selectedImages);
     }
 
     interface Presenter {
@@ -62,6 +63,7 @@ interface ImageStreamMvp {
 
         void dismiss();
 
+        void sendSelectedImages();
     }
 
 }

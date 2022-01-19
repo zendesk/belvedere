@@ -1,6 +1,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="zendesk.belvedere">
+
+    <!-- Needed for api 30+ https://developer.android.com/about/versions/11/privacy/package-visibility -->
+    <queries>
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <!-- Docs -->
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <!-- Gallery -->
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+
     <application>
+
         <provider
             android:name="zendesk.belvedere.BelvedereFileProvider"
             android:authorities="${applicationId}${belvedereFileProviderAuthoritySuffix}"

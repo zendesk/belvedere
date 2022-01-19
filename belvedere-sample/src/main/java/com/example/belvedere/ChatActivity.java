@@ -31,9 +31,11 @@ public class ChatActivity extends AppCompatActivity {
 
     private Listener listener;
     private ImageStream.ScrollListener scrollListener;
+    private ImageStream.SendListener sendListener = new SendListener();
 
     static List<MediaResult> mediaResults = new ArrayList<>();
     static Collection<MediaResult> extraResults = new LinkedHashSet<>();
+    private FakeAdapter adapter = new FakeAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         scrollListener = new ScrollListener();
         imageStream.addListener(listener);
         imageStream.addScrollListener(scrollListener);
+        imageStream.addSendListener(sendListener);
         input = findViewById(R.id.input);
 
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
@@ -61,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.activity_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new FakeAdapter());
+        recyclerView.setAdapter(adapter);
         init();
     }
 
@@ -120,6 +123,7 @@ public class ChatActivity extends AppCompatActivity {
             if(!imageStream.isAttachmentsPopupVisible()) {
                 showImageStream();
             }
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -135,6 +139,17 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    private static class SendListener implements ImageStream.SendListener {
+
+        @Override
+        public void onSend(List<MediaResult> mediaResults) {
+            extraResults.clear();
+            extraResults.addAll(mediaResults);
+            ChatActivity.mediaResults.clear();
+            ChatActivity.mediaResults.addAll(mediaResults);
+        }
+    }
+
     private void showImageStream() {
         BelvedereUi.imageStream(ChatActivity.this)
                 .withCameraIntent()
@@ -145,7 +160,7 @@ public class ChatActivity extends AppCompatActivity {
                 .showPopup(ChatActivity.this);
     }
 
-    class FakeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static class FakeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -156,12 +171,20 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("Belvedere Demo");
+            if (mediaResults.isEmpty()) {
+                ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText("No items selected");
+            } else {
+                ((TextView)holder.itemView.findViewById(android.R.id.text1)).setText(mediaResults.get(position).getName());
+            }
         }
 
         @Override
         public int getItemCount() {
-            return 1;
+            if (mediaResults.isEmpty()) {
+                return 1;
+            } else {
+                return mediaResults.size();
+            }
         }
     }
 }

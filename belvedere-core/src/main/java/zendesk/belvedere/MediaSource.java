@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -144,6 +145,7 @@ class MediaSource {
      * @param resolveFiles {@code true} if the selected files should be copied into the internal cache,
      *        {@code false} if not
      */
+    @SuppressWarnings("JavadocReference")
     void getFilesFromActivityOnResult(Context context, int requestCode, int resultCode,
                                       Intent data, Callback<List<MediaResult>> callback, boolean resolveFiles){
         final List<MediaResult> result = new ArrayList<>();
@@ -202,8 +204,10 @@ class MediaSource {
      * @return True if the system is able to handle the provided {@link Intent}
      *      False if not
      */
-    private boolean isIntentResolvable(Intent intent, Context context){
-        return intent != null && intent.resolveActivity(context.getPackageManager()) != null;
+    private boolean isIntentResolvable(Intent intent, Context context) {
+        PackageManager manager = context.getPackageManager();
+        List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
+        return infos.size() > 0;
     }
 
     /**

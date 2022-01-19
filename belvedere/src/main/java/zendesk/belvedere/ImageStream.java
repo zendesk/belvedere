@@ -23,6 +23,7 @@ public class ImageStream extends Fragment {
     private WeakReference<KeyboardHelper> keyboardHelper = new WeakReference<>(null);
 
     private List<WeakReference<Listener>> imageStreamListener = new ArrayList<>();
+    private List<WeakReference<SendListener>> imageStreamSendListener = new ArrayList<>();
     private List<WeakReference<ScrollListener>> imageStreamScrollListener = new ArrayList<>();
 
     private ImageStreamUi imageStreamPopup = null;
@@ -122,6 +123,15 @@ public class ImageStream extends Fragment {
         }
     }
 
+    void notifyImagesSent(List<MediaResult> mediaResults) {
+        for(WeakReference<SendListener> ref : imageStreamSendListener) {
+            final SendListener listener = ref.get();
+            if(listener != null) {
+                listener.onSend(mediaResults);
+            }
+        }
+    }
+
     void notifyDismissed() {
         callback = null; // Prevent memory leak of Callback
 
@@ -166,6 +176,13 @@ public class ImageStream extends Fragment {
      */
     public void addScrollListener(ScrollListener listener) {
         imageStreamScrollListener.add(new WeakReference<>(listener));
+    }
+
+    /**
+     * Add a {@link ScrollListener} to get informed when the ImageStream gets dragged by the user.
+     */
+    public void addSendListener(SendListener listener) {
+        imageStreamSendListener.add(new WeakReference<>(listener));
     }
 
     /**
@@ -232,5 +249,17 @@ public class ImageStream extends Fragment {
          * @param scrollPosition
          */
         void onScroll(int height, int scrollArea, float scrollPosition);
+    }
+
+    /**
+     * Informs about the selected attachments to be sent.
+     */
+    public interface SendListener {
+
+        /**
+         * Called with the selected attachments when the send button is clicked
+         * @params mediaFiles the selected attachments to be sent
+         */
+        void onSend(List<MediaResult> mediaResults);
     }
 }
