@@ -25,6 +25,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
         presentStream();
         initMenu();
         view.updateToolbarTitle(model.getSelectedMediaResults().size());
+        view.updateFloatingActionButton(model.getSelectedMediaResults().size());
     }
 
     @Override
@@ -44,6 +45,12 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
 
         // notify observers
         imageStreamBackend.notifyDismissed();
+    }
+
+    @Override
+    public void sendSelectedImages() {
+        List<MediaResult> results = model.getSelectedMediaResults();
+        imageStreamBackend.notifyImagesSent(results);
     }
 
     private List<MediaResult> setItemSelected(MediaResult mediaResult, boolean isSelected) {
@@ -124,6 +131,7 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
                 List<MediaResult> items = setItemSelected(media, item.isSelected());
 
                 view.updateToolbarTitle(items.size());
+                view.updateFloatingActionButton(items.size());
 
                 List<MediaResult> results = new ArrayList<>();
                 results.add(media);
