@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="belvedere_dialog_camera">Appareil photo</string>
+	<string name="belvedere_dialog_gallery">Galerie</string>
+	<string name="belvedere_fam_desc_collapse_fam">Réduire le menu Actions flottant</string>
+	<string name="belvedere_fam_desc_expand_fam">Développer le menu Actions flottant</string>
+	<string name="belvedere_fam_desc_open_gallery">Importer le fichier à partir de la galerie</string>
+	<string name="belvedere_fam_desc_open_google_photos">Importer l’image à partir de Google Photos</string>
+	<string name="belvedere_image_stream_file_too_large">Fichier trop volumineux</string>
+	<string name="belvedere_image_stream_title">Bibliothèque de photos</string>
+	<string name="belvedere_image_stream_unknown_app">Inconnu</string>
+	<string name="belvedere_permissions_denied">Permissions refusées</string>
+	<string name="belvedere_stream_item_camera_tile_desc">Importer l’image à partir de l’appareil photo</string>
+	<string name="belvedere_stream_item_select_file_desc">Sélectionner le fichier %s</string>
+	<string name="belvedere_stream_item_select_image_desc">Sélectionner l’image %s</string>
+	<string name="belvedere_stream_item_unselect_file_desc">Désélectionner le fichier %s</string>
+	<string name="belvedere_stream_item_unselect_image_desc">Désélectionner l’image %s</string>
+	<string name="belvedere_toolbar_desc_collapse">Fermer le sélecteur d’image</string>
+</resources>
