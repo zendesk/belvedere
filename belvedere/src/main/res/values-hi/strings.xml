@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">फ़ाइल %s का चयन रद्द करेंं</string>
 	<string name="belvedere_stream_item_unselect_image_desc">छवि %s का चयन रद्द करेंं</string>
 	<string name="belvedere_toolbar_desc_collapse">छवि पिकर बंद करें</string>
+    <string name="belvedere_permissions_rationale">अटैचमेंट भेजने के लिए आपको अपनी सेटिंग में अनुमतियों की अनुमति देनी होगी</string>
+	<string name="belvedere_navigate_to_settings">सेटिंग्स</string>
 </resources>

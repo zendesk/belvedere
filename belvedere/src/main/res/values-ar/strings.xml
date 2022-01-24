@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">إلغاء تحديد الملف %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">إلغاء تحديد الصورة %s</string>
 	<string name="belvedere_toolbar_desc_collapse">إغلاق منتقي الصورة</string>
+    <string name="belvedere_permissions_rationale">لإرسال المرفقات، سيكون عليك السماح بالأذونات في الإعدادات لديك</string>
+	<string name="belvedere_navigate_to_settings">إعدادات</string>
 </resources>

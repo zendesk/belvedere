@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Zrušit výběr souboru %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Zrušit výběr obrázku %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Zavřít výběr obrázků</string>
+    <string name="belvedere_navigate_to_settings">Nastavení</string>
+	<string name="belvedere_permissions_rationale">Chcete-li odesílat přílohy, musíte v nastavení povolit oprávnění</string>
 </resources>

@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Désélectionner le fichier %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Désélectionner l’image %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Fermer le sélecteur d’image</string>
+    <string name="belvedere_navigate_to_settings">Paramètres</string>
+	<string name="belvedere_permissions_rationale">Pour envoyer des pièces jointes, vous devez autoriser les permissions dans vos paramètres.</string>
 </resources>

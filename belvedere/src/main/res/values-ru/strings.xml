@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Отменить выбор файла %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Отменить выбор изображения %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Закрыть окно выбора изображения</string>
+    <string name="belvedere_permissions_rationale">Для отправки прикрепленных файлов необходимо предоставить разрешения в настройках</string>
+	<string name="belvedere_navigate_to_settings">Настройки</string>
 </resources>

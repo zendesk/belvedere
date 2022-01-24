@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Opphev merking av filen %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Opphev merking av bildet %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Lukk bildevelger</string>
+    <string name="belvedere_navigate_to_settings">Innstillinger</string>
+	<string name="belvedere_permissions_rationale">Hvis du vil sende vedlegg, må du tillate dette i innstillingene dine</string>
 </resources>

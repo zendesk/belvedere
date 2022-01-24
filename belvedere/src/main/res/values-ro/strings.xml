@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Deselectare fișier %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Deselectare imagine %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Închidere selector imagini</string>
+    <string name="belvedere_navigate_to_settings">Setări</string>
+	<string name="belvedere_permissions_rationale">Pentru a trimite fișiere atașate, trebuie să acordați permisiuni în setări</string>
 </resources>

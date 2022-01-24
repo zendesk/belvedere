@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">%s nevű fájl kiválasztásának megszüntetése</string>
 	<string name="belvedere_stream_item_unselect_image_desc">%s nevű kép kiválasztásának megszüntetése</string>
 	<string name="belvedere_toolbar_desc_collapse">A képválasztó bezárása</string>
+    <string name="belvedere_navigate_to_settings">Beállítások</string>
+	<string name="belvedere_permissions_rationale">Mellékletek küldéséhez engedélyeket kell engedélyeznie a beállításokban</string>
 </resources>

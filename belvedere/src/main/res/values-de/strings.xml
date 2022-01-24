@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Auswahl von Datei %s aufheben</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Auswahl von Bild %s aufheben</string>
 	<string name="belvedere_toolbar_desc_collapse">Bildauswahl schließen</string>
+    <string name="belvedere_navigate_to_settings">Einstellungen</string>
+	<string name="belvedere_permissions_rationale">Zum Senden von Anhängen müssen Sie in Ihren Einstellungen Berechtigungen zulassen</string>
 </resources>

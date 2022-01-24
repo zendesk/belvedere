@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Deselecteer bestand %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Deselecteer afbeelding %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Afbeeldingenkiezer sluiten</string>
+    <string name="belvedere_navigate_to_settings">Instellingen</string>
+	<string name="belvedere_permissions_rationale">Als u bijlagen wilt verzenden, moet u machtigingen toestaan in uw instellingen</string>
 </resources>

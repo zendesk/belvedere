@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">בטל את הבחירה בקובץ %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">בטל את הבחירה בתמונה %s</string>
 	<string name="belvedere_toolbar_desc_collapse">סגור את בוחר התמונות</string>
+    <string name="belvedere_navigate_to_settings">הגדרות</string>
+	<string name="belvedere_permissions_rationale">כדי לשלוח קבצים מצורפים עליך לאפשר הרשאות בהגדרות שלך</string>
 </resources>

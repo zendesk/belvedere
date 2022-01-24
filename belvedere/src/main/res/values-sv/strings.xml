@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Avmarkera filen %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Avmarkera bilden %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Stäng bildväljaren</string>
+    <string name="belvedere_permissions_rationale">Om du vill skicka bilagor måste du tillåta behörigheter i dina inställningar</string>
+	<string name="belvedere_navigate_to_settings">Inställningar</string>
 </resources>

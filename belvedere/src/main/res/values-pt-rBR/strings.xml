@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Cancelar seleção do arquivo %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Cancelar seleção da imagem %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Fechar seletor de imagens</string>
+    <string name="belvedere_permissions_rationale">Para enviar anexos, você precisa conceder permissões nas suas configurações</string>
+	<string name="belvedere_navigate_to_settings">Configurações</string>
 </resources>

@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Urung pilih file %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Urung pilih gambar %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Tutup pemilih gambar</string>
+    <string name="belvedere_permissions_rationale">Untuk mengirim lampiran, Anda perlu mengizinkan izin di pengaturan Anda</string>
+	<string name="belvedere_navigate_to_settings">Pengaturan</string>
 </resources>

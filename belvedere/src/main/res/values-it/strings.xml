@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Deseleziona file %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Deseleziona immagine %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Chiudi strumento di selezione immagini</string>
+    <string name="belvedere_navigate_to_settings">Impostazioni</string>
+	<string name="belvedere_permissions_rationale">Per inviare allegati devi concedere le autorizzazioni nelle impostazioni</string>
 </resources>

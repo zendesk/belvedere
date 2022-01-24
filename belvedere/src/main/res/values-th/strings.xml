@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">ยกเลิกเลือกไฟล์ %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">ยกเลิกเลือกภาพ %s</string>
 	<string name="belvedere_toolbar_desc_collapse">ปิดตัวเลือกภาพ</string>
+    <string name="belvedere_navigate_to_settings">การตั้งค่า</string>
+	<string name="belvedere_permissions_rationale">หากต้องการส่งไฟล์แนบ คุณจําเป็นต้องอนุญาตสิทธิ์ในการตั้งค่าของคุณ</string>
 </resources>
