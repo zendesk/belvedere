@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Κατάργηση επιλογής αρχείου %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Κατάργηση επιλογής εικόνας%s</string>
 	<string name="belvedere_toolbar_desc_collapse">Κλείσιμο εργαλείου επιλογής εικόνας</string>
+    <string name="belvedere_permissions_rationale">Για να στείλετε συνημμένα, πρέπει να επιτρέψετε δικαιώματα στις ρυθμίσεις σας</string>
+	<string name="belvedere_navigate_to_settings">Ρυθμίσεις</string>
 </resources>

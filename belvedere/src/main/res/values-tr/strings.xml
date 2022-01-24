@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">%s adlı dosyanın seçimini kaldırın</string>
 	<string name="belvedere_stream_item_unselect_image_desc">%s adlı resmin seçimini kaldırın</string>
 	<string name="belvedere_toolbar_desc_collapse">Resim seçiciyi kapatın</string>
+    <string name="belvedere_permissions_rationale">Ekleri göndermek için ayarlarınızda izinlere izin vermeniz gerekir</string>
+	<string name="belvedere_navigate_to_settings">Ayarlar</string>
 </resources>

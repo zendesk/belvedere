@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Fravælg filen %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Fravælg billedet %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Luk billedvælger</string>
+    <string name="belvedere_permissions_rationale">Hvis du vil sende vedhæftede filer, skal du acceptere tilladelser i dine indstillinger</string>
+	<string name="belvedere_navigate_to_settings">Indstillinger</string>
 </resources>

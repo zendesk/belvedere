@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Премахване на избора на файл %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Премахване на избора на изображение %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Затваряне на избирача на изображения</string>
+    <string name="belvedere_navigate_to_settings">Настройки</string>
+	<string name="belvedere_permissions_rationale">За да изпращате прикачени файлове, трябва да активирате разрешенията в настройките си</string>
 </resources>

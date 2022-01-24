@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Unselect file %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Unselect image %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Close image picker</string>
+    <string name="belvedere_permissions_rationale">To send attachments you need to allow permissions in your settings</string>
+	<string name="belvedere_navigate_to_settings">Settings</string>
 </resources>

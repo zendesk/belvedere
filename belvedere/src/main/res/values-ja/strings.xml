@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">ファイル%sの選択を解除します</string>
 	<string name="belvedere_stream_item_unselect_image_desc">画像%sの選択を解除します</string>
 	<string name="belvedere_toolbar_desc_collapse">画像ピッカーを閉じます</string>
+    <string name="belvedere_permissions_rationale">添付ファイルを送信するには、設定で権限を許可する必要があります</string>
+	<string name="belvedere_navigate_to_settings">設定</string>
 </resources>

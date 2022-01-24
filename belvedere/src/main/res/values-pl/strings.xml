@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Wyczyść zaznaczenie pliku %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Wyczyść zaznaczenie obrazu %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Zamknij wybór obrazów</string>
+    <string name="belvedere_permissions_rationale">Aby wysyłać załączniki, musisz przyznać im uprawnienia w ustawieniach</string>
+	<string name="belvedere_navigate_to_settings">Ustawienia</string>
 </resources>

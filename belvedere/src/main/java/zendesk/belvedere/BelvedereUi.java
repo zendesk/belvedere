@@ -218,7 +218,7 @@ public class BelvedereUi {
                         final ViewGroup parentView = appCompatActivity.findViewById(android.R.id.content);
                         Utils.showSnackBar(
                                 parentView,
-                                appCompatActivity.getString(R.string.belvedere_permissions_denied),
+                                appCompatActivity.getString(R.string.belvedere_permissions_rationale),
                                 Snackbar.LENGTH_LONG,
                                 appCompatActivity.getString(R.string.belvedere_navigate_to_settings),
                                 new OnClickListener() {

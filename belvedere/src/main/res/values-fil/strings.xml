@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">I-unselect ang file na %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">I-unselect ang larawan na %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Isara ang picker ng larawan</string>
+    <string name="belvedere_navigate_to_settings">Mga Setting</string>
+	<string name="belvedere_permissions_rationale">Para magpadala ng mga kalakip, kailangan mong payagan ang mga pahintulot sa iyong mga setting</string>
 </resources>

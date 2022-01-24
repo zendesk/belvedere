@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Nyahpilih fail %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Nyahpilih imej %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Tutup pemungut imej</string>
+    <string name="belvedere_permissions_rationale">Untuk menghantar lampiran, anda perlu membenarkan keizinan dalam tetapan anda</string>
+	<string name="belvedere_navigate_to_settings">Tetapan</string>
 </resources>

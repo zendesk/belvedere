@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">%s 파일 선택 취소</string>
 	<string name="belvedere_stream_item_unselect_image_desc">%s 이미지 선택 취소</string>
 	<string name="belvedere_toolbar_desc_collapse">이미지 선택기 닫기</string>
+    <string name="belvedere_navigate_to_settings">설정</string>
+	<string name="belvedere_permissions_rationale">첨부 파일을 보내려면 설정에서 권한을 허용해야 합니다.</string>
 </resources>

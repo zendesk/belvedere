@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">取消选择文件 %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">取消选择图像 %s</string>
 	<string name="belvedere_toolbar_desc_collapse">关闭图像选取器</string>
+    <string name="belvedere_permissions_rationale">要发送附件，您需要在设置中允许权限</string>
+	<string name="belvedere_navigate_to_settings">设置</string>
 </resources>

@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Poista valinta tiedostosta %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Poista valinta kuvasta %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Sulje kuvan valintatyökalu</string>
+    <string name="belvedere_permissions_rationale">Myönnä oikeudet asetuksista, jotta voit lähettää liitetiedostoja</string>
+	<string name="belvedere_navigate_to_settings">Asetukset</string>
 </resources>

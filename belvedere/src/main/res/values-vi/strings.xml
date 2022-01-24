@@ -16,4 +16,6 @@
 	<string name="belvedere_stream_item_unselect_file_desc">Bỏ chọn tập tin %s</string>
 	<string name="belvedere_stream_item_unselect_image_desc">Bỏ chọn ảnh %s</string>
 	<string name="belvedere_toolbar_desc_collapse">Đóng trình chọn ảnh</string>
+    <string name="belvedere_navigate_to_settings">Cài đặt</string>
+	<string name="belvedere_permissions_rationale">Để gửi tập tin đính kèm, bạn phải cho phép quyền trong cài đặt của bạn.</string>
 </resources>

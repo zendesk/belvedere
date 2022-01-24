@@ -9,12 +9,13 @@
     <string name="belvedere_image_stream_file_too_large">File too large</string>
     <string name="belvedere_image_stream_title">Photo library</string>
     <string name="belvedere_image_stream_unknown_app">Unknown</string>
-    <string name="belvedere_permissions_denied">To send attachments, you must grant permissions in your settings</string>
-    <string name="belvedere_navigate_to_settings" translatable="false">Settings</string>
+    <string name="belvedere_permissions_denied">Permissions denied</string>
     <string name="belvedere_stream_item_camera_tile_desc">Import image from camera</string>
     <string name="belvedere_stream_item_select_file_desc">Select file %s</string>
     <string name="belvedere_stream_item_select_image_desc">Select image %s</string>
     <string name="belvedere_stream_item_unselect_file_desc">Unselect file %s</string>
     <string name="belvedere_stream_item_unselect_image_desc">Unselect image %s</string>
     <string name="belvedere_toolbar_desc_collapse">Close image picker</string>
+    <string name="belvedere_navigate_to_settings">Settings</string>
+    <string name="belvedere_permissions_rationale">To send attachments you need to allow permissions in your settings</string>
 </resources>
