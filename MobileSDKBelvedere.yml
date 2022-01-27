@@ -38,7 +38,7 @@ parts:
   - translation:
       key: "bsdk_belvedere_attachment_permissions_rationale"
       title: "Message show when the user tries to attach a file and required permissions have been denied"
-      value: "To send attachments you need to allow permissions in your settings"
+      value: "To send attachments, you need to allow permissions in your settings"
       screenshot: "https://drive.google.com/file/d/1ZVWspcIZ4oUwnTz8it9G23ndOf5juUtF/view?usp=sharing"
   - translation:
       key: "bsdk_belvedere_navigate_to_settings"
