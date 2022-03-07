@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -216,10 +215,10 @@ public class BelvedereUi {
                     final Activity appCompatActivity = popupBackend.getActivity();
                     if (appCompatActivity != null) {
                         final ViewGroup parentView = appCompatActivity.findViewById(android.R.id.content);
-                        Utils.showSnackBar(
+                        Utils.showBottomSheetDialog(
                                 parentView,
                                 appCompatActivity.getString(R.string.belvedere_permissions_rationale),
-                                Snackbar.LENGTH_LONG,
+                                5000L,
                                 appCompatActivity.getString(R.string.belvedere_navigate_to_settings),
                                 new OnClickListener() {
                                     @Override

@@ -1,6 +1,9 @@
 package zendesk.belvedere;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,12 +14,15 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Transformation;
 import java.util.Locale;
 import zendesk.belvedere.ui.R;
@@ -36,11 +42,48 @@ class Utils {
         }
     }
 
-    static void showSnackBar(View view, String message, int length, CharSequence actionMessage,
-            View.OnClickListener onActionClickListener) {
-        final Snackbar snackbar = Snackbar.make(view, message, length);
-        snackbar.setAction(actionMessage, onActionClickListener);
-        snackbar.show();
+    static void showBottomSheetDialog(final View view, String message, long length, CharSequence actionMessage,
+            final View.OnClickListener onActionClickListener
+    ) {
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(view.getContext());
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                bottomSheetDialog.cancel();
+            }
+        };
+        bottomSheetDialog.setContentView(R.layout.belvedere_bottom_sheet);
+        TextView messageTextView = bottomSheetDialog.findViewById(R.id.belvedere_bottom_sheet_message_text);
+        if (messageTextView != null) {
+            messageTextView.setText(message);
+        }
+        TextView actionTextView = bottomSheetDialog.findViewById(R.id.belvedere_bottom_sheet_actions_text);
+        if (actionTextView != null) {
+            actionTextView.setText(actionMessage);
+            actionTextView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onActionClickListener.onClick(view);
+                    bottomSheetDialog.cancel();
+                }
+            });
+        }
+        bottomSheetDialog.setCancelable(true);
+        bottomSheetDialog.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        bottomSheetDialog.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        bottomSheetDialog.show();
+        handler.postDelayed(runnable, length);
     }
 
     static int getThemeColor(Context context, int attr) {

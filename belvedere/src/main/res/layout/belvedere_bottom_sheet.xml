@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/zuia_bottom_sheet_container"
+    style="@style/Widget.MaterialComponents.Snackbar.FullWidth"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/belvedere_spacing_medium"
+    android:background="@color/belvedere_bottom_sheet_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/belvedere_bottom_sheet_message_text"
+        style="@style/Widget.MaterialComponents.Snackbar.TextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/belvedere_spacing_small"
+        android:maxLines="4"
+        android:textColor="@color/belvedere_bottom_sheet_text_color"
+        android:textSize="14sp"
+        tools:text="To send attachments you need to allow permissions in your settings" />
+
+    <TextView
+        android:id="@+id/belvedere_bottom_sheet_actions_text"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Snackbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/belvedere_bottom_sheet_action_color"
+        android:textSize="14sp"
+        tools:text="Settings" />
+
+</LinearLayout>
