@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
@@ -41,8 +42,8 @@ class Utils {
         }
     }
 
-    static void showBottomSheetDialog(View view, String message, long length, CharSequence actionMessage,
-            View.OnClickListener onActionClickListener
+    static void showBottomSheetDialog(final View view, String message, long length, CharSequence actionMessage,
+            final View.OnClickListener onActionClickListener
     ) {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(view.getContext());
         final Handler handler = new Handler();
@@ -60,7 +61,13 @@ class Utils {
         TextView actionTextView = bottomSheetDialog.findViewById(R.id.belvedere_bottom_sheet_actions_text);
         if (actionTextView != null) {
             actionTextView.setText(actionMessage);
-            actionTextView.setOnClickListener(onActionClickListener);
+            actionTextView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onActionClickListener.onClick(view);
+                    bottomSheetDialog.cancel();
+                }
+            });
         }
         bottomSheetDialog.setCancelable(true);
         bottomSheetDialog.setOnCancelListener(new OnCancelListener() {
