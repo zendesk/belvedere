@@ -1,6 +1,9 @@
 package zendesk.belvedere;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,12 +14,14 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Transformation;
 import java.util.Locale;
 import zendesk.belvedere.ui.R;
@@ -36,11 +41,42 @@ class Utils {
         }
     }
 
-    static void showSnackBar(View view, String message, int length, CharSequence actionMessage,
-            View.OnClickListener onActionClickListener) {
-        final Snackbar snackbar = Snackbar.make(view, message, length);
-        snackbar.setAction(actionMessage, onActionClickListener);
-        snackbar.show();
+    static void showDeniedPermissionView(View view, String message, long length, CharSequence actionMessage,
+            View.OnClickListener onActionClickListener
+    ) {
+        final BottomSheetDialog permissionRationaleDialog = new BottomSheetDialog(view.getContext());
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                permissionRationaleDialog.cancel();
+            }
+        };
+        permissionRationaleDialog.setContentView(R.layout.belvedere_bottom_sheet);
+        TextView messageTextView = permissionRationaleDialog.findViewById(R.id.belvedere_bottom_sheet_message_text);
+        if (messageTextView != null) {
+            messageTextView.setText(message);
+        }
+        TextView actionTextView = permissionRationaleDialog.findViewById(R.id.belvedere_bottom_sheet_actions_text);
+        if (actionTextView != null) {
+            actionTextView.setText(actionMessage);
+            actionTextView.setOnClickListener(onActionClickListener);
+        }
+        permissionRationaleDialog.setCancelable(true);
+        permissionRationaleDialog.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        permissionRationaleDialog.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        permissionRationaleDialog.show();
+        handler.postDelayed(runnable, length);
     }
 
     static int getThemeColor(Context context, int attr) {
