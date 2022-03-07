@@ -41,41 +41,41 @@ class Utils {
         }
     }
 
-    static void showDeniedPermissionView(View view, String message, long length, CharSequence actionMessage,
+    static void showBottomSheetDialog(View view, String message, long length, CharSequence actionMessage,
             View.OnClickListener onActionClickListener
     ) {
-        final BottomSheetDialog permissionRationaleDialog = new BottomSheetDialog(view.getContext());
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(view.getContext());
         final Handler handler = new Handler();
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                permissionRationaleDialog.cancel();
+                bottomSheetDialog.cancel();
             }
         };
-        permissionRationaleDialog.setContentView(R.layout.belvedere_bottom_sheet);
-        TextView messageTextView = permissionRationaleDialog.findViewById(R.id.belvedere_bottom_sheet_message_text);
+        bottomSheetDialog.setContentView(R.layout.belvedere_bottom_sheet);
+        TextView messageTextView = bottomSheetDialog.findViewById(R.id.belvedere_bottom_sheet_message_text);
         if (messageTextView != null) {
             messageTextView.setText(message);
         }
-        TextView actionTextView = permissionRationaleDialog.findViewById(R.id.belvedere_bottom_sheet_actions_text);
+        TextView actionTextView = bottomSheetDialog.findViewById(R.id.belvedere_bottom_sheet_actions_text);
         if (actionTextView != null) {
             actionTextView.setText(actionMessage);
             actionTextView.setOnClickListener(onActionClickListener);
         }
-        permissionRationaleDialog.setCancelable(true);
-        permissionRationaleDialog.setOnCancelListener(new OnCancelListener() {
+        bottomSheetDialog.setCancelable(true);
+        bottomSheetDialog.setOnCancelListener(new OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 handler.removeCallbacks(runnable);
             }
         });
-        permissionRationaleDialog.setOnDismissListener(new OnDismissListener() {
+        bottomSheetDialog.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 handler.removeCallbacks(runnable);
             }
         });
-        permissionRationaleDialog.show();
+        bottomSheetDialog.show();
         handler.postDelayed(runnable, length);
     }
 

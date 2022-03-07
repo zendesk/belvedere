@@ -215,7 +215,7 @@ public class BelvedereUi {
                     final Activity appCompatActivity = popupBackend.getActivity();
                     if (appCompatActivity != null) {
                         final ViewGroup parentView = appCompatActivity.findViewById(android.R.id.content);
-                        Utils.showDeniedPermissionView(
+                        Utils.showBottomSheetDialog(
                                 parentView,
                                 appCompatActivity.getString(R.string.belvedere_permissions_rationale),
                                 5000L,
