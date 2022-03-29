@@ -258,7 +258,7 @@ public class ImageStream extends Fragment {
 
         /**
          * Called with the selected attachments when the send button is clicked
-         * @params mediaFiles the selected attachments to be sent
+         * @param mediaResults the selected attachments to be sent
          */
         void onSend(List<MediaResult> mediaResults);
     }
