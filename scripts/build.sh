@@ -2,7 +2,8 @@
 
 # common stuff
 isPullRequest() {
-    [[ "$GITHUB_EVENT_NAME" == "pull_request" ]] && return 1 || return 0
+    # Bash treats 0 as non-failure/success and non-zero as failure
+    [[ "$GITHUB_EVENT_NAME" == "pull_request" ]] && return 0 || return 255
 }
 
 exitOnFailedBuild() {
