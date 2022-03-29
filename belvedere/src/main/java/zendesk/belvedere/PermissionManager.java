@@ -18,17 +18,11 @@ class PermissionManager {
 
     private static final int PERMISSION_REQUEST_CODE = 9842;
 
-    private PermissionStorage preferences;
     private InternalPermissionCallback permissionListener = null;
 
-    PermissionManager(Context context) {
-        this.preferences = new PermissionStorage(context);
-    }
-
-    boolean onRequestPermissionsResult(Fragment fragment, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             final Map<String, Boolean> permissionResult = new HashMap<>();
-            final List<String> dontAskAgain = new ArrayList<>();
 
             for(int i = 0, c = permissions.length; i < c; i++) {
                 if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
@@ -36,16 +30,11 @@ class PermissionManager {
 
                 } else if(grantResults[i] == PackageManager.PERMISSION_DENIED) {
                     permissionResult.put(permissions[i], false);
-
-                    boolean showRationale = fragment.shouldShowRequestPermissionRationale(permissions[i]);
-                    if (!showRationale) {
-                        dontAskAgain.add(permissions[i]);
-                    }
                 }
             }
 
             if(permissionListener != null) {
-                permissionListener.result(permissionResult, dontAskAgain);
+                permissionListener.result(permissionResult);
             }
 
             return true;
@@ -70,7 +59,7 @@ class PermissionManager {
         } else {
             askForPermissions(fragment, permissions, new InternalPermissionCallback() {
                 @Override
-                public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
+                public void result(Map<String, Boolean> permissionResult) {
                     final List<MediaIntent> filteredMediaIntents = filterMediaIntents(context, mediaIntents);
 
                     if(canShowImageStream(context)) {
@@ -86,11 +75,8 @@ class PermissionManager {
     private void askForPermissions(Fragment fragment, final List<String> permissions, final InternalPermissionCallback permissionCallback) {
         setListener(new InternalPermissionCallback() {
             @Override
-            public void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain) {
-                for(String permission : dontAskAgain) {
-                    preferences.neverEverAskForThatPermissionAgain(permission);
-                }
-                permissionCallback.result(permissionResult, dontAskAgain);
+            public void result(Map<String, Boolean> permissionResult) {
+                permissionCallback.result(permissionResult);
                 setListener(null);
             }
         });
@@ -121,8 +107,7 @@ class PermissionManager {
         final List<String> permission = new ArrayList<>();
 
         for (MediaIntent intent : mediaIntents) {
-            if (!TextUtils.isEmpty(intent.getPermission()) &&
-                    !preferences.shouldINeverEverAskForThatPermissionAgain(intent.getPermission()) && intent.isAvailable()) {
+            if (!TextUtils.isEmpty(intent.getPermission()) && intent.isAvailable()) {
                 permission.add(intent.getPermission());
             }
         }
@@ -134,10 +119,8 @@ class PermissionManager {
         final List<String> permissions = new ArrayList<>();
 
         final boolean canShowImageStream = canShowImageStream(context);
-        final boolean canAskForStoragePermission =
-                !preferences.shouldINeverEverAskForThatPermissionAgain(Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        if(!canShowImageStream && canAskForStoragePermission) {
+        if(!canShowImageStream) {
             permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
@@ -165,7 +148,7 @@ class PermissionManager {
     }
 
     private interface InternalPermissionCallback {
-        void result(Map<String, Boolean> permissionResult, List<String> dontAskAgain);
+        void result(Map<String, Boolean> permissionResult);
     }
 
 }
