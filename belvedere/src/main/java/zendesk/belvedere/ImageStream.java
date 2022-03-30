@@ -38,7 +38,7 @@ public class ImageStream extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        permissionManager = new PermissionManager(getContext());
+        permissionManager = new PermissionManager();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ImageStream extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        boolean handled = permissionManager.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+        boolean handled = permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(!handled) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -258,7 +258,7 @@ public class ImageStream extends Fragment {
 
         /**
          * Called with the selected attachments when the send button is clicked
-         * @params mediaFiles the selected attachments to be sent
+         * @param mediaResults the selected attachments to be sent
          */
         void onSend(List<MediaResult> mediaResults);
     }

@@ -43,7 +43,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     private ListView listView;
     private MediaIntent waitingForPermission;
     private List<MediaIntent> mediaIntents;
-    private PermissionStorage preferences;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +54,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = new PermissionStorage(requireContext());
         if (savedInstanceState != null) {
             waitingForPermission = savedInstanceState.getParcelable(STATE_WAITING_FOR_PERMISSION);
         }
@@ -94,7 +92,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
                     boolean showRationale = shouldShowRequestPermissionRationale(waitingForPermission.getPermission());
 
                     if (!showRationale) {
-                        preferences.neverEverAskForThatPermissionAgain(waitingForPermission.getPermission());
                         mediaIntents = getMediaIntents();
                         fillList(mediaIntents);
                     }
@@ -187,7 +184,6 @@ public class BelvedereDialog extends AppCompatDialogFragment {
         List<MediaIntent> filter = new ArrayList<>();
         for (MediaIntent belvedereIntent : intents) {
             if (TextUtils.isEmpty(belvedereIntent.getPermission())
-                    || !preferences.shouldINeverEverAskForThatPermissionAgain(belvedereIntent.getPermission())
                     || belvedereIntent.isAvailable()) {
                 filter.add(belvedereIntent);
             }
@@ -198,7 +194,7 @@ public class BelvedereDialog extends AppCompatDialogFragment {
 
     private static class Adapter extends ArrayAdapter<MediaIntent> {
 
-        private Context context;
+        private final Context context;
 
         Adapter(Context context, int resource, List<MediaIntent> objects) {
             super(context, resource, objects);
