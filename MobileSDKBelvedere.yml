@@ -1,7 +1,6 @@
 title: "MobileSDKBelvedere"
 packages:
   - MobileSDKBelvedere
-  - enduser
   - enduser_sdk
 
 parts:
