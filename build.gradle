@@ -2,8 +2,8 @@ apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/zendesk-repos.gradle'
 
 ext {
-    compileSdkVersion = 30
-    targetSdkVersion = 30
+    compileSdkVersion = 33
+    targetSdkVersion = 33
     minSdkVersionCore = 16
     minSdkVersionUi = 16
 
