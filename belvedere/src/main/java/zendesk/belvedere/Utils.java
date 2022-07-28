@@ -1,9 +1,13 @@
 package zendesk.belvedere;
 
+import static zendesk.belvedere.BelvedereUi.INTENT_URI_SCHEMA;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,7 +18,9 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +30,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Transformation;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 import zendesk.belvedere.ui.R;
 
@@ -84,6 +91,19 @@ class Utils {
         });
         bottomSheetDialog.show();
         handler.postDelayed(runnable, length);
+    }
+
+    static void openAppSettingsScreen(WeakReference<Activity> activity) {
+        Intent settingsIntent = new Intent();
+        settingsIntent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        settingsIntent.setData(
+                Uri.fromParts(
+                        INTENT_URI_SCHEMA,
+                        activity.get().getPackageName(),
+                        null
+                )
+        );
+        activity.get().startActivity(settingsIntent);
     }
 
     static int getThemeColor(Context context, int attr) {

@@ -13,6 +13,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import zendesk.belvedere.PermissionManager.InternalPermissionCallback;
 import zendesk.belvedere.ui.R;
 
 /**
@@ -154,6 +155,15 @@ public class ImageStream extends Fragment {
 
     void handlePermissions(final List<MediaIntent> mediaIntents, final PermissionManager.PermissionCallback permissionCallback) {
         permissionManager.handlePermissions(this, mediaIntents, permissionCallback);
+    }
+
+    /**
+     * Requests permissions from the given list.
+     * @param permissions list of permissions to be requested.
+     * @param permissionCallback callback that Keeps track of permissions' states
+     */
+    void requestPermissions(final List<String> permissions, final InternalPermissionCallback permissionCallback){
+        permissionManager.askForPermissions(this, permissions, permissionCallback);
     }
 
     /**

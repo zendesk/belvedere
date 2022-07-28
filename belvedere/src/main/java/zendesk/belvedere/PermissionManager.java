@@ -31,7 +31,6 @@ class PermissionManager {
     private static final String[] TIRAMISU_PERMISSIONS = {
             permission.READ_MEDIA_IMAGES,
             permission.READ_MEDIA_VIDEO,
-            permission.READ_MEDIA_AUDIO
     };
 
     boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -86,7 +85,7 @@ class PermissionManager {
         }
     }
 
-    private void askForPermissions(Fragment fragment, final List<String> permissions, final InternalPermissionCallback permissionCallback) {
+    public void askForPermissions(Fragment fragment, final List<String> permissions, final InternalPermissionCallback permissionCallback) {
         setListener(new InternalPermissionCallback() {
             @Override
             public void result(Map<String, Boolean> permissionResult) {
@@ -163,7 +162,7 @@ class PermissionManager {
         void onPermissionsDenied();
     }
 
-    private interface InternalPermissionCallback {
+    public interface InternalPermissionCallback {
         void result(Map<String, Boolean> permissionResult);
     }
 
