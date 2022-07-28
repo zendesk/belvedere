@@ -122,9 +122,9 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
                 new InternalPermissionCallback() {
                     @Override
                     public void result(Map<String, Boolean> permissionResult) {
-                        for (Entry<String, Boolean> per : permissionResult.entrySet()) {
-                            if (Objects.equals(per.getKey(), permission.READ_MEDIA_AUDIO)
-                                    && per.getValue()) {
+                        for (Entry<String, Boolean> entryPermission : permissionResult.entrySet()) {
+                            if (Objects.equals(entryPermission.getKey(), permission.READ_MEDIA_AUDIO)
+                                    && entryPermission.getValue()) {
                                 ImageStreamPresenter.this.view.openMediaIntent(model.getDocumentIntent(),
                                         imageStreamBackend);
                             } else {
