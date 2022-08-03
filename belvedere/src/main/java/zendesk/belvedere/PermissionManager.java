@@ -1,24 +1,37 @@
 package zendesk.belvedere;
 
+import static zendesk.belvedere.PermissionUtil.isPermissionGranted;
+
 import android.Manifest;
+import android.Manifest.permission;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 class PermissionManager {
 
     private static final int PERMISSION_REQUEST_CODE = 9842;
 
     private InternalPermissionCallback permissionListener = null;
+
+    @RequiresApi(api = 33)
+    private static final String[] TIRAMISU_PERMISSIONS = {
+            permission.READ_MEDIA_IMAGES,
+            permission.READ_MEDIA_VIDEO,
+    };
 
     boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE) {
@@ -72,7 +85,7 @@ class PermissionManager {
         }
     }
 
-    private void askForPermissions(Fragment fragment, final List<String> permissions, final InternalPermissionCallback permissionCallback) {
+    public void askForPermissions(Fragment fragment, final List<String> permissions, final InternalPermissionCallback permissionCallback) {
         setListener(new InternalPermissionCallback() {
             @Override
             public void result(Map<String, Boolean> permissionResult) {
@@ -120,22 +133,24 @@ class PermissionManager {
 
         final boolean canShowImageStream = canShowImageStream(context);
 
-        if(!canShowImageStream) {
-            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (!canShowImageStream) {
+            if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                Collections.addAll(permissions, TIRAMISU_PERMISSIONS);
+            } else {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
         }
-
         return permissions;
     }
 
     private boolean canShowImageStream(Context context) {
         final boolean isBelowKitkat = Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
-        final boolean hasReadPermission = isPermissionGranted(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+        final boolean hasReadPermission =
+                (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU)
+                        ? isPermissionGranted(context, TIRAMISU_PERMISSIONS)
+                        : isPermissionGranted(context, Manifest.permission.READ_EXTERNAL_STORAGE);
 
         return isBelowKitkat || hasReadPermission;
-    }
-
-    private boolean isPermissionGranted(Context context, String permission) {
-        return PermissionUtil.isPermissionGranted(context, permission);
     }
 
     private void setListener(InternalPermissionCallback listener) {
@@ -147,7 +162,7 @@ class PermissionManager {
         void onPermissionsDenied();
     }
 
-    private interface InternalPermissionCallback {
+    public interface InternalPermissionCallback {
         void result(Map<String, Boolean> permissionResult);
     }
 

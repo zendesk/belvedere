@@ -1,11 +1,23 @@
 package zendesk.belvedere;
 
 
+import static zendesk.belvedere.BelvedereUi.FIVE_SECONDS_DELAY;
+import android.Manifest.permission;
+import android.app.Activity;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
-
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import androidx.annotation.RequiresApi;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import zendesk.belvedere.PermissionManager.InternalPermissionCallback;
 import zendesk.belvedere.ui.R;
 
 class ImageStreamPresenter implements ImageStreamMvp.Presenter {
@@ -77,16 +89,68 @@ class ImageStreamPresenter implements ImageStreamMvp.Presenter {
             view.showGooglePhotosMenuItem(clickListener);
         }
 
-        if(model.hasDocumentIntent()) {
-            final View.OnClickListener clickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ImageStreamPresenter.this.view.openMediaIntent(model.getDocumentIntent(), imageStreamBackend);
-                }
-            };
-
-            view.showDocumentMenuItem(clickListener);
+        if (model.hasDocumentIntent()) {
+            openMediaFileScreen();
         }
+    }
+
+    /**
+     * Opens the media files screen.
+     */
+    private void openMediaFileScreen() {
+        final View.OnClickListener clickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                    openMediaOnPermissionGranted();
+                } else {
+                    ImageStreamPresenter.this.view.openMediaIntent(model.getDocumentIntent(),
+                            imageStreamBackend);
+                }
+            }
+        };
+        view.showDocumentMenuItem(clickListener);
+    }
+
+    /**
+     * Requests music and audio permission when the user tries to open the media files screen.
+     * It's only invoked on Android 13 and above.
+     */
+    @RequiresApi(api = 33)
+    private void openMediaOnPermissionGranted() {
+        imageStreamBackend.requestPermissions(Arrays.asList(permission.READ_MEDIA_AUDIO),
+                new InternalPermissionCallback() {
+                    @Override
+                    public void result(Map<String, Boolean> permissionResult) {
+                        for (Entry<String, Boolean> entryPermission : permissionResult.entrySet()) {
+                            if (Objects.equals(entryPermission.getKey(), permission.READ_MEDIA_AUDIO)
+                                    && entryPermission.getValue()) {
+                                ImageStreamPresenter.this.view.openMediaIntent(model.getDocumentIntent(),
+                                        imageStreamBackend);
+                            } else {
+                                displayBottomSheetDialogOnPermissionDenied();
+                            }
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Displays the bottom sheet UI component when the user doesn't allow a required permission.
+     */
+    private void displayBottomSheetDialogOnPermissionDenied() {
+        final ViewGroup parentView = imageStreamBackend.getActivity().findViewById(android.R.id.content);
+        Utils.showBottomSheetDialog(
+                parentView,
+                imageStreamBackend.getString(R.string.belvedere_permissions_rationale),
+                FIVE_SECONDS_DELAY,
+                imageStreamBackend.getString(R.string.belvedere_navigate_to_settings),
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Utils.openAppSettingsScreen(new WeakReference<>((Activity) imageStreamBackend.getActivity()));
+                    }
+                });
     }
 
     private void presentStream() {

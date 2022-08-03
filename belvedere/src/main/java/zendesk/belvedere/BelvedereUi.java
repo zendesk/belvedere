@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,8 @@ public class BelvedereUi {
     private final static String FRAGMENT_TAG = "BelvedereDialog";
     private final static String EXTRA_MEDIA_INTENT = "extra_intent";
     private final static String FRAGMENT_TAG_POPUP = "belvedere_image_stream";
-    private final static String INTENT_URI_SCHEMA = "package";
+    public final static String INTENT_URI_SCHEMA = "package";
+    public final static Long FIVE_SECONDS_DELAY = 5000L;
 
     /**
      * Gets the builder for showing the ImageStream.
@@ -218,21 +220,12 @@ public class BelvedereUi {
                         Utils.showBottomSheetDialog(
                                 parentView,
                                 appCompatActivity.getString(R.string.belvedere_permissions_rationale),
-                                5000L,
+                                FIVE_SECONDS_DELAY,
                                 appCompatActivity.getString(R.string.belvedere_navigate_to_settings),
                                 new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        Intent settingsIntent = new Intent();
-                                        settingsIntent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        settingsIntent.setData(
-                                                Uri.fromParts(
-                                                        INTENT_URI_SCHEMA,
-                                                        appCompatActivity.getPackageName(),
-                                                        null
-                                                )
-                                        );
-                                        appCompatActivity.startActivity(settingsIntent);
+                                        Utils.openAppSettingsScreen(new WeakReference<>(appCompatActivity));
                                     }
                                 });
                     }

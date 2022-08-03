@@ -23,6 +23,23 @@ class PermissionUtil {
     }
 
     /**
+     * Check if the user has granted a collection of permissions.
+     * @param context A valid application {@link Context}
+     * @param permissions list of permission to be checked
+     * @return true if all permissions were granted, otherwise false.
+     */
+    static boolean isPermissionGranted(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Internal helper method for checking, if a permission is declared in the
      * glorious {@code AndroidManifest.xml}.
      *
