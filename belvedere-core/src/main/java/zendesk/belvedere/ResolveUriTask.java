@@ -94,6 +94,9 @@ class ResolveUriTask extends AsyncTask<Uri, Void, List<MediaResult>> {
             } catch (IOException e) {
                 L.e(Belvedere.LOG_TAG, String.format(Locale.US, "IO Error copying file, uri: %s", uri), e);
 
+            } catch (IllegalStateException e) {
+                L.e(Belvedere.LOG_TAG, String.format(Locale.US, "The file is either partially downloaded or corrupted, uri: %s", uri), e);
+
             } finally {
                 try {
                     if (inputStream != null) {
