@@ -332,6 +332,12 @@ class MediaSource {
             intent.putExtra(Intent.EXTRA_MIME_TYPES, additionalTypes.toArray(new String[0]));
         }
 
-        return intent;
+        //Intent.createChooser should be used for ACTION_GET_CONTENT with broad mime types like */*.
+        //https://developer.android.com/reference/android/content/Intent?hl=ru#ACTION_GET_CONTENT
+        //Starting from API 30 it seems like Intent#createChooser is the only way to start a document chooser,
+        //even if there's a single default application.
+        return isIntentResolvable(intent, context) ?
+                intent :
+                Intent.createChooser(intent, null);
     }
 }
