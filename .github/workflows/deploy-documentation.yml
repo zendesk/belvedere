@@ -1,0 +1,41 @@
+name: Deploy documentation
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy-documentation:
+    name: Deploy documentation to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-documentation.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Archive documentation
+        run: tar --directory docs -cvf docs.tar .
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: docs.tar
+          retention-days: 1
+
+      - name: Deploy documentation
+        id: deploy-documentation
+        uses: actions/deploy-pages@v4
