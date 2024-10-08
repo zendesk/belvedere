@@ -1,3 +1,5 @@
+:warning: As of October 8th, the repository has been made read-only and will not receive any future updates. We recommend using the official [Google Photo Picker library](https://developer.android.com/training/data-storage/shared/photopicker), as this will help ensure compliance with privacy best practices. :warning:
+
 <p align="center">
 
 # Belvedere
